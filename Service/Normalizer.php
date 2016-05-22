@@ -232,9 +232,9 @@ class Normalizer
     /**
      * Returns values for properties with annotation type 'object'.
      *
-     * @param object             $object
-     * @param mixed              $propertyValue
-     * @param Normalize          $propertyAnnotation
+     * @param object    $object
+     * @param mixed     $propertyValue
+     * @param Normalize $propertyAnnotation
      *
      * @throws Exception
      *
