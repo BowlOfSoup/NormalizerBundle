@@ -1,0 +1,3 @@
+coverage_clover: Tests/coverage/clover.xml
+json_path: Tests/coverage/coveralls-upload.json
+exclude_no_stmt: true

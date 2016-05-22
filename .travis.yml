@@ -1,0 +1,36 @@
+language: php
+
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+matrix:
+    include:
+        - php: 5.3
+          env: SYMFONY_VERSION=2.7.*
+        - php: 5.4
+          env: SYMFONY_VERSION=2.7.*
+        - php: 5.5
+          env: SYMFONY_VERSION=2.7.*
+        - php: 5.6
+          env: SYMFONY_VERSION=2.8.*
+        - php: 5.6
+          env: SYMFONY_VERSION=3.0.*
+        - php: 7.0
+          env: SYMFONY_VERSION=2.8.*
+        - php: 7.0
+          env: SYMFONY_VERSION=3.0.*
+    fast_finish: true
+
+before_script:
+    - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
+    - composer install
+
+script:
+    - mkdir -p Tests/coverage
+    - phpunit
+
+after_script:
+ - php vendor/bin/coveralls -v

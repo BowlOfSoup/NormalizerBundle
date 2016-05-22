@@ -1,0 +1,24 @@
+{
+  "name": "bowlofsoup/normalizer-bundle",
+  "description": "Normalizer for objects.",
+  "keywords": ["normalizer", "representation", "object", "array"],
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "BowlOfSoup",
+      "homepage": "https://github.com/BowlOfSoup"
+    }
+  ],
+  "require": {
+    "php": ">=5.3",
+    "symfony/framework-bundle": "~2.3|~3.0"
+  },
+  "require-dev": {
+    "satooshi/php-coveralls": "1.0.*"
+  },
+  "autoload": {
+    "psr-0": { "BowlOfSoup\\NormalizerBundle": "" }
+  },
+  "target-dir": "BowlOfSoup/NormalizerBundle"
+}

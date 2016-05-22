@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service class="BowlOfSoup\NormalizerBundle\EventListener\RegisterAnnotationsListener" id="bow.event_listener.register_annotations">
+            <tag name="kernel.event_subscriber"/>
+            <argument>%bowl_of_soup_normalizer.register_annotations%</argument>
+        </service>
+
+        <service class="Doctrine\Common\Annotations\AnnotationReader" id="bos.doctrine.annotation_reader" />
+
+        <service class="BowlOfSoup\NormalizerBundle\Service\ClassExtractor" id="bos.class_extractor">
+            <argument type="service" id="bos.doctrine.annotation_reader" />
+        </service>
+
+        <service class="BowlOfSoup\NormalizerBundle\Service\PropertyExtractor" id="bos.property_extractor">
+            <argument type="service" id="bos.doctrine.annotation_reader" />
+        </service>
+
+        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer">
+            <argument type="service" id="bos.class_extractor" />
+            <argument type="service" id="bos.property_extractor" />
+        </service>
+    </services>
+</container>
