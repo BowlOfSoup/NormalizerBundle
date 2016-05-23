@@ -22,6 +22,15 @@ Use the following annotation to include the class property in the normalization 
      */
     private $propertyToBeNormalized
  
+### Maximal depth
+To normalize until a certain depth (type="object" / type="collection"). Property can only be set on class level.
+
+    /** 
+     * @Bos\Normalize(maxDepth=2)
+     */
+    class ClassToBeNormalized
+    {
+
 ### Skip empty properties
 You can omit properties that are empty to be normalized. If the property contains no data (empty, or null) the normalized output will not contain this property.
 
@@ -39,9 +48,9 @@ This can also be used on class level. All properties which are empty, will now n
     {
  
 
-### 'Group' suport
+### Group or context support
 
-Use property 'group' to seperate context.
+Use property 'group' to separate context.
 
     /**
      * @Bos\Normalize(group={"default"})
