@@ -2,6 +2,8 @@
 
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
+use BowlOfSoup\NormalizerBundle\Annotation as Bos;
+
 class SomeClass extends AbstractClass
 {
     private $property32 = 123;

@@ -5,10 +5,13 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 
 /**
- * @Bos\Normalize(skipEmpty=true)
+ * @Bos\Normalize(group={"default"}, skipEmpty=true)
  */
 class Social
 {
+    /** @var int */
+    private $id;
+
     /**
      * @var string
      *
@@ -45,6 +48,26 @@ class Social
      * @Bos\Normalize(group={"default"}, type="object")
      */
     private $person;
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return string

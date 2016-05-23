@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
+use Doctrine\Common\Collections\Collection;
 
 class Address
 {
@@ -33,6 +34,13 @@ class Address
      * @Bos\Normalize(group={"default"}, callback="getCityWithFormat")
      */
     private $city;
+
+    /**
+     * @var Collection
+     *
+     * @Bos\Normalize(group={"maxDepthTestDepth1"}, type="collection")
+     */
+    private $group;
 
     /**
      * @return string
@@ -118,6 +126,26 @@ class Address
     public function setCity($city)
     {
         $this->city = $city;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param Collection $group
+     *
+     * @return $this
+     */
+    public function setGroup(Collection $group)
+    {
+        $this->group = $group;
 
         return $this;
     }

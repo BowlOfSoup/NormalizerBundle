@@ -29,6 +29,7 @@ class Normalize
         'format' => array('type' => 'string'),
         'callback' => array('type' => 'string'),
         'skipEmpty' => array('type' => 'boolean'),
+        'maxDepth' => array('type' => 'integer'),
     );
 
     /** @var string */
@@ -48,6 +49,9 @@ class Normalize
 
     /** @var boolean */
     private $skipEmpty = false;
+
+    /** @var int */
+    private $maxDepth;
 
     /**
      * @param array $properties
@@ -112,6 +116,14 @@ class Normalize
     }
 
     /**
+     * @return int
+     */
+    public function getMaxDepth()
+    {
+        return $this->maxDepth;
+    }
+
+    /**
      * @param array  $properties
      * @param string $propertyName
      * @param array  $propertyOptions
@@ -141,7 +153,7 @@ class Normalize
      */
     private function checkEmpty($property, $propertyName)
     {
-        if (empty($property) && false !== $property) {
+        if (0 !== $property && empty($property) && false !== $property) {
             throw new InvalidArgumentException(
                 sprintf(static::EXCEPTION_EMPTY, $propertyName, __CLASS__)
             );

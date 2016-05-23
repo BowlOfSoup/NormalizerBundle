@@ -6,6 +6,11 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 
+/**
+ * @Bos\Normalize(group={"maxDepthTestDepth0"}, maxDepth=0)
+ * @Bos\Normalize(group={"maxDepthTestDepth1"}, maxDepth=1)
+ * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
+ */
 class Person
 {
     /**
@@ -25,7 +30,7 @@ class Person
     /**
      * @var string
      *
-     * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"default", "anotherGroup"})
      */
     private $surName;
 
@@ -35,6 +40,13 @@ class Person
      * @Bos\Normalize(group={"default"}, type="collection")
      */
     private $initials;
+
+    /**
+     * @var string
+     *
+     * @Bos\Normalize()
+     */
+    private $gender;
 
     /**
      * @var DateTime
@@ -53,14 +65,16 @@ class Person
     /**
      * @var Collection
      *
-     * @Bos\Normalize(group={"default"}, type="collection")
+     * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
+     * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
      */
     private $addresses;
 
     /**
      * @var Social
      *
-     * @Bos\Normalize(group={"default"}, type="object")
+     * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
+     * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
      */
     private $social;
 
@@ -164,6 +178,26 @@ class Person
     public function setInitials($initials)
     {
         $this->initials = $initials;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param string $gender
+     *
+     * @return $this
+     */
+    public function setGender($gender)
+    {
+        $this->gender = $gender;
 
         return $this;
     }

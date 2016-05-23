@@ -28,13 +28,21 @@ class ClassExtractor
      * @param object $object
      * @param string $annotation
      *
-     * @return object|null
+     * @return array
      */
-    public function extractClassAnnotation($object, $annotation)
+    public function extractClassAnnotations($object, $annotation)
     {
+        $annotations = array();
         $reflectedClass = new ReflectionClass($object);
 
-        return $this->annotationReader->getClassAnnotation($reflectedClass, $annotation);
+        $classAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
+        foreach ($classAnnotations as $classAnnotation) {
+            if ($classAnnotation instanceof $annotation) {
+                $annotations[] = $classAnnotation;
+            }
+        }
+
+        return $annotations;
     }
 
     /**

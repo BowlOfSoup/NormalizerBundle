@@ -2,6 +2,7 @@
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
+use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use PHPUnit_Framework_TestCase;
@@ -18,21 +19,25 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
      */
     public function testExtractClassAnnotation()
     {
-        $object = new stdClass();
-        $reflectedClass = new ReflectionClass($object);
+        $annotation = new Normalize(array());
+        $annotationResult = array($annotation);
+
+        $someClass = new SomeClass();
+        $reflectedClass = new ReflectionClass($someClass);
 
         $mockAnnotationReader = $this
             ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')
             ->disableOriginalConstructor()
-            ->setMethods(array('getClassAnnotation'))
+            ->setMethods(array('getClassAnnotations'))
             ->getMock();
         $mockAnnotationReader
             ->expects($this->once())
-            ->method('getClassAnnotation')
-            ->with($this->equalTo($reflectedClass), $this->equalTo(static::ANNOTATION_NORMALIZE));
+            ->method('getClassAnnotations')
+            ->with($this->equalTo($reflectedClass))
+            ->will($this->returnValue($annotationResult));
 
         $classExtractor = new ClassExtractor($mockAnnotationReader);
-        $classExtractor->extractClassAnnotation($object, static::ANNOTATION_NORMALIZE);
+        $classExtractor->extractClassAnnotations($someClass, static::ANNOTATION_NORMALIZE);
     }
 
     /**

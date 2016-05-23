@@ -19,12 +19,14 @@ class Normalizer
     /** @var PropertyExtractor */
     protected $propertyExtractor;
 
-    /**
-     * Stores normalized objects to prevent circular reference.
-     *
-     * @var array
-     */
+    /** @var array */
     private $processedObjects = array();
+
+    /** @var int */
+    private $processedDepth = 0;
+
+    /** @var int */
+    private $maxDepth;
 
     /** @var string|null */
     private $group = null;
@@ -60,6 +62,9 @@ class Normalizer
     /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
+     * In this method, 'new Normalize(array())' is used for PHP < 5.5 support.
+     * Normally we should use 'Normalize::class'
+     *
      * @param object $object
      * @param bool   $disableCircularReferenceCheck
      *
@@ -90,12 +95,38 @@ class Normalizer
                     $object,
                     $classProperty,
                     $propertyAnnotations,
-                    $this->classExtractor->extractClassAnnotation($object, new Normalize(array()))
+                    $this->getClassAnnotation($object)
                 )
             );
         }
 
         return $normalizedProperties;
+    }
+
+    /**
+     * Get class annotation for specified group.
+     *
+     * First group entry will be used, duplicate definitions will be gracefuly ignored.
+     *
+     * @param object $object
+     *
+     * @return Normalize
+     */
+    private function getClassAnnotation($object)
+    {
+        $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Normalize(array()));
+        if (empty($classAnnotations)) {
+            return null;
+        }
+
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
+        foreach ($classAnnotations as $classAnnotation) {
+            if ($this->isGroupValidForProperty($classAnnotation)) {
+                return $classAnnotation;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -115,10 +146,9 @@ class Normalizer
         Normalize $classAnnotation = null
     ) {
         $normalizedProperties = array();
-
-        $skipEmpty = false;
-        if (null !== $classAnnotation) {
-            $skipEmpty = $classAnnotation->getSkipEmpty();
+        $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
+        if (null !== $classAnnotation && null === $this->maxDepth) {
+            $this->maxDepth = $classAnnotation->getMaxDepth();
         }
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
@@ -242,6 +272,11 @@ class Normalizer
      */
     private function getValueForPropertyWithTypeObject($object, $propertyValue, Normalize $propertyAnnotation)
     {
+        if ($this->hasMaxDepth()) {
+            return $this->getValueForMaxDepth($propertyValue);
+        }
+        ++$this->processedDepth;
+
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback) && is_callable(array($propertyValue, $annotationCallback))) {
             return $propertyValue->$annotationCallback();
@@ -251,7 +286,10 @@ class Normalizer
             return null;
         }
 
-        return $this->normalizeReferencedObject($propertyValue, $object);
+        $normalizedProperty = $this->normalizeReferencedObject($propertyValue, $object);
+        --$this->processedDepth;
+
+        return $normalizedProperty;
     }
 
     /**
@@ -271,6 +309,10 @@ class Normalizer
         $className = get_class($object);
         if (is_object($object) && !in_array($className, $this->processedObjects)) {
             $normalizedProperty = $this->normalizeObject($object);
+
+            if (empty($normalizedProperty)) {
+                return null;
+            };
         }
 
         if (empty($normalizedProperty)) {
@@ -313,16 +355,55 @@ class Normalizer
                 continue;
             }
 
+            if ($this->hasMaxDepth()) {
+                $normalizedCollection[] = $this->getValueForMaxDepth($collectionItem);
+                continue;
+            }
+            ++$this->processedDepth;
+
             if (!empty($annotationCallback) && is_callable(array($collectionItem, $annotationCallback))) {
                 $normalizedCollection[] = $collectionItem->$annotationCallback();
             } else {
-                $normalizedCollection[] = $this->normalizeObject(
+                $normalizedObject = $this->normalizeObject(
                     $collectionItem,
                     static::DISABLE_CIRCULAR_REFERENCE_CHECK
                 );
+
+                $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
+            --$this->processedDepth;
         }
 
         return $normalizedCollection;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws Exception
+     */
+    private function hasMaxDepth()
+    {
+        return null !== $this->maxDepth && ($this->processedDepth + 1) > $this->maxDepth;
+    }
+
+    /**
+     * @param object $object
+     *
+     * @return int|string
+     *
+     * @throws Exception
+     */
+    private function getValueForMaxDepth($object)
+    {
+        $propertyValue = $this->propertyExtractor->getId($object);
+        if (null === $propertyValue) {
+            throw new Exception(
+                'Maximal depth reached, but no identifier found. '.
+                'Prevent this by adding a getId() method to ' . get_class($object)
+            );
+        }
+
+        return $propertyValue;
     }
 }

@@ -21,6 +21,7 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
         $this->assertSame($properties['format'], $normalize->getFormat());
         $this->assertSame($properties['callback'], $normalize->getCallback());
         $this->assertSame($properties['skipEmpty'], $normalize->getSkipEmpty());
+        $this->assertSame($properties['maxDepth'], $normalize->getMaxDepth());
     }
 
     /**
@@ -86,6 +87,7 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
             'format' => 'Y-m-d',
             'callback' => 'toArray',
             'skipEmpty' => true,
+            'maxDepth' => 2,
         );
     }
 }
