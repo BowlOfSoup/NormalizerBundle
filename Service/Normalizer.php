@@ -2,6 +2,7 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service;
 
+use BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
@@ -56,6 +57,10 @@ class Normalizer
         $this->group = $group;
         $this->processedObjects = array();
 
+        if (!is_object($object)) {
+            return null;
+        }
+
         return $this->normalizeObject($object);
     }
 
@@ -106,11 +111,14 @@ class Normalizer
     /**
      * Get class annotation for specified group.
      *
-     * First group entry will be used, duplicate definitions will be gracefuly ignored.
+     * First group entry will be used, duplicate definitions will be gracefully ignored.
+     *
+     * In this method, 'new Normalize(array())' is used for PHP < 5.5 support,
+     * Normally we should use 'Normalize::class'
      *
      * @param object $object
      *
-     * @return Normalize
+     * @return Normalize|null
      */
     private function getClassAnnotation($object)
     {
@@ -121,7 +129,7 @@ class Normalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
-            if ($this->isGroupValidForProperty($classAnnotation)) {
+            if ($classAnnotation->isGroupValidForProperty($this->group)) {
                 return $classAnnotation;
             }
         }
@@ -153,7 +161,7 @@ class Normalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
-            if (!$this->isGroupValidForProperty($propertyAnnotation)) {
+            if (!$propertyAnnotation->isGroupValidForProperty($this->group)) {
                 continue;
             }
 
@@ -199,13 +207,13 @@ class Normalizer
     /**
      * Check if annotation property 'group' matches up with requested group.
      *
-     * @param Normalize $propertyAnnotation
+     * @param AbstractAnnotation $propertyAnnotation
      *
      * @return bool
      */
-    private function isGroupValidForProperty(Normalize $propertyAnnotation)
+    private function isGroupValidForProperty(AbstractAnnotation $annotation)
     {
-        $annotationPropertyGroup = $propertyAnnotation->getGroup();
+        $annotationPropertyGroup = $annotation->getGroup();
 
         if ((!empty($this->group) && !in_array($this->group, $annotationPropertyGroup)) ||
             (empty($this->group) && !empty($annotationPropertyGroup))

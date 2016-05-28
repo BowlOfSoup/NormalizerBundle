@@ -32,6 +32,10 @@ class ClassExtractor
      */
     public function extractClassAnnotations($object, $annotation)
     {
+        if (!is_object($object)) {
+            return array();
+        }
+
         $annotations = array();
         $reflectedClass = new ReflectionClass($object);
 
@@ -54,6 +58,10 @@ class ClassExtractor
      */
     public function getProperties($object)
     {
+        if (!is_object($object)) {
+            return array();
+        }
+
         $reflectedClass = new ReflectionClass($object);
         $classProperties = $this->getClassProperties($reflectedClass);
 
