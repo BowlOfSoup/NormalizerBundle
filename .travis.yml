@@ -1,5 +1,5 @@
 language: php
-memory_limit = 2048M
+memory_limit: 2048M
 sudo: false
 
 cache:
