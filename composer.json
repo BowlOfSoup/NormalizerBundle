@@ -21,8 +21,7 @@
     "psr-0": { "BowlOfSoup\\NormalizerBundle": "" }
   },
   "target-dir": "BowlOfSoup/NormalizerBundle",
-  "minimum-stability": "dev",
-  "prefer-stable": true,
+  "minimum-stability": "1.0",
   "extra": {
     "branch-alias": {
       "dev-master": "1.0-dev"
