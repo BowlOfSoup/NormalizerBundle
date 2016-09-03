@@ -60,6 +60,25 @@ class Normalizer
     }
 
     /**
+     * Returns a normalized array of given array of objects, for a specific group.
+     *
+     * @param object[]    $objects
+     * @param string|null $group
+     *
+     * @return array
+     */
+    public function normalizeArray(array $objects, $group = null)
+    {
+        $normalizedArray = array();
+
+        foreach ($objects as $object) {
+            $normalizedArray[] = $this->normalize($object, $group);
+        }
+
+        return $normalizedArray;
+    }
+
+    /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
      * In this method, 'new Normalize(array())' is used for PHP < 5.5 support.

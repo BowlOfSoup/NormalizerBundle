@@ -31,47 +31,30 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $normalizer = new Normalizer($classExtractor, $propertyExtractor);
         $result = $normalizer->normalize($person, 'default');
 
-        $expectedResult = array(
-            'id' => 123,
-            'name_value' => 'Bowl',
-            'surName' => 'Of Soup',
-            'initials' => null,
-            'dateOfBirth' => '1980-01-01',
-            'dateOfRegistration' => 'Apr. 2015',
-            'addresses' => array(
-                array(
-                    'street' => 'Dummy Street',
-                    'number' => null,
-                    'postalCode' => null,
-                    'city' => 'The City Is: Amsterdam',
-                ),
-                array(
-                    'street' => null,
-                    'number' => 4,
-                    'postalCode' => '1234AB',
-                    'city' => 'The City Is: ',
-                ),
-            ),
-            'social' => array(
-                'facebook' => 'Facebook ID',
-                'twitter' => 'Twitter ID',
-                'person' => array(
-                    'id' => 123,
-                ),
-            ),
-            'telephoneNumbers' => array(
-                'home' => 123,
-                'mobile' => 456,
-                'work' => 789,
-                'wife' => 777,
-             ),
-            'nonValidCollectionProperty' => null,
-            'validCollectionPropertyWithCallback' => array(123),
-            'validEmptyObjectProperty' => null,
-        );
+        $expectedResult = $this->getSuccessResult();
 
         $this->assertNotEmpty($result);
         $this->assertArraySubset($result, $expectedResult);
+    }
+
+    /**
+     * @testdox Normalize array of objects, full happy path no type property, still callback
+     */
+    public function testNormalizeArraySuccess()
+    {
+        $classExtractor = new ClassExtractor(new AnnotationReader());
+        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+
+        $arrayOfObjects = array($this->getDummyDataSet(), $this->getDummyDataSet());
+
+        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
+        $result = $normalizer->normalizeArray($arrayOfObjects, 'default');
+
+        $expectedResult = $this->getSuccessResult();
+
+        $this->assertNotEmpty($result);
+        $this->assertArraySubset($result[0], $expectedResult);
+        $this->assertArraySubset($result[1], $expectedResult);
     }
 
     /**
@@ -327,5 +310,50 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $person->setTelephoneNumbers($telephoneNumbers);
 
         return $person;
+    }
+
+    /**
+     * @return array
+     */
+    private function getSuccessResult()
+    {
+        return array(
+            'id' => 123,
+            'name_value' => 'Bowl',
+            'surName' => 'Of Soup',
+            'initials' => null,
+            'dateOfBirth' => '1980-01-01',
+            'dateOfRegistration' => 'Apr. 2015',
+            'addresses' => array(
+                array(
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'The City Is: Amsterdam',
+                ),
+                array(
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => 'The City Is: ',
+                ),
+            ),
+            'social' => array(
+                'facebook' => 'Facebook ID',
+                'twitter' => 'Twitter ID',
+                'person' => array(
+                    'id' => 123,
+                ),
+            ),
+            'telephoneNumbers' => array(
+                'home' => 123,
+                'mobile' => 456,
+                'work' => 789,
+                'wife' => 777,
+            ),
+            'nonValidCollectionProperty' => null,
+            'validCollectionPropertyWithCallback' => array(123),
+            'validEmptyObjectProperty' => null,
+        );
     }
 }
