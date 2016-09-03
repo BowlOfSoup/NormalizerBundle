@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
+use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface;
 
@@ -81,7 +82,7 @@ class Serializer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Serialize $classAnnotation */
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForProperty($group)) {
                 return $classAnnotation;
@@ -94,17 +95,20 @@ class Serializer
     /**
      * @param string|null $encodingType
      *
+     * @throws NormalizerBundleException
+     *
      * @return EncoderInterface
      */
     private function getEncoder($encodingType = null)
     {
         if (null === $this->encoderProperties || $encodingType !== $this->encoderProperties->getType()) {
-            // Can not encode, wrong type match.
+            throw new NormalizerBundleException('Can not encode value, ' .
+                'encoder properties type and given encoder type do not match.');
         }
 
         $encoder = EncoderFactory::getEncoder($encodingType);
         if (null === $encoder) {
-            // Can not serialize, invalid type.
+            throw new NormalizerBundleException('Can not encode value, given encoder type does not exist.');
         }
 
         return $encoder;

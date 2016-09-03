@@ -2,6 +2,7 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
+use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
 use Exception;
 use SimpleXMLElement;
 
@@ -9,6 +10,9 @@ class EncoderXml extends AbstractEncoder
 {
     /** @var string */
     const DEFAULT_WRAP_ELEMENT = 'data';
+
+    /** @var string */
+    const EXCEPTION_PREFIX = 'Error when encoding XML: ';
 
     /**
      * @inheritdoc
@@ -20,6 +24,8 @@ class EncoderXml extends AbstractEncoder
 
     /**
      * @inheritdoc
+     *
+     * @throws NormalizerBundleException
      */
     public function encode($value)
     {
@@ -31,13 +37,14 @@ class EncoderXml extends AbstractEncoder
             $this->wrapElement = static::DEFAULT_WRAP_ELEMENT;
         }
 
-        $wrapElement = '<' . $this->wrapElement . '></' . $this->wrapElement . '>';
+        $xmlData = new SimpleXMLElement(
+            '<?xml version="1.0"?>' . '<' . $this->wrapElement . '></' . $this->wrapElement . '>'
+        );
 
         try {
-            $xmlData = new SimpleXMLElement('<?xml version="1.0"?>' . $wrapElement);
             $xmlData = $this->arrayToXml($value, $xmlData);
         } catch (Exception $e) {
-            var_dump($e->getMessage());
+            throw new NormalizerBundleException(static::EXCEPTION_PREFIX . $e->getMessage());
         }
 
         $this->getError($xmlData->asXML());
@@ -70,13 +77,15 @@ class EncoderXml extends AbstractEncoder
 
     /**
      * @param string $xmlData
+     *
+     * @throws NormalizerBundleException
      */
     private function getError($xmlData)
     {
         libxml_use_internal_errors(true);
         if (false === simplexml_load_string($xmlData)) {
             foreach(libxml_get_errors() as $error) {
-                var_dump($error->message);
+                throw new NormalizerBundleException(static::EXCEPTION_PREFIX . $error->message);
             }
         }
     }

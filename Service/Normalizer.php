@@ -2,8 +2,8 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service;
 
-use BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Exception;
@@ -127,7 +127,7 @@ class Normalizer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForProperty($this->group)) {
                 return $classAnnotation;
@@ -205,26 +205,6 @@ class Normalizer
     }
 
     /**
-     * Check if annotation property 'group' matches up with requested group.
-     *
-     * @param AbstractAnnotation $propertyAnnotation
-     *
-     * @return bool
-     */
-    private function isGroupValidForProperty(AbstractAnnotation $annotation)
-    {
-        $annotationPropertyGroup = $annotation->getGroup();
-
-        if ((!empty($this->group) && !in_array($this->group, $annotationPropertyGroup)) ||
-            (empty($this->group) && !empty($annotationPropertyGroup))
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Returns values for properties with the annotation property 'type'.
      *
      * @param object             $object
@@ -232,8 +212,6 @@ class Normalizer
      * @param mixed              $propertyValue
      * @param Normalize          $propertyAnnotation
      * @param string             $annotationPropertyType
-     *
-     * @throws Exception
      *
      * @return mixed|null
      */
@@ -274,8 +252,6 @@ class Normalizer
      * @param mixed     $propertyValue
      * @param Normalize $propertyAnnotation
      *
-     * @throws Exception
-     *
      * @return mixed|null
      */
     private function getValueForPropertyWithTypeObject($object, $propertyValue, Normalize $propertyAnnotation)
@@ -306,7 +282,7 @@ class Normalizer
      * @param object $object
      * @param object $parentObject
      *
-     * @throws Exception
+     * @throws NormalizerBundleException
      *
      * @return array
      */
@@ -326,7 +302,7 @@ class Normalizer
         if (empty($normalizedProperty)) {
             $normalizedProperty = $this->propertyExtractor->getId($object);
             if (null === $normalizedProperty) {
-                throw new Exception(
+                throw new NormalizerBundleException(
                     'Circular reference on: ' .$className . ' called from: ' . get_class($parentObject) .
                     '. If possible, prevent this by adding a getId() method to ' . $className
                 );
@@ -400,13 +376,13 @@ class Normalizer
      *
      * @return int|string
      *
-     * @throws Exception
+     * @throws NormalizerBundleException
      */
     private function getValueForMaxDepth($object)
     {
         $propertyValue = $this->propertyExtractor->getId($object);
         if (null === $propertyValue) {
-            throw new Exception(
+            throw new NormalizerBundleException(
                 'Maximal depth reached, but no identifier found. '.
                 'Prevent this by adding a getId() method to ' . get_class($object)
             );

@@ -10,9 +10,6 @@ class EncoderFactory
     /** @var string */
     const TYPE_XML = 'xml';
 
-    /** @var string */
-    const TYPE_YAML = 'yaml';
-
     /**
      * @param string $type
      *
@@ -25,8 +22,6 @@ class EncoderFactory
                 return new EncoderJson();
             case static::TYPE_XML :
                 return new EncoderXml();
-            case static::TYPE_YAML :
-                return new EncoderYaml();
         }
     }
 }

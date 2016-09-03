@@ -2,10 +2,15 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
+use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
+
 class EncoderJson extends AbstractEncoder
 {
     /** @var string */
     const ERROR_NO_ERROR = 'No error';
+
+    /** @var string */
+    const EXCEPTION_PREFIX = 'Error when encoding JSON: ';
 
     /** @var int */
     private $options;
@@ -44,13 +49,15 @@ class EncoderJson extends AbstractEncoder
 
     /**
      * Dumps error messages.
+     *
+     * @throws NormalizerBundleException
      */
     private function getError()
     {
         $errorMessage = json_last_error_msg();
 
         if (static::ERROR_NO_ERROR !== $errorMessage) {
-            var_dump($errorMessage);
+            throw new NormalizerBundleException(static::EXCEPTION_PREFIX . $errorMessage);
         }
     }
 }

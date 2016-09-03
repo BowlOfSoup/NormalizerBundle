@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
+use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
 
 interface EncoderInterface
 {
