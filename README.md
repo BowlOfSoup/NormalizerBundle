@@ -123,3 +123,4 @@ The normalizer needs to be injected.
 Calling the normalizer with a group is optional, but certainly recommended. The result will be an array.
 
     $result = $this->normalizer->normalize($someEntity, 'somegroup');
+    $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');
