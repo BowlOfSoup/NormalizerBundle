@@ -18,7 +18,12 @@
     "satooshi/php-coveralls": "1.0.*"
   },
   "autoload": {
-    "psr-0": { "BowlOfSoup\\NormalizerBundle": "" }
+    "psr-4": { "BowlOfSoup\\NormalizerBundle\\": "" }
   },
-  "target-dir": "BowlOfSoup/NormalizerBundle"
+  "minimum-stability": "dev",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  }
 }
