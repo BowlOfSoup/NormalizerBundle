@@ -133,6 +133,23 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox Normalize object, null object given.
+     */
+    public function testNormalizeNullObject()
+    {
+        $classExtractor = new ClassExtractor(new AnnotationReader());
+        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+
+        $someClass = null;
+
+        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
+        $result = $normalizer->normalize($someClass);
+
+        $this->assertSame(gettype(array()), gettype($result));
+        $this->assertEmpty($result);
+    }
+
+    /**
      * @testdox Normalize object, Circular reference, no fallback (hack!).
      *
      * @expectedException \Exception

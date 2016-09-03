@@ -50,10 +50,14 @@ class ClassExtractor
      *
      * @param object $object
      *
-     * @return \ReflectionProperty[]
+     * @return \ReflectionProperty[]|array
      */
     public function getProperties($object)
     {
+        if (!is_object($object)) {
+            return array();
+        }
+
         $reflectedClass = new ReflectionClass($object);
         $classProperties = $this->getClassProperties($reflectedClass);
 
