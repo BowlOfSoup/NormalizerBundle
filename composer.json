@@ -20,5 +20,6 @@
   "autoload": {
     "psr-0": { "BowlOfSoup\\NormalizerBundle": "" }
   },
-  "target-dir": "BowlOfSoup/NormalizerBundle"
+  "target-dir": "BowlOfSoup/NormalizerBundle",
+  "minimum-stability": "dev"
 }
