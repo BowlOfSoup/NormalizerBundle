@@ -86,6 +86,13 @@ class Person
     private $telephoneNumbers;
 
     /**
+     * @var Hobbies
+     *
+     * @Bos\Normalize(group={"default"}, type="collection")
+     */
+    private $hobbies;
+
+    /**
      * @Bos\Normalize(group={"default"}, type="object")
      */
     protected $validEmptyObjectProperty;
@@ -302,6 +309,26 @@ class Person
     public function setTelephoneNumbers(TelephoneNumbers $telephoneNumbers)
     {
         $this->telephoneNumbers = $telephoneNumbers;
+
+        return $this;
+    }
+
+    /**
+     * @return Hobbies
+     */
+    public function getHobbies()
+    {
+        return $this->hobbies;
+    }
+
+    /**
+     * @param Hobbies $hobbies
+     *
+     * @return $this
+     */
+    public function setHobbies($hobbies)
+    {
+        $this->hobbies = $hobbies;
 
         return $this;
     }

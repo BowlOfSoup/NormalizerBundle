@@ -10,9 +10,6 @@ use ReflectionProperty;
 
 class Normalizer
 {
-    /** @var bool */
-    const DISABLE_CIRCULAR_REFERENCE_CHECK = true;
-
     /** @var ClassExtractor */
     protected $classExtractor;
 
@@ -85,15 +82,12 @@ class Normalizer
      * Normally we should use 'Normalize::class'
      *
      * @param object $object
-     * @param bool   $disableCircularReferenceCheck
      *
      * @return array
      */
-    private function normalizeObject($object, $disableCircularReferenceCheck = false)
+    private function normalizeObject($object)
     {
-        if (!$disableCircularReferenceCheck) {
-            $this->processedObjects[] = get_class($object);
-        }
+        $this->processedObjects[] = get_class($object);
         $normalizedProperties = array();
 
         $classProperties = $this->classExtractor->getProperties($object);
@@ -118,6 +112,8 @@ class Normalizer
                 )
             );
         }
+
+        array_pop($this->processedObjects);
 
         return $normalizedProperties;
     }
@@ -383,11 +379,7 @@ class Normalizer
             if (!empty($annotationCallback) && is_callable(array($collectionItem, $annotationCallback))) {
                 $normalizedCollection[] = $collectionItem->$annotationCallback();
             } else {
-                $normalizedObject = $this->normalizeObject(
-                    $collectionItem,
-                    static::DISABLE_CIRCULAR_REFERENCE_CHECK
-                );
-
+                $normalizedObject = $this->normalizeObject($collectionItem);
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
             --$this->processedDepth;

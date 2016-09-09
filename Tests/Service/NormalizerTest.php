@@ -6,6 +6,8 @@ use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
+use BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies;
+use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
@@ -326,6 +328,33 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
             ->setWife(777);
         $person->setTelephoneNumbers($telephoneNumbers);
 
+        $hobbyCollection = new ArrayCollection();
+
+        $hobbyType1 = new HobbyType();
+        $hobbyType1->setId(1);
+        $hobbyType1->setName('Music');
+
+        $hobbyType2 = new HobbyType();
+        $hobbyType2->setId(2);
+        $hobbyType2->setName('Technical');
+
+        $hobbies1 = new Hobbies();
+        $hobbies1->setDescription('Playing Guitar');
+        $hobbies1->setHobbyType($hobbyType1);
+        $hobbyCollection->add($hobbies1);
+
+        $hobbies2 = new Hobbies();
+        $hobbies2->setDescription('Fixing Computers');
+        $hobbies2->setHobbyType($hobbyType2);
+        $hobbyCollection->add($hobbies2);
+
+        $hobbies3 = new Hobbies();
+        $hobbies3->setDescription('Playing Piano');
+        $hobbies3->setHobbyType($hobbyType1);
+        $hobbyCollection->add($hobbies3);
+
+        $person->setHobbies($hobbyCollection);
+
         return $person;
     }
 
@@ -367,6 +396,29 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
                 'mobile' => 456,
                 'work' => 789,
                 'wife' => 777,
+            ),
+            'hobbies' => array(
+                array(
+                    'description' => 'Playing Guitar',
+                    'hobbyType' => array(
+                        'id' => 1,
+                        'name' => 'Music',
+                    ),
+                ),
+                array(
+                    'description' => 'Fixing Computers',
+                    'hobbyType' => array(
+                        'id' => 2,
+                        'name' => 'Technical',
+                    ),
+                ),
+                array(
+                    'description' => 'Playing Piano',
+                    'hobbyType' => array(
+                        'id' => 1,
+                        'name' => 'Music',
+                    ),
+                ),
             ),
             'nonValidCollectionProperty' => null,
             'validCollectionPropertyWithCallback' => array(123),
