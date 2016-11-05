@@ -4,6 +4,10 @@
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg)](https://php.net/)
 [![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%202.7-green.svg)](https://symfony.com/)
 
+Installation
+------------
+    composer require bowlofsoup/normalizer-bundle 1.*
+
 Bowl Of Soup Normalizer
 =======================
 
@@ -123,3 +127,4 @@ The normalizer needs to be injected.
 Calling the normalizer with a group is optional, but certainly recommended. The result will be an array.
 
     $result = $this->normalizer->normalize($someEntity, 'somegroup');
+    $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');

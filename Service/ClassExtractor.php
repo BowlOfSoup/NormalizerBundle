@@ -54,7 +54,7 @@ class ClassExtractor
      *
      * @param object $object
      *
-     * @return \ReflectionProperty[]
+     * @return \ReflectionProperty[]|array
      */
     public function getProperties($object)
     {

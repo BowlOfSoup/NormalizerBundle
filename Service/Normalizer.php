@@ -11,9 +11,6 @@ use ReflectionProperty;
 
 class Normalizer
 {
-    /** @var bool */
-    const DISABLE_CIRCULAR_REFERENCE_CHECK = true;
-
     /** @var ClassExtractor */
     protected $classExtractor;
 
@@ -22,6 +19,9 @@ class Normalizer
 
     /** @var array */
     private $processedObjects = array();
+
+    /** @var array */
+    private $processedObjectCache = array();
 
     /** @var int */
     private $processedDepth = 0;
@@ -65,22 +65,51 @@ class Normalizer
     }
 
     /**
+     * Returns a normalized array of given array of objects, for a specific group.
+     *
+     * @param object[]    $objects
+     * @param string|null $group
+     *
+     * @return array
+     */
+    public function normalizeArray(array $objects, $group = null)
+    {
+        $normalizedArray = array();
+
+        foreach ($objects as $object) {
+            $normalizedArray[] = $this->normalize($object, $group);
+        }
+
+        return $normalizedArray;
+    }
+
+    /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
      * In this method, 'new Normalize(array())' is used for PHP < 5.5 support.
      * Normally we should use 'Normalize::class'
      *
      * @param object $object
-     * @param bool   $disableCircularReferenceCheck
      *
      * @return array
      */
-    private function normalizeObject($object, $disableCircularReferenceCheck = false)
+    private function normalizeObject($object)
     {
-        if (!$disableCircularReferenceCheck) {
-            $this->processedObjects[] = get_class($object);
-        }
         $normalizedProperties = array();
+        $objectName = get_class($object);
+        $objectIdentifier = $this->propertyExtractor->getId($object);
+
+        $this->processedObjects[$objectName] = $objectIdentifier;
+
+        // If cached return previously cached normalized object.
+        if (null !== $objectIdentifier &&
+            array_key_exists($objectName, $this->processedObjectCache) &&
+            array_key_exists($objectIdentifier, $this->processedObjectCache[$objectName])
+        ) {
+            return $this->processedObjectCache[$objectName][$objectIdentifier];
+        }
+
+        $this->processedObjectCache[$objectName][$objectIdentifier] = array();
 
         $classProperties = $this->classExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
@@ -104,6 +133,12 @@ class Normalizer
                 )
             );
         }
+
+        // Cache object
+        if (null !== $objectIdentifier) {
+            $this->processedObjectCache[$objectName][$objectIdentifier] = $normalizedProperties;
+        }
+        array_pop($this->processedObjects);
 
         return $normalizedProperties;
     }
@@ -290,8 +325,8 @@ class Normalizer
     {
         $normalizedProperty = null;
 
-        $className = get_class($object);
-        if (is_object($object) && !in_array($className, $this->processedObjects)) {
+        $objectName = get_class($object);
+        if (is_object($object) && !$this->isCircularReference($object, $objectName)) {
             $normalizedProperty = $this->normalizeObject($object);
 
             if (empty($normalizedProperty)) {
@@ -303,8 +338,8 @@ class Normalizer
             $normalizedProperty = $this->propertyExtractor->getId($object);
             if (null === $normalizedProperty) {
                 throw new NormalizerBundleException(
-                    'Circular reference on: ' .$className . ' called from: ' . get_class($parentObject) .
-                    '. If possible, prevent this by adding a getId() method to ' . $className
+                    'Circular reference on: ' .$objectName . ' called from: ' . get_class($parentObject) .
+                    '. If possible, prevent this by adding a getId() method to ' . $objectName
                 );
             }
 
@@ -348,17 +383,27 @@ class Normalizer
             if (!empty($annotationCallback) && is_callable(array($collectionItem, $annotationCallback))) {
                 $normalizedCollection[] = $collectionItem->$annotationCallback();
             } else {
-                $normalizedObject = $this->normalizeObject(
-                    $collectionItem,
-                    static::DISABLE_CIRCULAR_REFERENCE_CHECK
-                );
-
+                $normalizedObject = $this->normalizeObject($collectionItem);
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
             --$this->processedDepth;
         }
 
         return $normalizedCollection;
+    }
+
+    /**
+     * @param object $object
+     * @param string $objectName
+     *
+     * @return bool
+     */
+    private function isCircularReference($object, $objectName)
+    {
+        $objectIdentifier = $this->propertyExtractor->getId($object);
+
+        return array_key_exists($objectName, $this->processedObjects) &&
+            array_key_exists($objectIdentifier, $this->processedObjectCache[$objectName]);
     }
 
     /**

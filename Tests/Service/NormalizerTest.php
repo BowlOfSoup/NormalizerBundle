@@ -6,6 +6,8 @@ use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
+use BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies;
+use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
@@ -31,47 +33,30 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $normalizer = new Normalizer($classExtractor, $propertyExtractor);
         $result = $normalizer->normalize($person, 'default');
 
-        $expectedResult = array(
-            'id' => 123,
-            'name_value' => 'Bowl',
-            'surName' => 'Of Soup',
-            'initials' => null,
-            'dateOfBirth' => '1980-01-01',
-            'dateOfRegistration' => 'Apr. 2015',
-            'addresses' => array(
-                array(
-                    'street' => 'Dummy Street',
-                    'number' => null,
-                    'postalCode' => null,
-                    'city' => 'The City Is: Amsterdam',
-                ),
-                array(
-                    'street' => null,
-                    'number' => 4,
-                    'postalCode' => '1234AB',
-                    'city' => 'The City Is: ',
-                ),
-            ),
-            'social' => array(
-                'facebook' => 'Facebook ID',
-                'twitter' => 'Twitter ID',
-                'person' => array(
-                    'id' => 123,
-                ),
-            ),
-            'telephoneNumbers' => array(
-                'home' => 123,
-                'mobile' => 456,
-                'work' => 789,
-                'wife' => 777,
-             ),
-            'nonValidCollectionProperty' => null,
-            'validCollectionPropertyWithCallback' => array(123),
-            'validEmptyObjectProperty' => null,
-        );
+        $expectedResult = $this->getSuccessResult();
 
         $this->assertNotEmpty($result);
         $this->assertArraySubset($result, $expectedResult);
+    }
+
+    /**
+     * @testdox Normalize array of objects, full happy path no type property, still callback
+     */
+    public function testNormalizeArraySuccess()
+    {
+        $classExtractor = new ClassExtractor(new AnnotationReader());
+        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+
+        $arrayOfObjects = array($this->getDummyDataSet(), $this->getDummyDataSet());
+
+        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
+        $result = $normalizer->normalizeArray($arrayOfObjects, 'default');
+
+        $expectedResult = $this->getSuccessResult();
+
+        $this->assertNotEmpty($result);
+        $this->assertArraySubset($result[0], $expectedResult);
+        $this->assertArraySubset($result[1], $expectedResult);
     }
 
     /**
@@ -141,6 +126,23 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $propertyExtractor = new PropertyExtractor(new AnnotationReader());
 
         $someClass = new SomeClass();
+
+        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
+        $result = $normalizer->normalize($someClass);
+
+        $this->assertSame(gettype(array()), gettype($result));
+        $this->assertEmpty($result);
+    }
+
+    /**
+     * @testdox Normalize object, null object given.
+     */
+    public function testNormalizeNullObject()
+    {
+        $classExtractor = new ClassExtractor(new AnnotationReader());
+        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+
+        $someClass = null;
 
         $normalizer = new Normalizer($classExtractor, $propertyExtractor);
         $result = $normalizer->normalize($someClass);
@@ -326,6 +328,101 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
             ->setWife(777);
         $person->setTelephoneNumbers($telephoneNumbers);
 
+        $hobbyCollection = new ArrayCollection();
+
+        $hobbyType1 = new HobbyType();
+        $hobbyType1->setId(1);
+        $hobbyType1->setName('Music');
+
+        $hobbyType2 = new HobbyType();
+        $hobbyType2->setId(2);
+        $hobbyType2->setName('Technical');
+
+        $hobbies1 = new Hobbies();
+        $hobbies1->setDescription('Playing Guitar');
+        $hobbies1->setHobbyType($hobbyType1);
+        $hobbyCollection->add($hobbies1);
+
+        $hobbies2 = new Hobbies();
+        $hobbies2->setDescription('Fixing Computers');
+        $hobbies2->setHobbyType($hobbyType2);
+        $hobbyCollection->add($hobbies2);
+
+        $hobbies3 = new Hobbies();
+        $hobbies3->setDescription('Playing Piano');
+        $hobbies3->setHobbyType($hobbyType1);
+        $hobbyCollection->add($hobbies3);
+
+        $person->setHobbies($hobbyCollection);
+
         return $person;
+    }
+
+    /**
+     * @return array
+     */
+    private function getSuccessResult()
+    {
+        return array(
+            'id' => 123,
+            'name_value' => 'Bowl',
+            'surName' => 'Of Soup',
+            'initials' => null,
+            'dateOfBirth' => '1980-01-01',
+            'dateOfRegistration' => 'Apr. 2015',
+            'addresses' => array(
+                array(
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'The City Is: Amsterdam',
+                ),
+                array(
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => 'The City Is: ',
+                ),
+            ),
+            'social' => array(
+                'facebook' => 'Facebook ID',
+                'twitter' => 'Twitter ID',
+                'person' => array(
+                    'id' => 123,
+                ),
+            ),
+            'telephoneNumbers' => array(
+                'home' => 123,
+                'mobile' => 456,
+                'work' => 789,
+                'wife' => 777,
+            ),
+            'hobbies' => array(
+                array(
+                    'description' => 'Playing Guitar',
+                    'hobbyType' => array(
+                        'id' => 1,
+                        'name' => 'Music',
+                    ),
+                ),
+                array(
+                    'description' => 'Fixing Computers',
+                    'hobbyType' => array(
+                        'id' => 2,
+                        'name' => 'Technical',
+                    ),
+                ),
+                array(
+                    'description' => 'Playing Piano',
+                    'hobbyType' => array(
+                        'id' => 1,
+                        'name' => 'Music',
+                    ),
+                ),
+            ),
+            'nonValidCollectionProperty' => null,
+            'validCollectionPropertyWithCallback' => array(123),
+            'validEmptyObjectProperty' => null,
+        );
     }
 }
