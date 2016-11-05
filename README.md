@@ -7,6 +7,11 @@
 Bowl Of Soup Normalizer
 =======================
 
+Installation
+------------
+### Composer require
+    composer require bowlofsoup/normalizer-bundle 1.*
+
 Annotations in your model
 -------------------------
 The normalizer uses annotations to indicate how the data should be represented. You can use the following annotations properties:
