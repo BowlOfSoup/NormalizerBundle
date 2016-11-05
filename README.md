@@ -6,15 +6,10 @@
 
 Installation
 ------------
-    composer require bowlofsoup/normalizer-bundle 1.0
+    composer require bowlofsoup/normalizer-bundle 1.*
 
 Bowl Of Soup Normalizer
 =======================
-
-Installation
-------------
-### Composer require
-    composer require bowlofsoup/normalizer-bundle 1.*
 
 Annotations in your model
 -------------------------
