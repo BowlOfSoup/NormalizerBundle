@@ -4,6 +4,10 @@
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg)](https://php.net/)
 [![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%202.7-green.svg)](https://symfony.com/)
 
+Installation
+------------
+    composer require bowlofsoup/normalizer-bundle 1.0
+
 Bowl Of Soup Normalizer
 =======================
 
