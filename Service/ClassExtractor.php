@@ -8,6 +8,9 @@ use ReflectionProperty;
 
 class ClassExtractor
 {
+    /** @var string */
+    const TYPE = 'class';
+
     /** @var bool */
     const GET_PROPERTIES_ONLY_PRIVATES = true;
 

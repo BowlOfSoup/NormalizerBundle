@@ -50,7 +50,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $arrayOfObjects = array($this->getDummyDataSet(), $this->getDummyDataSet());
 
         $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalizeArray($arrayOfObjects, 'default');
+        $result = $normalizer->normalize($arrayOfObjects, 'default');
 
         $expectedResult = $this->getSuccessResult();
 

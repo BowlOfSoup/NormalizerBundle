@@ -7,6 +7,7 @@ use DateTime;
 use Doctrine\Common\Collections\Collection;
 use Exception;
 use ReflectionProperty;
+use Traversable;
 
 class Normalizer
 {
@@ -21,6 +22,9 @@ class Normalizer
 
     /** @var array */
     private $processedObjectCache = array();
+
+    /** @var array */
+    private $annotationCache = array();
 
     /** @var int */
     private $processedDepth = 0;
@@ -44,38 +48,39 @@ class Normalizer
     }
 
     /**
-     * Normalize an object, for a specific group.
+     * Normalize an object or an array of objects, for a specific group.
      *
-     * @param object      $object
+     * @param mixed       $data
      * @param string|null $group
      *
      * @return array
      */
-    public function normalize($object, $group = null)
+    public function normalize($data, $group = null)
     {
         $this->group = $group;
-        $this->processedObjects = array();
+        $normalizedData = array();
 
-        return $this->normalizeObject($object);
+        if (is_array($data) || $data instanceof Traversable) {
+            foreach ($data as $item) {
+                $normalizedData[] = $this->normalize($item, $group);
+            }
+        } else {
+            $normalizedData = $this->normalizeObject($data);
+        }
+        $this->cleanUp();
+
+        return $normalizedData;
     }
 
     /**
-     * Returns a normalized array of given array of objects, for a specific group.
-     *
-     * @param object[]    $objects
-     * @param string|null $group
-     *
-     * @return array
+     * Resets the caches.
      */
-    public function normalizeArray(array $objects, $group = null)
+    private function cleanUp()
     {
-        $normalizedArray = array();
-
-        foreach ($objects as $object) {
-            $normalizedArray[] = $this->normalize($object, $group);
-        }
-
-        return $normalizedArray;
+        $this->processedObjects = array();
+        $this->processedObjectCache = array();
+        $this->annotationCache = array();
+        $this->maxDepth = null;
     }
 
     /**
@@ -103,15 +108,11 @@ class Normalizer
         ) {
             return $this->processedObjectCache[$objectName][$objectIdentifier];
         }
-
         $this->processedObjectCache[$objectName][$objectIdentifier] = array();
 
         $classProperties = $this->classExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
-            $propertyAnnotations = $this->propertyExtractor->extractPropertyAnnotations(
-                $classProperty,
-                new Normalize(array())
-            );
+            $propertyAnnotations = $this->getPropertyAnnotations($objectName, $classProperty);
             if (empty($propertyAnnotations)) {
                 continue;
             }
@@ -124,7 +125,7 @@ class Normalizer
                     $object,
                     $classProperty,
                     $propertyAnnotations,
-                    $this->getClassAnnotation($object)
+                    $this->getClassAnnotation($objectName, $object)
                 )
             );
         }
@@ -141,27 +142,60 @@ class Normalizer
     /**
      * Get class annotation for specified group.
      *
-     * First group entry will be used, duplicate definitions will be gracefuly ignored.
+     * First group entry will be used, duplicate definitions will be gracefully ignored.
      *
+     * @param string $objectName
      * @param object $object
      *
-     * @return Normalize
+     * @return Normalize|null
      */
-    private function getClassAnnotation($object)
+    private function getClassAnnotation($objectName, $object)
     {
-        $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Normalize(array()));
+        if (isset($this->annotationCache[ClassExtractor::TYPE][$objectName])) {
+            $classAnnotations = $this->annotationCache[ClassExtractor::TYPE][$objectName];
+        } else {
+            $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Normalize(array()));
+            $this->annotationCache[ClassExtractor::TYPE][$objectName] = $classAnnotations;
+        }
         if (empty($classAnnotations)) {
             return null;
         }
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
-            if ($this->isGroupValidForProperty($classAnnotation)) {
+            if ($this->isGroupValid($classAnnotation)) {
+                $this->maxDepth = $classAnnotation->getMaxDepth();
+
                 return $classAnnotation;
             }
         }
 
         return null;
+    }
+
+    /**
+     * Get property annotations.
+     *
+     * @param string             $objectName
+     * @param ReflectionProperty $classProperty
+     *
+     * @return array
+     */
+    private function getPropertyAnnotations($objectName, ReflectionProperty $classProperty)
+    {
+        $propertyName = $classProperty->getName();
+
+        if (isset($this->annotationCache[PropertyExtractor::TYPE][$objectName][$propertyName])) {
+            $propertyAnnotations = $this->annotationCache[PropertyExtractor::TYPE][$objectName][$propertyName];
+        } else {
+            $propertyAnnotations = $this->propertyExtractor->extractPropertyAnnotations(
+                $classProperty,
+                new Normalize(array())
+            );
+            $this->annotationCache[PropertyExtractor::TYPE][$objectName][$propertyName] = $propertyAnnotations;
+        }
+
+        return $propertyAnnotations;
     }
 
     /**
@@ -182,13 +216,10 @@ class Normalizer
     ) {
         $normalizedProperties = array();
         $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
-        if (null !== $classAnnotation && null === $this->maxDepth) {
-            $this->maxDepth = $classAnnotation->getMaxDepth();
-        }
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
-            if (!$this->isGroupValidForProperty($propertyAnnotation)) {
+            if (!$this->isGroupValid($propertyAnnotation)) {
                 continue;
             }
 
@@ -238,7 +269,7 @@ class Normalizer
      *
      * @return bool
      */
-    private function isGroupValidForProperty(Normalize $propertyAnnotation)
+    private function isGroupValid(Normalize $propertyAnnotation)
     {
         $annotationPropertyGroup = $propertyAnnotation->getGroup();
 

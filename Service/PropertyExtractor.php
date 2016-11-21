@@ -8,6 +8,9 @@ use ReflectionProperty;
 
 class PropertyExtractor
 {
+    /** @var string */
+    const TYPE = 'property';
+
     /** @var bool */
     const FORCE_PROPERTY_GET_METHOD = true;
 
