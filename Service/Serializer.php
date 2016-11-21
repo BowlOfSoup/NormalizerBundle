@@ -15,9 +15,6 @@ class Serializer
     /** @var Normalizer */
     private $normalizer;
 
-    /** @var EncoderInterface */
-    private $encoderProperties;
-
     /**
      * @param ClassExtractor $classExtractor
      * @param Normalizer     $normalizer
@@ -31,21 +28,13 @@ class Serializer
     }
 
     /**
-     * @param EncoderInterface $encoderType
-     */
-    public function setEncoderProperties(EncoderInterface $encoderType)
-    {
-        $this->encoderProperties = $encoderType;
-    }
-
-    /**
-     * @param mixed       $value
-     * @param string|null $type
-     * @param string|null $group
-     *
+     * @param mixed                   $value
+     * @param string|EncoderInterface $encoding
+     * @param string|null             $group
+    *
      * @return string
-     */
-    public function serialize($value, $type = null, $group = null)
+    */
+    public function serialize($value, $encoding, $group = null)
     {
         $serializeAnnotation = null;
 
@@ -54,7 +43,7 @@ class Serializer
             $value = $this->normalizer->normalize($value, $group);
         }
 
-        $encoder = $this->getEncoder($type);
+        $encoder = $this->getEncoder($encoding);
         if (null !== $serializeAnnotation) {
             $encoder->populateFromAnnotation($serializeAnnotation);
         }
@@ -82,7 +71,7 @@ class Serializer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation $classAnnotation */
+        /** @var Serialize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForProperty($group)) {
                 return $classAnnotation;
@@ -93,22 +82,21 @@ class Serializer
     }
 
     /**
-     * @param string|null $encodingType
+     * @param string|EncoderInterface $encoding
      *
      * @throws NormalizerBundleException
      *
      * @return EncoderInterface
      */
-    private function getEncoder($encodingType = null)
+    private function getEncoder($encoding)
     {
-        if (null === $this->encoderProperties || $encodingType !== $this->encoderProperties->getType()) {
-            throw new NormalizerBundleException('Can not encode value, ' .
-                'encoder properties type and given encoder type do not match.');
+        if ($encoding instanceof EncoderInterface) {
+            return $encoding;
         }
 
-        $encoder = EncoderFactory::getEncoder($encodingType);
+        $encoder = EncoderFactory::getEncoder($encoding);
         if (null === $encoder) {
-            throw new NormalizerBundleException('Can not encode value, given encoder type does not exist.');
+            throw new NormalizerBundleException('Can not encode. Given encoder type does not exist.');
         }
 
         return $encoder;

@@ -58,7 +58,7 @@ class Normalizer
         $this->processedObjects = array();
 
         if (!is_object($object)) {
-            return null;
+            return array();
         }
 
         return $this->normalizeObject($object);
