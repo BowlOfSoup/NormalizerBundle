@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
+[![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/normalizer-bundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b/mini.png)](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg)](https://php.net/)
