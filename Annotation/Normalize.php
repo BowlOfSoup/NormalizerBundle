@@ -28,6 +28,7 @@ class Normalize
         'type' => array('type' => 'string', 'assert' => array('collection', 'datetime', 'object')),
         'format' => array('type' => 'string'),
         'callback' => array('type' => 'string'),
+        'normalizeCallbackResult' => array('type' => 'boolean'),
         'skipEmpty' => array('type' => 'boolean'),
         'maxDepth' => array('type' => 'integer'),
     );
@@ -46,6 +47,9 @@ class Normalize
 
     /** @var string */
     private $callback;
+
+    /** @var boolean */
+    private $normalizeCallbackResult = false;
 
     /** @var boolean */
     private $skipEmpty = false;
@@ -105,6 +109,14 @@ class Normalize
     public function getCallback()
     {
         return $this->callback;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function mustNormalizeCallbackResult()
+    {
+        return $this->normalizeCallbackResult;
     }
 
     /**

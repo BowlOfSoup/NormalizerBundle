@@ -134,6 +134,7 @@ class Normalizer
         if (null !== $objectIdentifier) {
             $this->processedObjectCache[$objectName][$objectIdentifier] = $normalizedProperties;
         }
+
         array_pop($this->processedObjects);
 
         return $normalizedProperties;
@@ -243,9 +244,12 @@ class Normalizer
                 // Callback support, only for properties with no type defined.
                 $annotationPropertyCallback = $propertyAnnotation->getCallback();
                 if (!empty($annotationPropertyCallback)) {
-                    $propertyValue = $this->propertyExtractor->getPropertyValueByMethod(
-                        $object,
-                        $annotationPropertyCallback
+                    $propertyValue = $this->handleCallbackResult(
+                        $this->propertyExtractor->getPropertyValueByMethod(
+                            $object,
+                            $annotationPropertyCallback
+                        ),
+                        $propertyAnnotation
                     );
                 }
             }
@@ -345,7 +349,7 @@ class Normalizer
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback) && is_callable(array($propertyValue, $annotationCallback))) {
-            return $propertyValue->$annotationCallback();
+            return $this->handleCallbackResult($propertyValue->$annotationCallback(), $propertyAnnotation);
         }
 
         if (null === $propertyValue) {
@@ -428,7 +432,10 @@ class Normalizer
             ++$this->processedDepth;
 
             if (!empty($annotationCallback) && is_callable(array($collectionItem, $annotationCallback))) {
-                $normalizedCollection[] = $collectionItem->$annotationCallback();
+                $normalizedCollection[] = $this->handleCallbackResult(
+                    $collectionItem->$annotationCallback(),
+                    $propertyAnnotation
+                );
             } else {
                 $normalizedObject = $this->normalizeObject($collectionItem);
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
@@ -478,6 +485,41 @@ class Normalizer
                 'Maximal depth reached, but no identifier found. '.
                 'Prevent this by adding a getId() method to ' . get_class($object)
             );
+        }
+
+        return $propertyValue;
+    }
+
+    /**
+     * @param mixed     $propertyValue
+     * @param Normalize $propertyAnnotation
+     *
+     * @return array
+     */
+    private function handleCallbackResult($propertyValue, Normalize $propertyAnnotation)
+    {
+        if (!$propertyAnnotation->mustNormalizeCallbackResult()) {
+            return $propertyValue;
+        }
+
+        if ($propertyValue instanceof Collection || is_array($propertyValue)) {
+            $allObjects = true;
+            $normalizedCollection = array();
+            foreach ($propertyValue as $item) {
+                if (!is_object($item)) {
+                    // Values that are not objects will be skipped/cannot be normalized.
+                    $allObjects = false;
+                    continue;
+                }
+                $normalizedCollection[] = $this->normalizeObject($item);
+            }
+            if (empty($normalizedCollection) && !$allObjects) {
+                return $propertyValue;
+            }
+
+            return $normalizedCollection;
+        } else if (is_object($propertyValue)) {
+            return $this->normalizeObject($propertyValue);
         }
 
         return $propertyValue;

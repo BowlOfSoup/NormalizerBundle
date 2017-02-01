@@ -423,6 +423,32 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
             'nonValidCollectionProperty' => null,
             'validCollectionPropertyWithCallback' => array(123),
             'validEmptyObjectProperty' => null,
+            'testForNormalizingCallback' => array(
+                array(
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'The City Is: Amsterdam',
+                ),
+                array(
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => 'The City Is: ',
+                ),
+            ),
+            'testForNormalizingCallbackObject' => array(
+                'street' => 'Dummy Street',
+                'number' => null,
+                'postalCode' => null,
+                'city' => 'The City Is: Amsterdam',
+            ),
+            'testForNormalizingCallbackString' => 'asdasd',
+            'testForNormalizingCallbackArray' => array(
+                '123',
+                '456',
+                '789',
+            ),
         );
     }
 }
