@@ -11,6 +11,12 @@ Installation
 Bowl Of Soup Normalizer
 =======================
 
+Besides normalizing objects it features:
+- Circular reference check, handles circular reference by detecting it and returning content of the objects getId() method.
+- Object caching, if a getId() method is implemented for an object it will cache it (per normalize flow).
+
+The main features are described in the corresponding annotations.
+
 Annotations in your model
 -------------------------
 The normalizer uses annotations to indicate how the data should be represented. You can use the following annotations properties:
@@ -90,7 +96,7 @@ Format the 'DateTime' type. Can only be used for type="DateTime".
     private $propertyToBeNormalized
  
 ### Callback
-Sometimes you encouter an object for which you still want to use the legacy toArray() method, or just a custom method to normalize data for a property to normalize.
+Sometimes you encouter an object for which you still want to use a legacy method, or just a custom method to normalize data for a property to normalize.
 if used together with type="object", the callback is the method that is bound to the class property the annotation is set on, if used without type="", the callback relates to a method within the current class.
 
     /**
@@ -99,6 +105,17 @@ if used together with type="object", the callback is the method that is bound to
      */
     private $propertyToBeNormalized
  
+### Normalize callback output
+It is possible to normalize output from a callback method.
+E.g. if you return an array with objects or just a single object from a callback method it will also normalize those objects.
+
+    /**
+     * @Bos\Normalize(callback="legacyMethod", normalizeCallbackResult=true)
+     * @Bos\Normalize(type="object", callback="legacyMethod", normalizeCallbackResult=true)
+     * @Bos\Normalize(type="collection", callback="legacyMethod", normalizeCallbackResult=true)
+     */
+    private $propertyToBeNormalized
+
 ### Normalize collections
 If you have property which contains collection of other entities, you can use the type 'collection'. If you specify a callback, it will be applied to each item of the collection and placed to the result array.
 
