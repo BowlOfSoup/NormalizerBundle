@@ -131,6 +131,13 @@ class Person
     private $testForNormalizingCallbackArray;
 
     /**
+     * @var ProxyObject
+     *
+     * @Bos\Normalize(group={"default"}, type="object")
+     */
+    private $testForProxy;
+
+    /**
      * @return int
      */
     public function getId()
@@ -422,5 +429,21 @@ class Person
             '456',
             '789',
         );
+    }
+
+    /**
+     * @return ProxyObject
+     */
+    public function getTestForProxy()
+    {
+        return $this->testForProxy;
+    }
+
+    /**
+     * @param ProxyObject $proxyObject
+     */
+    public function setTestForProxy(ProxyObject $proxyObject)
+    {
+        $this->testForProxy = $proxyObject;
     }
 }

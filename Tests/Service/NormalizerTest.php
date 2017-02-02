@@ -10,6 +10,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies;
 use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
@@ -355,6 +356,8 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
 
         $person->setHobbies($hobbyCollection);
 
+        $person->setTestForProxy(new ProxyObject());
+
         return $person;
     }
 
@@ -448,6 +451,9 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
                 '123',
                 '456',
                 '789',
+            ),
+            'testForProxy' => array(
+                'value' => 'Hello',
             ),
         );
     }

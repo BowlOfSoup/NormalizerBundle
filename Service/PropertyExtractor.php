@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Persistence\Proxy;
 use Exception;
 use ReflectionProperty;
 
@@ -64,6 +65,11 @@ class PropertyExtractor
         $forceGetMethod = false
     ) {
         $propertyName = $property->getName();
+
+        if ('id' !== $propertyName && $object instanceof Proxy) {
+            // Force initialization of Doctrine proxy.
+            $forceGetMethod = true;
+        }
 
         if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
             $getMethodName = 'get' . ucfirst($propertyName);
