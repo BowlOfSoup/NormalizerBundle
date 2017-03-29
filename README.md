@@ -17,7 +17,7 @@ Besides normalizing objects it features:
 - Object caching: If a getId() method is implemented for an object it will cache the normalized object per flow (call to normalize()).
 - Annotation caching:
   - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow. (call to normalize()).
-  - In Symfony prod mode, annotations are cached completely (after first run). 
+  - In Symfony prod mode, annotations are cached completely (after first run).
 
 The main features are described in the corresponding annotations.
 
