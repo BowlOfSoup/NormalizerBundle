@@ -268,26 +268,6 @@ class Normalizer
     }
 
     /**
-     * Check if annotation property 'group' matches up with requested group.
-     *
-     * @param Normalize $propertyAnnotation
-     *
-     * @return bool
-     */
-    private function isGroupValid(Normalize $propertyAnnotation)
-    {
-        $annotationPropertyGroup = $propertyAnnotation->getGroup();
-
-        if ((!empty($this->group) && !in_array($this->group, $annotationPropertyGroup)) ||
-            (empty($this->group) && !empty($annotationPropertyGroup))
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Returns values for properties with the annotation property 'type'.
      *
      * @param object             $object

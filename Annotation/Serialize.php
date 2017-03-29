@@ -13,6 +13,7 @@ class Serialize extends AbstractAnnotation
     /** @var array */
     private $supportedProperties = array(
         'group' => array('type' => 'array'),
+        'type' => array('type' => 'string', 'assert' => array('xml', 'json')),
         'wrapElement' => array('type' => 'string'),
     );
 

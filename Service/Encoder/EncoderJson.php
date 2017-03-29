@@ -24,6 +24,8 @@ class EncoderJson extends AbstractEncoder
     }
 
     /**
+     * Set json_encode options, keep in mind that options need to be divided like JSON_HEX_TAG | JSON_HEX_QUOT.
+     *
      * @param int $options
      */
     public function setOptions($options)

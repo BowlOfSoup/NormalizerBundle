@@ -10,7 +10,7 @@ class SerializeTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Test annotation with valid property sets.
      */
-    public function testNormalizeNoValidations()
+    public function testSerializeNoValidations()
     {
         $properties = $this->getValidSetOfProperties();
         $serialize = new Serialize($properties);
@@ -26,7 +26,7 @@ class SerializeTest extends PHPUnit_Framework_TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is not supported.
      */
-    public function testNormalizeValidationType()
+    public function testSerializeValidationType()
     {
         $properties = $this->getValidSetOfProperties();
         $properties['type'] = 'dummy';
@@ -39,7 +39,7 @@ class SerializeTest extends PHPUnit_Framework_TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Wrong datatype used for property "group" for annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize"
      */
-    public function testNormalizeValidationPropertyType()
+    public function testSerializeValidationPropertyType()
     {
         $properties = $this->getValidSetOfProperties();
         $properties['group'] = 'dummy';

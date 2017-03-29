@@ -41,6 +41,21 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox Extracting class annotations, but no class (object) given.
+     */
+    public function testExtractClassAnnotationNoClassGiven()
+    {
+        $mockAnnotationReader = $this
+            ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $classExtractor = new ClassExtractor($mockAnnotationReader);
+
+        $this->assertInternalType('array', $classExtractor->extractClassAnnotations(array(), static::ANNOTATION_NORMALIZE));
+    }
+
+    /**
      * @testdox Get all properties of a class.
      */
     public function testGetProperties()

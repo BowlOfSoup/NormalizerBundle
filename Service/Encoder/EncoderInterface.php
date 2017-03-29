@@ -3,7 +3,6 @@
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
-use BowlOfSoup\NormalizerBundle\Exception\NormalizerBundleException;
 
 interface EncoderInterface
 {
@@ -13,7 +12,7 @@ interface EncoderInterface
     public function getType();
 
     /**
-     * @param string $value
+     * @param array|mixed $value
      *
      * @return string|null
      */
