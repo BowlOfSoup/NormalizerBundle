@@ -92,6 +92,14 @@ class Normalize
     }
 
     /**
+     * @return bool
+     */
+    public function hasType()
+    {
+        return null !== $this->type;
+    }
+
+    /**
      * @return string
      */
     public function getFormat()

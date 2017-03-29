@@ -14,6 +14,8 @@ class ProxyObject implements Proxy
      */
     private $value = 'Hello';
 
+    private $proxyProperty = 'string';
+
     /**
      * {@inheritdoc}
      */

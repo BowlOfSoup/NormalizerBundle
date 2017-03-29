@@ -2,9 +2,10 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service;
 
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Persistence\Proxy;
-use Exception;
+use ReflectionException;
 use ReflectionProperty;
 
 class PropertyExtractor
@@ -55,7 +56,7 @@ class PropertyExtractor
      * @param ReflectionProperty $property
      * @param bool               $forceGetMethod
      *
-     * @throws Exception
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
@@ -65,6 +66,12 @@ class PropertyExtractor
         $forceGetMethod = false
     ) {
         $propertyName = $property->getName();
+        $propertyValue = null;
+        try {
+            $propertyValue = $property->getValue($object);
+        } catch (ReflectionException $e) {
+            $forceGetMethod = true;
+        }
 
         if ('id' !== $propertyName && $object instanceof Proxy) {
             // Force initialization of Doctrine proxy.
@@ -73,16 +80,26 @@ class PropertyExtractor
 
         if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
             $getMethodName = 'get' . ucfirst($propertyName);
-            if (!is_callable(array($object, $getMethodName))) {
-                throw new Exception(
-                    'Unable to get property value. No get() method found for property ' . $propertyName
+            if (is_callable(array($object, $getMethodName))) {
+                return $object->$getMethodName();
+            }
+
+            if (null !== $propertyValue) {
+                return $propertyValue;
+            }
+
+            if ($object instanceof Proxy) {
+                throw new BosNormalizerException(
+                    'Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName
                 );
             }
 
-            return $object->$getMethodName();
+            throw new BosNormalizerException(
+                'Unable to get property value. No get() method found for property ' . $propertyName
+            );
         }
 
-        return $property->getValue($object);
+        return $propertyValue;
     }
 
     /**

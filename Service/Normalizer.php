@@ -3,9 +3,9 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use DateTime;
 use Doctrine\Common\Collections\Collection;
-use Exception;
 use ReflectionProperty;
 use Traversable;
 
@@ -216,7 +216,6 @@ class Normalizer
         Normalize $classAnnotation = null
     ) {
         $normalizedProperties = array();
-        $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
@@ -227,18 +226,17 @@ class Normalizer
             $propertyName = $property->getName();
             $propertyValue = $this->propertyExtractor->getPropertyValue($object, $property);
 
-            if ((true === $skipEmpty || true === $propertyAnnotation->getSkipEmpty()) && empty($propertyValue)) {
+            if ($this->skipEmptyValue($propertyValue, $propertyAnnotation, $classAnnotation)) {
                 continue;
             }
 
-            $annotationPropertyType = $propertyAnnotation->getType();
-            if (null !== ($annotationPropertyType)) {
+            if ($propertyAnnotation->hasType()) {
                 $propertyValue = $this->getValueForPropertyWithType(
                     $object,
                     $property,
                     $propertyValue,
                     $propertyAnnotation,
-                    $annotationPropertyType
+                    $propertyAnnotation->getType()
                 );
             } else {
                 // Callback support, only for properties with no type defined.
@@ -295,8 +293,6 @@ class Normalizer
      * @param Normalize          $propertyAnnotation
      * @param string             $annotationPropertyType
      *
-     * @throws Exception
-     *
      * @return mixed|null
      */
     private function getValueForPropertyWithType(
@@ -336,8 +332,6 @@ class Normalizer
      * @param mixed     $propertyValue
      * @param Normalize $propertyAnnotation
      *
-     * @throws Exception
-     *
      * @return mixed|null
      */
     private function getValueForPropertyWithTypeObject($object, $propertyValue, Normalize $propertyAnnotation)
@@ -368,7 +362,7 @@ class Normalizer
      * @param object $object
      * @param object $parentObject
      *
-     * @throws Exception
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return array
      */
@@ -388,7 +382,7 @@ class Normalizer
         if (empty($normalizedProperty)) {
             $normalizedProperty = $this->propertyExtractor->getId($object);
             if (null === $normalizedProperty) {
-                throw new Exception(
+                throw new BosNormalizerException(
                     'Circular reference on: ' .$objectName . ' called from: ' . get_class($parentObject) .
                     '. If possible, prevent this by adding a getId() method to ' . $objectName
                 );
@@ -462,8 +456,6 @@ class Normalizer
 
     /**
      * @return bool
-     *
-     * @throws Exception
      */
     private function hasMaxDepth()
     {
@@ -475,13 +467,13 @@ class Normalizer
      *
      * @return int|string
      *
-     * @throws Exception
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
     private function getValueForMaxDepth($object)
     {
         $propertyValue = $this->propertyExtractor->getId($object);
         if (null === $propertyValue) {
-            throw new Exception(
+            throw new BosNormalizerException(
                 'Maximal depth reached, but no identifier found. '.
                 'Prevent this by adding a getId() method to ' . get_class($object)
             );
@@ -523,5 +515,23 @@ class Normalizer
         }
 
         return $propertyValue;
+    }
+
+    /**
+     * @param mixed $value
+     * @param \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation
+     * @param \BowlOfSoup\NormalizerBundle\Annotation\Normalize|null $classAnnotation
+     *
+     * @return bool
+     */
+    private function skipEmptyValue($value, Normalize $propertyAnnotation, Normalize $classAnnotation = null)
+    {
+        $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
+
+        if ((true === $skipEmpty || true === $propertyAnnotation->getSkipEmpty()) && empty($value)) {
+            return true;
+        }
+
+        return false;
     }
 }

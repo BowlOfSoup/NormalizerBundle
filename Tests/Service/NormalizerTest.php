@@ -155,7 +155,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Normalize object, Circular reference, no fallback (hack!).
      *
-     * @expectedException \Exception
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @expectedExceptionMessage Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person
      */
     public function testNormalizeCircularReferenceNoFallback()
@@ -236,7 +236,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Normalize object, with limited depth to 0, but no identifier method.
      *
-     * @expectedException \Exception
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @expectedExceptionMessage Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Address
      */
     public function testNormalizeSuccessMaxDepth0NoIdentifier()

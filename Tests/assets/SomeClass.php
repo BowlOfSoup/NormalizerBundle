@@ -10,6 +10,8 @@ class SomeClass extends AbstractClass
 
     public $property53 = 'string';
 
+    private $property76 = 'another value';
+
     public function getProperty32()
     {
         return $this->property32;
