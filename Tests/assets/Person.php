@@ -4,6 +4,7 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
 /**
@@ -108,6 +109,33 @@ class Person
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
      */
     private $validCollectionPropertyWithCallback;
+
+    /**
+     * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallback", normalizeCallbackResult=true)
+     */
+    private $testForNormalizingCallback;
+
+    /**
+     * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackObject", normalizeCallbackResult=true)
+     */
+    private $testForNormalizingCallbackObject;
+
+    /**
+     * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackString", normalizeCallbackResult=true)
+     */
+    private $testForNormalizingCallbackString;
+
+    /**
+     * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackArray", normalizeCallbackResult=true)
+     */
+    private $testForNormalizingCallbackArray;
+
+    /**
+     * @var ProxyObject
+     *
+     * @Bos\Normalize(group={"default"}, type="object")
+     */
+    private $testForProxy;
 
     /**
      * @return int
@@ -351,5 +379,71 @@ class Person
     public function normalizeValidCollectionPropertyWithCallback()
     {
         return 'test';
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getTestForNormalizingCallback()
+    {
+        $addressCollection = new ArrayCollection();
+        $address1 = new Address();
+        $address1->setStreet('Dummy Street');
+        $address1->setCity('Amsterdam');
+        $addressCollection->add($address1);
+        $address2 = new Address();
+        $address2->setPostalCode('1234AB');
+        $address2->setNumber(4);
+        $addressCollection->add($address2);
+
+        return $addressCollection;
+    }
+
+    /**
+     * @return Address
+     */
+    public function getTestForNormalizingCallbackObject()
+    {
+        $address1 = new Address();
+        $address1->setStreet('Dummy Street');
+        $address1->setCity('Amsterdam');
+
+        return $address1;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTestForNormalizingCallbackString()
+    {
+        return 'asdasd';
+    }
+
+    /**
+     * @return array
+     */
+    public function getTestForNormalizingCallbackArray()
+    {
+        return array(
+            '123',
+            '456',
+            '789',
+        );
+    }
+
+    /**
+     * @return ProxyObject
+     */
+    public function getTestForProxy()
+    {
+        return $this->testForProxy;
+    }
+
+    /**
+     * @param ProxyObject $proxyObject
+     */
+    public function setTestForProxy(ProxyObject $proxyObject)
+    {
+        $this->testForProxy = $proxyObject;
     }
 }

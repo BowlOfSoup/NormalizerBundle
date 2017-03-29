@@ -10,6 +10,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies;
 use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
@@ -50,7 +51,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
         $arrayOfObjects = array($this->getDummyDataSet(), $this->getDummyDataSet());
 
         $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalizeArray($arrayOfObjects, 'default');
+        $result = $normalizer->normalize($arrayOfObjects, 'default');
 
         $expectedResult = $this->getSuccessResult();
 
@@ -154,7 +155,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Normalize object, Circular reference, no fallback (hack!).
      *
-     * @expectedException \Exception
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @expectedExceptionMessage Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person
      */
     public function testNormalizeCircularReferenceNoFallback()
@@ -235,7 +236,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Normalize object, with limited depth to 0, but no identifier method.
      *
-     * @expectedException \Exception
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @expectedExceptionMessage Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Address
      */
     public function testNormalizeSuccessMaxDepth0NoIdentifier()
@@ -355,6 +356,8 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
 
         $person->setHobbies($hobbyCollection);
 
+        $person->setTestForProxy(new ProxyObject());
+
         return $person;
     }
 
@@ -423,6 +426,35 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
             'nonValidCollectionProperty' => null,
             'validCollectionPropertyWithCallback' => array(123),
             'validEmptyObjectProperty' => null,
+            'testForNormalizingCallback' => array(
+                array(
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'The City Is: Amsterdam',
+                ),
+                array(
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => 'The City Is: ',
+                ),
+            ),
+            'testForNormalizingCallbackObject' => array(
+                'street' => 'Dummy Street',
+                'number' => null,
+                'postalCode' => null,
+                'city' => 'The City Is: Amsterdam',
+            ),
+            'testForNormalizingCallbackString' => 'asdasd',
+            'testForNormalizingCallbackArray' => array(
+                '123',
+                '456',
+                '789',
+            ),
+            'testForProxy' => array(
+                'value' => 'Hello',
+            ),
         );
     }
 }

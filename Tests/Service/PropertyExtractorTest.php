@@ -4,6 +4,7 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use PHPUnit_Framework_TestCase;
 
@@ -74,11 +75,7 @@ class PropertyExtractorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @testdox Get a value for a property, force get method, no method available.
-     *
-     * @expectedException \Exception
-     * @expectedExceptionMessage Unable to get property value. No get() method found for property property53
-     *
+     * @testdox Get a value for a property, force get method, no method available, force get from public/protected.
      */
     public function testGetPropertyValueForceGetMethodNoMethodAvailable()
     {
@@ -86,10 +83,53 @@ class PropertyExtractorTest extends PHPUnit_Framework_TestCase
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
         foreach ($properties as $property) {
             if ('property53' === $property->getName()) {
+                $result = $this->getStubPropertyExtractor()->getPropertyValue(
+                    $someClass,
+                    $property,
+                    PropertyExtractor::FORCE_PROPERTY_GET_METHOD
+                );
+
+                $this->assertSame('string', $result);
+            }
+        }
+    }
+
+    /**
+     * @testdox Get a value for a property, force get method, no method available, force get, but not public/protected.
+     *
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @expectedExceptionMessage Unable to get property value. No get() method found for property property76
+     */
+    public function testGetPropertyValueForceGetMethodNoMethodAvailableNoAccess()
+    {
+        $someClass = new SomeClass();
+        $properties = $this->getStubClassExtractor()->getProperties($someClass);
+        foreach ($properties as $property) {
+            if ('property76' === $property->getName()) {
                 $this->getStubPropertyExtractor()->getPropertyValue(
                     $someClass,
                     $property,
                     PropertyExtractor::FORCE_PROPERTY_GET_METHOD
+                );
+            }
+        }
+    }
+
+    /**
+     * @testdox Get a value for a property, force get method, no method available, force get, is Doctrine Proxy.
+     *
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @expectedExceptionMessage Unable to initiate Doctrine proxy, not get() method found for property proxyProperty
+     */
+    public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy()
+    {
+        $proxyObject = new ProxyObject();
+        $properties = $this->getStubClassExtractor()->getProperties($proxyObject);
+        foreach ($properties as $property) {
+            if ('proxyProperty' === $property->getName()) {
+                $this->getStubPropertyExtractor()->getPropertyValue(
+                    $proxyObject,
+                    $property
                 );
             }
         }

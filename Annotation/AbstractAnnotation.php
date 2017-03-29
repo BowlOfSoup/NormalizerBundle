@@ -47,6 +47,7 @@ abstract class AbstractAnnotation
     public function isGroupValidForProperty($group)
     {
         $annotationGroup = $this->getGroup();
+
         return ((empty($group) || in_array($group, $annotationGroup)) && (!empty($group) || empty($annotationGroup)));
     }
 

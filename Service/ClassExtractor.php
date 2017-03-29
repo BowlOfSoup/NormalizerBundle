@@ -2,22 +2,25 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use ReflectionClass;
 use ReflectionProperty;
 
 class ClassExtractor
 {
+    /** @var string */
+    const TYPE = 'class';
+
     /** @var bool */
     const GET_PROPERTIES_ONLY_PRIVATES = true;
 
-    /** @var AnnotationReader */
+    /** @var Reader */
     protected $annotationReader;
 
     /**
-     * @param \Doctrine\Common\Annotations\AnnotationReader $annotationReader
+     * @param \Doctrine\Common\Annotations\Reader $annotationReader
      */
-    public function __construct(AnnotationReader $annotationReader)
+    public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }

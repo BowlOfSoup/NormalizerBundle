@@ -2,22 +2,27 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Exception;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Persistence\Proxy;
+use ReflectionException;
 use ReflectionProperty;
 
 class PropertyExtractor
 {
+    /** @var string */
+    const TYPE = 'property';
+
     /** @var bool */
     const FORCE_PROPERTY_GET_METHOD = true;
 
-    /** @var AnnotationReader */
+    /** @var Reader */
     protected $annotationReader;
 
     /**
-     * @param \Doctrine\Common\Annotations\AnnotationReader $annotationReader
+     * @param \Doctrine\Common\Annotations\Reader $annotationReader
      */
-    public function __construct(AnnotationReader $annotationReader)
+    public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }
@@ -51,7 +56,7 @@ class PropertyExtractor
      * @param ReflectionProperty $property
      * @param bool               $forceGetMethod
      *
-     * @throws Exception
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
@@ -61,19 +66,40 @@ class PropertyExtractor
         $forceGetMethod = false
     ) {
         $propertyName = $property->getName();
+        $propertyValue = null;
+        try {
+            $propertyValue = $property->getValue($object);
+        } catch (ReflectionException $e) {
+            $forceGetMethod = true;
+        }
+
+        if ('id' !== $propertyName && $object instanceof Proxy) {
+            // Force initialization of Doctrine proxy.
+            $forceGetMethod = true;
+        }
 
         if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
             $getMethodName = 'get' . ucfirst($propertyName);
-            if (!is_callable(array($object, $getMethodName))) {
-                throw new Exception(
-                    'Unable to get property value. No get() method found for property ' . $propertyName
+            if (is_callable(array($object, $getMethodName))) {
+                return $object->$getMethodName();
+            }
+
+            if (null !== $propertyValue) {
+                return $propertyValue;
+            }
+
+            if ($object instanceof Proxy) {
+                throw new BosNormalizerException(
+                    'Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName
                 );
             }
 
-            return $object->$getMethodName();
+            throw new BosNormalizerException(
+                'Unable to get property value. No get() method found for property ' . $propertyName
+            );
         }
 
-        return $property->getValue($object);
+        return $propertyValue;
     }
 
     /**

@@ -17,6 +17,7 @@ class Normalize extends AbstractAnnotation
         'type' => array('type' => 'string', 'assert' => array('collection', 'datetime', 'object')),
         'format' => array('type' => 'string'),
         'callback' => array('type' => 'string'),
+        'normalizeCallbackResult' => array('type' => 'boolean'),
         'skipEmpty' => array('type' => 'boolean'),
         'maxDepth' => array('type' => 'integer'),
     );
@@ -29,6 +30,9 @@ class Normalize extends AbstractAnnotation
 
     /** @var string */
     private $callback;
+
+    /** @var boolean */
+    private $normalizeCallbackResult = false;
 
     /** @var boolean */
     private $skipEmpty = false;
@@ -57,6 +61,30 @@ class Normalize extends AbstractAnnotation
     }
 
     /**
+     * @return array
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasType()
+    {
+        return null !== $this->type;
+    }
+
+    /**
      * @return string
      */
     public function getFormat()
@@ -74,6 +102,14 @@ class Normalize extends AbstractAnnotation
     public function getCallback()
     {
         return $this->callback;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function mustNormalizeCallbackResult()
+    {
+        return $this->normalizeCallbackResult;
     }
 
     /**

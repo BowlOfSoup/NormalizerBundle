@@ -53,7 +53,7 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
 
         $someClass = new SomeClass();
         $properties = $stubClassExtractor->getProperties($someClass);
-        $this->assertSame(4, count($properties));
+        $this->assertSame(5, count($properties));
 
         $property = $properties[0];
         $this->assertSame('property32', $property->getName());
@@ -67,12 +67,16 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
         $this->assertSame('string', $property->getValue($someClass));
 
         $property = $properties[2];
+        $this->assertSame('property76', $property->getName());
+        $this->assertInstanceOf('\ReflectionProperty', $property);
+
+        $property = $properties[3];
         $this->assertSame('property2', $property->getName());
         $this->assertInstanceOf('\ReflectionProperty', $property);
         $property->setAccessible(true);
         $this->assertSame(array(), $property->getValue($someClass));
 
-        $property = $properties[3];
+        $property = $properties[4];
         $this->assertSame('property1', $property->getName());
         $this->assertInstanceOf('\ReflectionProperty', $property);
         $property->setAccessible(true);

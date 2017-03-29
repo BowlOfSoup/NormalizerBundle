@@ -4,6 +4,6 @@ namespace BowlOfSoup\NormalizerBundle\Exception;
 
 use Exception;
 
-class NormalizerBundleException extends Exception
+class BosNormalizerException extends Exception
 {
 }

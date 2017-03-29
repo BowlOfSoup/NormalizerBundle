@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b/mini.png)](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg)](https://php.net/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg?no-cache=1)](https://php.net/)
 [![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%202.7-green.svg)](https://symfony.com/)
 
 Installation
@@ -10,6 +10,14 @@ Installation
 
 Bowl Of Soup Normalizer
 =======================
+
+Besides normalizing objects it features:
+- Working with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
+- Circular reference check, handles circular reference by detecting it and returning content of the objects getId() method.
+- Object caching, if a getId() method is implemented for an object it will cache the normalized object per flow (call to normalize()).
+- Annotation caching, the annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow. (call to normalize()).
+
+The main features are described in the corresponding annotations.
 
 Annotations in your model
 -------------------------
@@ -90,7 +98,7 @@ Format the 'DateTime' type. Can only be used for type="DateTime".
     private $propertyToBeNormalized
  
 ### Callback
-Sometimes you encouter an object for which you still want to use the legacy toArray() method, or just a custom method to normalize data for a property to normalize.
+Sometimes you encouter an object for which you still want to use a legacy method, or just a custom method to normalize data for a property to normalize.
 if used together with type="object", the callback is the method that is bound to the class property the annotation is set on, if used without type="", the callback relates to a method within the current class.
 
     /**
@@ -99,6 +107,17 @@ if used together with type="object", the callback is the method that is bound to
      */
     private $propertyToBeNormalized
  
+### Normalize callback output
+It is possible to normalize output from a callback method.
+E.g. if you return an array with objects or just a single object from a callback method it will also normalize those objects.
+
+    /**
+     * @Bos\Normalize(callback="legacyMethod", normalizeCallbackResult=true)
+     * @Bos\Normalize(type="object", callback="legacyMethod", normalizeCallbackResult=true)
+     * @Bos\Normalize(type="collection", callback="legacyMethod", normalizeCallbackResult=true)
+     */
+    private $propertyToBeNormalized
+
 ### Normalize collections
 If you have property which contains collection of other entities, you can use the type 'collection'. If you specify a callback, it will be applied to each item of the collection and placed to the result array.
 
