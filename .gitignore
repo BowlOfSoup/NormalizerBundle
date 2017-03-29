@@ -1,2 +1,4 @@
-Tests/coverage
-vendor
+/.idea/
+/composer.lock
+/vendor/
+/Tests/coverage/

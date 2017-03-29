@@ -14,7 +14,8 @@ Bowl Of Soup Normalizer
 Besides normalizing objects it features:
 - Working with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
 - Circular reference check, handles circular reference by detecting it and returning content of the objects getId() method.
-- Object caching, if a getId() method is implemented for an object it will cache it (per normalize flow).
+- Object caching, if a getId() method is implemented for an object it will cache the normalized object per flow (call to normalize()).
+- Annotation caching, the annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow. (call to normalize()).
 
 The main features are described in the corresponding annotations.
 

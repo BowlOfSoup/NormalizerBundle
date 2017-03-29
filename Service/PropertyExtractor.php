@@ -3,7 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\Persistence\Proxy;
 use ReflectionException;
 use ReflectionProperty;
@@ -16,13 +16,13 @@ class PropertyExtractor
     /** @var bool */
     const FORCE_PROPERTY_GET_METHOD = true;
 
-    /** @var AnnotationReader */
+    /** @var Reader */
     protected $annotationReader;
 
     /**
-     * @param \Doctrine\Common\Annotations\AnnotationReader $annotationReader
+     * @param \Doctrine\Common\Annotations\Reader $annotationReader
      */
-    public function __construct(AnnotationReader $annotationReader)
+    public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }
