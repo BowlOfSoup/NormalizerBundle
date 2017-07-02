@@ -63,12 +63,45 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @testdox Encoder encodes with error.
+     * @testdox Encoder encodes with error, but PHP < 5.5.0 support.
+     *
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @expectedExceptionMessage Error when encoding JSON: Maximum stack depth exceeded
+     */
+    public function testError()
+    {
+        $normalizedData = array(
+            'id' => 123,
+            array(
+                'id' => 123,
+                array(
+                    'id' => 123,
+                ),
+            ),
+        );
+
+        $mockBuilder = $this
+            ->getMockBuilder('BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson')
+            ->disableOriginalConstructor()
+            ->setMethods(array('jsonLastErrorMsgExists'));
+
+        $encoderJson = $mockBuilder->getMock();
+        $encoderJson
+            ->expects($this->any())
+            ->method('jsonLastErrorMsgExists')
+            ->will($this->returnValue(false));
+
+        $encoderJson->setDepth(2);
+        $encoderJson->encode($normalizedData);
+    }
+
+    /**
+     * @testdox Encoder encodes with error, PHP >= 5.5.0.
      *
      * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      * @expectedExceptionMessage Error when encoding JSON: Recursion detected
      */
-    public function testError()
+    public function testErrorPhp550()
     {
         $o = new \stdClass();
         $o->arr = array();

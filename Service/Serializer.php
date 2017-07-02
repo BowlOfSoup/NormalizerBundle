@@ -3,7 +3,6 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
-use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface;
 
@@ -94,11 +93,6 @@ class Serializer
             return $encoding;
         }
 
-        $encoder = EncoderFactory::getEncoder($encoding);
-        if (null === $encoder) {
-            throw new BosNormalizerException('Can not encode. Given encoder type does not exist.');
-        }
-
-        return $encoder;
+        return EncoderFactory::getEncoder($encoding);
     }
 }

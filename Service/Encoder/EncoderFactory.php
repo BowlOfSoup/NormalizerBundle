@@ -27,7 +27,7 @@ class EncoderFactory
             case static::TYPE_XML :
                 return new EncoderXml();
             default :
-                throw new BosSerializerException('Unknown encoder.');
+                throw new BosSerializerException('Unknown encoder type.');
                 break;
         }
     }

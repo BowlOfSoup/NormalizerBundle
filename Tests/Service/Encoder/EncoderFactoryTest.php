@@ -10,7 +10,7 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Factory returns correct encoder.
      */
-    public function testManufactoringEncoder()
+    public function testManufacturingEncoder()
     {
         $this->assertInstanceOf(
             'BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson',
@@ -26,7 +26,7 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
      * @testdox Unknown encoder.
      *
      * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
-     * @expectedExceptionMessage Unknown encoder.
+     * @expectedExceptionMessage Unknown encoder type.
      */
     public function testUnknownEncoder()
     {
