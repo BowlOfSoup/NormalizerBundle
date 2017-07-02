@@ -3,9 +3,8 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
-use PHPUnit_Framework_TestCase;
 
-class ClassExtractorTest extends PHPUnit_Framework_TestCase
+class ClassExtractorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Factory returns correct encoder.

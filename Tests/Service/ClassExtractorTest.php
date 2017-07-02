@@ -5,11 +5,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use PHPUnit_Framework_TestCase;
-use ReflectionClass;
-use stdClass;
 
-class ClassExtractorTest extends PHPUnit_Framework_TestCase
+class ClassExtractorTest extends \PHPUnit_Framework_TestCase
 {
     /** @var string */
     const ANNOTATION_NORMALIZE = 'BowlOfSoup\NormalizerBundle\Annotation\Normalize';
@@ -23,7 +20,7 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
         $annotationResult = array($annotation);
 
         $someClass = new SomeClass();
-        $reflectedClass = new ReflectionClass($someClass);
+        $reflectedClass = new \ReflectionClass($someClass);
 
         $mockAnnotationReader = $this
             ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')

@@ -5,9 +5,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
-use PHPUnit_Framework_TestCase;
 
-class EncoderJsonTest extends PHPUnit_Framework_TestCase
+class EncoderJsonTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Encoder is of correct type.
@@ -63,42 +62,45 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @testdox Encoder encodes with error, but PHP < 5.5.0 support.
-     */
-    public function testError()
-    {
-        $o = new \stdClass();
-        $o->arr = array();
-        $o->arr[] = $o;
-
-        $mockBuilder = $this
-            ->getMockBuilder('BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson')
-            ->disableOriginalConstructor()
-            ->setMethods(array('jsonLastErrorMsgExists'));
-
-        $encoderJson = $mockBuilder->getMock();
-        $encoderJson
-            ->expects($this->any())
-            ->method('jsonLastErrorMsgExists')
-            ->will($this->returnValue(false));
-
-        $this->assertFalse($encoderJson->encode($o));
-    }
-
-    /**
-     * @testdox Encoder encodes with error, PHP >= 5.5.0.
+     * @testdox Encoder encodes with error.
      *
      * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      * @expectedExceptionMessage Error when encoding JSON: Recursion detected
      */
-    public function testErrorPhp550()
+    public function testError()
     {
+        if (version_compare(PHP_VERSION, '5.5', '<')) {
+            return;
+        }
+
         $o = new \stdClass();
         $o->arr = array();
         $o->arr[] = $o;
 
         $encoderJson = new EncoderJson();
         $encoderJson->encode($o);
+    }
+
+    /**
+     * @testdox json_last_error_msg does not exists.
+     */
+    public function testJsonLastErrorMsgMethodDoesNotExists()
+    {
+        $normalizedData = array(
+            'id' => 123,
+        );
+
+        $mockBuilder = $this
+            ->getMockBuilder('BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson')
+            ->disableOriginalConstructor()
+            ->setMethods(array('jsonLastErrorMsgExists'));
+        $encoderJson = $mockBuilder->getMock();
+        $encoderJson
+            ->expects($this->any())
+            ->method('jsonLastErrorMsgExists')
+            ->will($this->returnValue(false));
+
+        $this->assertSame('{"id":123}', $encoderJson->encode($normalizedData));
     }
 
     /**

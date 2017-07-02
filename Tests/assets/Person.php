@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
+ * @Bos\Serialize(wrapElement="wrapperElement", group={"default"})
  */
 class Person
 {

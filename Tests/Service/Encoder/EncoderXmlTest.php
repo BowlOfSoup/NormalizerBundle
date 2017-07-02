@@ -5,9 +5,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderXml;
-use PHPUnit_Framework_TestCase;
 
-class EncoderXmlTest extends PHPUnit_Framework_TestCase
+class EncoderXmlTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Encoder is of correct type.
