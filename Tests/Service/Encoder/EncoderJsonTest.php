@@ -70,7 +70,7 @@ class EncoderJsonTest extends \PHPUnit_Framework_TestCase
     public function testError()
     {
         if (version_compare(PHP_VERSION, '5.5', '<')) {
-            return;
+            $this->markTestSkipped();
         }
 
         $o = new \stdClass();

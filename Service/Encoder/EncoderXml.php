@@ -55,6 +55,29 @@ class EncoderXml extends AbstractEncoder
     }
 
     /**
+     * @param array            $data
+     * @param SimpleXMLElement $xmlData
+     *
+     * @return SimpleXMLElement
+     */
+    protected function arrayToXml(array $data, SimpleXMLElement $xmlData)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (is_numeric($key)) {
+                    $key = 'item' . $key;
+                }
+                $subNode = $xmlData->addChild($key);
+                $this->arrayToXml($value, $subNode);
+            } else {
+                $xmlData->addChild("$key", htmlspecialchars("$value"));
+            }
+        }
+
+        return $xmlData;
+    }
+
+    /**
      * @param string $xmlData
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
@@ -86,28 +109,5 @@ class EncoderXml extends AbstractEncoder
         $domOutput->appendChild($domElement);
 
         return $domOutput->saveXML($domOutput, LIBXML_NOEMPTYTAG);
-    }
-
-    /**
-     * @param array            $data
-     * @param SimpleXMLElement $xmlData
-     *
-     * @return SimpleXMLElement
-     */
-    private function arrayToXml(array $data, SimpleXMLElement $xmlData)
-    {
-        foreach ($data as $key => $value) {
-            if (is_array($value)) {
-                if (is_numeric($key)) {
-                    $key = 'item' . $key;
-                }
-                $subNode = $xmlData->addChild($key);
-                $this->arrayToXml($value, $subNode);
-            } else {
-                $xmlData->addChild("$key", htmlspecialchars("$value"));
-            }
-        }
-
-        return $xmlData;
     }
 }
