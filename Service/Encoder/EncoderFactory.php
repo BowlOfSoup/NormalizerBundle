@@ -2,6 +2,8 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
+
 class EncoderFactory
 {
     /** @var string */
@@ -13,6 +15,8 @@ class EncoderFactory
     /**
      * @param string $type
      *
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     *
      * @return EncoderInterface
      */
     public static function getEncoder($type)
@@ -22,6 +26,9 @@ class EncoderFactory
                 return new EncoderJson();
             case static::TYPE_XML :
                 return new EncoderXml();
+            default :
+                throw new BosSerializerException('Unknown encoder.');
+                break;
         }
     }
 }

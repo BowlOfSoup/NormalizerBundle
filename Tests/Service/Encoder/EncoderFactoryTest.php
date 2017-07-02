@@ -20,6 +20,16 @@ class ClassExtractorTest extends PHPUnit_Framework_TestCase
             'BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderXml',
             EncoderFactory::getEncoder(EncoderFactory::TYPE_XML)
         );
-        $this->assertNull(EncoderFactory::getEncoder('something'));
+    }
+
+    /**
+     * @testdox Unknown encoder.
+     *
+     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @expectedExceptionMessage Unknown encoder.
+     */
+    public function testUnknownEncoder()
+    {
+        EncoderFactory::getEncoder('something');
     }
 }

@@ -2,7 +2,7 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
-use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 use Exception;
 use SimpleXMLElement;
 
@@ -26,6 +26,8 @@ class EncoderXml extends AbstractEncoder
      * @inheritdoc
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     *
+     * @return string
      */
     public function encode($value)
     {
@@ -44,12 +46,27 @@ class EncoderXml extends AbstractEncoder
         try {
             $xmlData = $this->arrayToXml($value, $xmlData);
         } catch (Exception $e) {
-            throw new BosNormalizerException(static::EXCEPTION_PREFIX . $e->getMessage());
+            throw new BosSerializerException(static::EXCEPTION_PREFIX . $e->getMessage());
         }
 
         $this->getError($xmlData->asXML());
 
         return $xmlData->asXML();
+    }
+
+    /**
+     * @param string $xmlData
+     *
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     */
+    protected function getError($xmlData)
+    {
+        libxml_use_internal_errors(true);
+        if (false === simplexml_load_string($xmlData)) {
+            foreach(libxml_get_errors() as $error) {
+                throw new BosSerializerException($error->message);
+            }
+        }
     }
 
     /**
@@ -73,20 +90,5 @@ class EncoderXml extends AbstractEncoder
         }
 
         return $xmlData;
-    }
-
-    /**
-     * @param string $xmlData
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     */
-    private function getError($xmlData)
-    {
-        libxml_use_internal_errors(true);
-        if (false === simplexml_load_string($xmlData)) {
-            foreach(libxml_get_errors() as $error) {
-                throw new BosNormalizerException(static::EXCEPTION_PREFIX . $error->message);
-            }
-        }
     }
 }

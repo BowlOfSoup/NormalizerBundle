@@ -4,19 +4,19 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
-use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
+use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderXml;
 use PHPUnit_Framework_TestCase;
 
-class EncoderJsonTest extends PHPUnit_Framework_TestCase
+class EncoderXmlTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Encoder is of correct type.
      */
     public function testType()
     {
-        $encoderJson = new EncoderJson();
+        $encoderXml = new EncoderXml();
 
-        $this->assertSame(EncoderFactory::TYPE_JSON, $encoderJson->getType());
+        $this->assertSame(EncoderFactory::TYPE_XML, $encoderXml->getType());
     }
 
     /**
@@ -24,9 +24,8 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
      */
     public function testSuccess()
     {
-        $encoderJson = new EncoderJson();
-        $encoderJson->setWrapElement('data');
-        $encoderJson->setOptions(JSON_ERROR_UTF8);
+        $encoderXml = new EncoderXml();
+        $encoderXml->setWrapElement('data');
 
         $normalizedString = array(
             'id' => 123,
@@ -51,14 +50,9 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $result = $encoderJson->encode($normalizedString);
-
-        $this->assertSame(
-            '{"data":{"id":123,"name_value":"Bowl","surName":"Of Soup","initials":null,' .
-            '"dateOfBirth":"1980-01-01","dateOfRegistration":"Apr. 2015","addresses":[{"street":"Dummy Street",' .
-            '"number":null,"postalCode":null,"city":"The City Is: Amsterdam"},{"street":null,"number":4,' .
-            '"postalCode":"1234AB","city":"The City Is: "}]}}',
-            $result
+        $this->assertContains(
+            '<data><id>123</id><name_value>Bowl</name_value><surName>Of Soup</surName><initials/><dateOfBirth>1980-01-01</dateOfBirth><dateOfRegistration>Apr. 2015</dateOfRegistration><addresses><item0><street>Dummy Street</street><number/><postalCode/><city>The City Is: Amsterdam</city></item0><item1><street/><number>4</number><postalCode>1234AB</postalCode><city>The City Is: </city></item1></addresses></data>',
+            $encoderXml->encode($normalizedString)
         );
     }
 
@@ -66,16 +60,17 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
      * @testdox Encoder encodes with error.
      *
      * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
-     * @expectedExceptionMessage Error when encoding JSON: Recursion detected
+     * @expectedExceptionMessage Opening and ending tag mismatch: titles line 1 and title
      */
     public function testError()
     {
-        $o = new \stdClass();
-        $o->arr = array();
-        $o->arr[] = $o;
+        $encoderXml = new EncoderXml();
 
-        $encoderJson = new EncoderJson();
-        $encoderJson->encode($o);
+        $reflectionClass = new \ReflectionClass($encoderXml);
+        $reflectionMethod = $reflectionClass->getMethod('getError');
+        $reflectionMethod->setAccessible(true);
+
+        $reflectionMethod->invokeArgs($encoderXml, array('<movies><movie><titles>Faulty XML</title></movie></movies>'));
     }
 
     /**
@@ -89,15 +84,15 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $encoderJson = new EncoderJson();
-        $encoderJson->populateFromAnnotation($serializeAnnotation);
+        $encoderXml = new EncoderXml();
+        $encoderXml->populateFromAnnotation($serializeAnnotation);
 
-        $result = $encoderJson->encode(
+        $result = $encoderXml->encode(
             array(
                 'id' => 123,
             )
         );
 
-        $this->assertSame('{"test":{"id":123}}', $result);
+        $this->assertContains('<test><id>123</id></test>', $result);
     }
 }

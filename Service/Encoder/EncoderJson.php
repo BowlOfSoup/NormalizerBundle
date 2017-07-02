@@ -2,7 +2,7 @@
 
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
-use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 
 class EncoderJson extends AbstractEncoder
 {
@@ -59,7 +59,7 @@ class EncoderJson extends AbstractEncoder
         $errorMessage = json_last_error_msg();
 
         if (static::ERROR_NO_ERROR !== $errorMessage) {
-            throw new BosNormalizerException(static::EXCEPTION_PREFIX . $errorMessage);
+            throw new BosSerializerException(static::EXCEPTION_PREFIX . $errorMessage);
         }
     }
 }
