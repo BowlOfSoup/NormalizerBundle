@@ -15,9 +15,6 @@ class EncoderJson extends AbstractEncoder
     /** @var int */
     private $options;
 
-    /** @var int */
-    private $depth = 512;
-
     /**
      * @inheritdoc
      */
@@ -37,14 +34,6 @@ class EncoderJson extends AbstractEncoder
     }
 
     /**
-     * @param int $depth
-     */
-    public function setDepth($depth = 512)
-    {
-        $this->depth = $depth;
-    }
-
-    /**
      * @inheritdoc
      */
     public function encode($value)
@@ -53,7 +42,7 @@ class EncoderJson extends AbstractEncoder
             $value = array($this->wrapElement => $value);
         }
 
-        $encodedValue = json_encode($value, (int) $this->options, $this->depth);
+        $encodedValue = json_encode($value, (int) $this->options);
 
         $this->getError();
 
@@ -67,12 +56,11 @@ class EncoderJson extends AbstractEncoder
      */
     protected function getError()
     {
-        if ($this->jsonLastErrorMsgExists()) {
-            $errorMessage = json_last_error_msg();
-        } else {
-            $errorMessage = $this->getJsonErrorMessage();
+        if (!$this->jsonLastErrorMsgExists()) {
+            return;
         }
 
+        $errorMessage = json_last_error_msg();
         if (static::ERROR_NO_ERROR !== $errorMessage) {
             throw new BosSerializerException(static::EXCEPTION_PREFIX . $errorMessage);
         }
@@ -84,26 +72,5 @@ class EncoderJson extends AbstractEncoder
     protected function jsonLastErrorMsgExists()
     {
         return function_exists('json_last_error_msg');
-    }
-
-    /**
-     * Get last JSON error message: PHP < 5.5.0 support.
-     *
-     * @return string
-     */
-    private function getJsonErrorMessage()
-    {
-        $errors = array(
-            JSON_ERROR_NONE => 'No error',
-            JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
-            JSON_ERROR_STATE_MISMATCH => 'State mismatch (invalid or malformed JSON)',
-            JSON_ERROR_CTRL_CHAR => 'Control character error, possibly incorrectly encoded',
-            JSON_ERROR_SYNTAX => 'Syntax error',
-            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters, possibly incorrectly encoded'
-        );
-
-        $error = json_last_error();
-
-        return isset($errors[$error]) ? $errors[$error] : static::ERROR_NO_ERROR;
     }
 }

@@ -64,21 +64,12 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Encoder encodes with error, but PHP < 5.5.0 support.
-     *
-     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
-     * @expectedExceptionMessage Error when encoding JSON: Maximum stack depth exceeded
      */
     public function testError()
     {
-        $normalizedData = array(
-            'id' => 123,
-            array(
-                'id' => 123,
-                array(
-                    'id' => 123,
-                ),
-            ),
-        );
+        $o = new \stdClass();
+        $o->arr = array();
+        $o->arr[] = $o;
 
         $mockBuilder = $this
             ->getMockBuilder('BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson')
@@ -91,8 +82,7 @@ class EncoderJsonTest extends PHPUnit_Framework_TestCase
             ->method('jsonLastErrorMsgExists')
             ->will($this->returnValue(false));
 
-        $encoderJson->setDepth(2);
-        $encoderJson->encode($normalizedData);
+        $this->assertFalse($encoderJson->encode($o));
     }
 
     /**
