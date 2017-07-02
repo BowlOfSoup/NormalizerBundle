@@ -50,15 +50,9 @@ class EncoderXmlTest extends PHPUnit_Framework_TestCase
             ),
         );
 
-        $expected = '<data><id>123</id><name_value>Bowl</name_value><surName>Of Soup</surName><initials/><dateOfBirth>1980-01-01</dateOfBirth><dateOfRegistration>Apr. 2015</dateOfRegistration><addresses><item0><street>Dummy Street</street><number/><postalCode/><city>The City Is: Amsterdam</city></item0><item1><street/><number>4</number><postalCode>1234AB</postalCode><city>The City Is: </city></item1></addresses></data>';
-        var_dump(PHP_VERSION);
-        var_dump(version_compare(PHP_VERSION, '7', '<'));
-        if (version_compare(PHP_VERSION, '7', '<')) {
-            $expected = '<data><id>123</id><name_value>Bowl</name_value><surName>Of Soup</surName><initials></initials><dateOfBirth>1980-01-01</dateOfBirth><dateOfRegistration>Apr. 2015</dateOfRegistration><addresses><item0><street>Dummy Street</street><number></number><postalCode></postalCode><city>The City Is: Amsterdam</city></item0><item1><street></street><number>4</number><postalCode>1234AB</postalCode><city>The City Is: </city></item1></addresses></data>';
-        }
-        var_dump($expected);
+        $expected = '<data><id>123</id><name_value>Bowl</name_value><surName>Of Soup</surName><initials></initials><dateOfBirth>1980-01-01</dateOfBirth><dateOfRegistration>Apr. 2015</dateOfRegistration><addresses><item0><street>Dummy Street</street><number></number><postalCode></postalCode><city>The City Is: Amsterdam</city></item0><item1><street></street><number>4</number><postalCode>1234AB</postalCode><city>The City Is: </city></item1></addresses></data>';
 
-        $this->assertContains($expected, $encoderXml->encode($normalizedString));
+        $this->assertContains($this->flatten($expected), $this->flatten($encoderXml->encode($normalizedString)));
     }
 
     /**
@@ -98,6 +92,16 @@ class EncoderXmlTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $this->assertContains('<test><id>123</id></test>', $result);
+        $this->assertContains($this->flatten('<test><id>123</id></test>'), $this->flatten($result));
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return string
+     */
+    private function flatten($value)
+    {
+        return trim(preg_replace('/\s+/', '', $value));
     }
 }

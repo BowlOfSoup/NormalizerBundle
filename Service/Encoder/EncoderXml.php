@@ -51,7 +51,7 @@ class EncoderXml extends AbstractEncoder
 
         $this->getError($xmlData->asXML());
 
-        return $xmlData->asXML();
+        return $this->makeDom($xmlData);
     }
 
     /**
@@ -67,6 +67,25 @@ class EncoderXml extends AbstractEncoder
                 throw new BosSerializerException($error->message);
             }
         }
+    }
+
+    /**
+     * @param SimpleXMLElement $xmlData
+     *
+     * @return string
+     */
+    protected function makeDom(SimpleXMLElement $xmlData)
+    {
+        $domElement = dom_import_simplexml($xmlData);
+
+        $domOutput = new \DOMDocument('1.0');
+        $domOutput->formatOutput = true;
+
+        $domElement = $domOutput->importNode($domElement, true);
+
+        $domOutput->appendChild($domElement);
+
+        return $domOutput->saveXML($domOutput, LIBXML_NOEMPTYTAG);
     }
 
     /**
