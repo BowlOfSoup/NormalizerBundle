@@ -84,17 +84,17 @@ class EncoderXml extends AbstractEncoder
      */
     protected function getError($xmlData)
     {
-        $error = '';
+        $errorMessage = '';
 
         libxml_use_internal_errors(true);
         if (false === simplexml_load_string($xmlData)) {
             foreach(libxml_get_errors() as $error) {
-                $error .= ', ' . $error->message;
+                $errorMessage .= ', ' . $error->message;
             }
         }
 
-        if (!empty($error)) {
-            throw new BosSerializerException($error);
+        if (!empty($errorMessage)) {
+            throw new BosSerializerException($errorMessage);
         }
     }
 
