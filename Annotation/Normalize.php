@@ -2,25 +2,14 @@
 
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
-use InvalidArgumentException;
-
 /**
  * Register normalization properties.
  *
  * @Annotation
  * @Target({"CLASS","PROPERTY"})
  */
-class Normalize
+class Normalize extends AbstractAnnotation
 {
-    /** @var string */
-    const EXCEPTION_EMPTY = 'Parameter "%s" of annotation "%s" cannot be empty.';
-
-    /** @var string */
-    const EXCEPTION_TYPE = 'Wrong datatype used for property "%s" for annotation "%s"';
-
-    /** @var string */
-    const EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
-
     /** @var array */
     private $supportedProperties = array(
         'name' => array('type' => 'string'),
@@ -35,12 +24,6 @@ class Normalize
 
     /** @var string */
     private $name;
-
-    /** @var array */
-    private $group = array();
-
-    /** @var string */
-    private $type;
 
     /** @var string */
     private $format;
@@ -63,7 +46,9 @@ class Normalize
     public function __construct(array $properties)
     {
         foreach ($this->supportedProperties as $supportedPropertyKey => $supportedPropertyOptions) {
-            $this->handleProperty($properties, $supportedPropertyKey, $supportedPropertyOptions);
+            if ($this->validateProperties($properties, $supportedPropertyKey, $supportedPropertyOptions, __CLASS__)) {
+                $this->$supportedPropertyKey = $properties[$supportedPropertyKey];
+            }
         }
     }
 
@@ -141,73 +126,5 @@ class Normalize
     public function getMaxDepth()
     {
         return $this->maxDepth;
-    }
-
-    /**
-     * @param array  $properties
-     * @param string $propertyName
-     * @param array  $propertyOptions
-     */
-    private function handleProperty(array $properties, $propertyName, array $propertyOptions = array())
-    {
-        if (isset($properties[$propertyName])) {
-            $this->checkEmpty($properties[$propertyName], $propertyName);
-
-            if (isset($propertyOptions['type'])) {
-                $this->checkType($propertyOptions['type'], $properties[$propertyName], $propertyName);
-            }
-
-            if (isset($propertyOptions['assert'])) {
-                $this->checkAssert($propertyOptions['assert'], $properties[$propertyName], $propertyName);
-            }
-
-            $this->$propertyName = $properties[$propertyName];
-        }
-    }
-
-    /**
-     * @param string $property
-     * @param string $propertyName
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkEmpty($property, $propertyName)
-    {
-        if (0 !== $property && empty($property) && false !== $property) {
-            throw new InvalidArgumentException(
-                sprintf(static::EXCEPTION_EMPTY, $propertyName, __CLASS__)
-            );
-        }
-    }
-
-    /**
-     * @param string $type
-     * @param string $property
-     * @param string $propertyName
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkType($type, $property, $propertyName)
-    {
-        if ($type !== gettype($property)) {
-            throw new InvalidArgumentException(
-                sprintf(static::EXCEPTION_TYPE, $propertyName, __CLASS__)
-            );
-        }
-    }
-
-    /**
-     * @param array  $assertions
-     * @param string $property
-     *
-     * @throws \InvalidArgumentException
-     */
-    private function checkAssert(array $assertions, $property)
-    {
-        if (!in_array(strtolower($property), $assertions)) {
-            throw new InvalidArgumentException(
-                sprintf(static::EXCEPTION_TYPE_SUPPORTED, $property, __CLASS__)
-            );
-        }
     }
 }

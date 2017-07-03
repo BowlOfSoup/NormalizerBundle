@@ -24,6 +24,7 @@
                 <file>BowlOfSoupNormalizerBundle.php</file>
                 <directory>DependencyInjection</directory>
                 <directory>EventListener</directory>
+                <directory>Exception</directory>
                 <directory>Resources</directory>
                 <directory>Tests</directory>
                 <directory>vendor</directory>
@@ -40,5 +41,6 @@
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
         <log type="coverage-clover" target="Tests/coverage/clover.xml"/>
+        <log type="coverage-html" target="Tests/coverage" charset="UTF-8" highlight="false" />
     </logging>
 </phpunit>

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
+ * @Bos\Serialize(wrapElement="wrapperElement", group={"default"})
  */
 class Person
 {
@@ -62,6 +63,13 @@ class Person
      * @Bos\Normalize(group={"default"}, type="DateTime", format="M. Y")
      */
     private $dateOfRegistration;
+
+    /**
+     * @var DateTime
+     *
+     * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y", callback="calculateDeceasedDate")
+     */
+    private $deceasedDate;
 
     /**
      * @var Collection
@@ -279,6 +287,14 @@ class Person
         $this->dateOfRegistration = $dateOfRegistration;
 
         return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function calculateDeceasedDate()
+    {
+       return new \DateTime('2020-01-01');
     }
 
     /**
