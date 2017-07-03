@@ -2,8 +2,6 @@
 
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
-use InvalidArgumentException;
-
 abstract class AbstractAnnotation
 {
     /** @var string */
@@ -63,19 +61,19 @@ abstract class AbstractAnnotation
     {
         if (isset($properties[$propertyName])) {
             if ($this->isEmpty($properties[$propertyName])) {
-                throw new InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
+                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
             }
 
             if (isset($propertyOptions['type']) &&
                 !$this->hasCorrectType($propertyOptions['type'], $properties[$propertyName])
             ) {
-                throw new InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
+                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
             }
 
             if (isset($propertyOptions['assert']) &&
                 !$this->hasValidAssertion($propertyOptions['assert'], $properties[$propertyName])
             ) {
-                throw new InvalidArgumentException(
+                throw new \InvalidArgumentException(
                     sprintf(static::EXCEPTION_TYPE_SUPPORTED, $properties[$propertyName], $annotation)
                 );
             }
