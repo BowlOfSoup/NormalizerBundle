@@ -58,12 +58,13 @@ The serializer needs to be injected.
 
     <argument type="service" id="bos.serializer" />
 
-You can input an object or an array. If you input an object, it will normalize first, and thus use the "Normalize" annotations.
+You can input an object or an array. If you input an object, it will normalize first, and thus the "Normalize" annotations are used.
 
-Calling the serializer with a group is optional, but certainly recommended. The result will be a blob of data.
+Calling the serializer with a group is optional, but certainly recommended.
 
     $result = $this->serializer->serialize($someEntity, 'somegroup');
 
+The result will be a blob of data.
 
 # Normalizer
 
