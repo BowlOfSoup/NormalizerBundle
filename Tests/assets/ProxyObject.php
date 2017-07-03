@@ -7,6 +7,9 @@ use Doctrine\Common\Persistence\Proxy;
 
 class ProxyObject implements Proxy
 {
+    /** @var string */
+    private $id = "123";
+
     /**
      * @var string
      *
@@ -14,6 +17,7 @@ class ProxyObject implements Proxy
      */
     private $value = 'Hello';
 
+    /** @var string */
     private $proxyProperty = 'string';
 
     /**
@@ -28,6 +32,14 @@ class ProxyObject implements Proxy
      */
     public function __isInitialized()
     {
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return (int) $this->id;
     }
 
     /**

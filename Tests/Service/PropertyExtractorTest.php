@@ -136,6 +136,27 @@ class PropertyExtractorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox Get a value for a property, Doctrine Proxy, force get method, assert ID = integer.
+     */
+    public function testGetPropertyDoctrineProxyForceGetMethodAssertIdInteger()
+    {
+        $result = null;
+
+        $proxyObject = new ProxyObject();
+        $properties = $this->getStubClassExtractor()->getProperties($proxyObject);
+        foreach ($properties as $property) {
+            if ('id' === $property->getName()) {
+                $result = $this->getStubPropertyExtractor()->getPropertyValue(
+                    $proxyObject,
+                    $property
+                );
+            }
+        }
+
+        $this->assertSame(123, $result);
+    }
+
+    /**
      * @testdox Get a value for a property by specifying method.
      */
     public function testGetPropertyValueByMethod()
