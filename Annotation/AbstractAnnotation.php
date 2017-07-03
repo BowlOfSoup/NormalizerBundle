@@ -59,29 +59,29 @@ abstract class AbstractAnnotation
      */
     protected function validateProperties(array $properties, $propertyName, array $propertyOptions, $annotation)
     {
-        if (isset($properties[$propertyName])) {
-            if ($this->isEmpty($properties[$propertyName])) {
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
-            }
-
-            if (isset($propertyOptions['type']) &&
-                !$this->hasCorrectType($propertyOptions['type'], $properties[$propertyName])
-            ) {
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
-            }
-
-            if (isset($propertyOptions['assert']) &&
-                !$this->hasValidAssertion($propertyOptions['assert'], $properties[$propertyName])
-            ) {
-                throw new \InvalidArgumentException(
-                    sprintf(static::EXCEPTION_TYPE_SUPPORTED, $properties[$propertyName], $annotation)
-                );
-            }
-
-            return true;
+        if (!isset($properties[$propertyName])) {
+            return false;
         }
 
-        return false;
+        if ($this->isEmpty($properties[$propertyName])) {
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
+        }
+
+        if (isset($propertyOptions['type']) &&
+            !$this->hasCorrectType($propertyOptions['type'], $properties[$propertyName])
+        ) {
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
+        }
+
+        if (isset($propertyOptions['assert']) &&
+            !$this->hasValidAssertion($propertyOptions['assert'], $properties[$propertyName])
+        ) {
+            throw new \InvalidArgumentException(
+                sprintf(static::EXCEPTION_TYPE_SUPPORTED, $properties[$propertyName], $annotation)
+            );
+        }
+
+        return true;
     }
 
     /**
