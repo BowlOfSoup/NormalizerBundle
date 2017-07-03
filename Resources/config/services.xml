@@ -24,13 +24,18 @@
             <argument type="service" id="bos.doctrine.cached_reader" />
         </service>
 
+        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer">
+            <argument type="service" id="bos.class_extractor" />
+            <argument type="service" id="bos.property_extractor" />
+        </service>
+
         <service class="BowlOfSoup\NormalizerBundle\Service\PropertyExtractor" id="bos.property_extractor">
             <argument type="service" id="bos.doctrine.cached_reader" />
         </service>
 
-        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer">
+        <service class="BowlOfSoup\NormalizerBundle\Service\Serializer" id="bos.serializer">
             <argument type="service" id="bos.class_extractor" />
-            <argument type="service" id="bos.property_extractor" />
+            <argument type="service" id="bos.normalizer" />
         </service>
     </services>
 </container>

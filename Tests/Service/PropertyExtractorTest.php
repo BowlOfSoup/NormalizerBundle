@@ -6,9 +6,8 @@ use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use PHPUnit_Framework_TestCase;
 
-class PropertyExtractorTest extends PHPUnit_Framework_TestCase
+class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Extracting property annotations.

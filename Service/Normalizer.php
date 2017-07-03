@@ -4,10 +4,7 @@ namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use DateTime;
 use Doctrine\Common\Collections\Collection;
-use ReflectionProperty;
-use Traversable;
 
 class Normalizer
 {
@@ -60,7 +57,7 @@ class Normalizer
         $this->group = $group;
         $normalizedData = array();
 
-        if (is_array($data) || $data instanceof Traversable) {
+        if (is_array($data) || $data instanceof \Traversable) {
             foreach ($data as $item) {
                 $normalizedData[] = $this->normalize($item, $group);
             }
@@ -145,6 +142,9 @@ class Normalizer
      *
      * First group entry will be used, duplicate definitions will be gracefully ignored.
      *
+     * In this method, 'new Normalize(array())' is used for PHP < 5.5 support,
+     * Normally we should use 'Normalize::class'
+     *
      * @param string $objectName
      * @param object $object
      *
@@ -162,9 +162,9 @@ class Normalizer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
-            if ($this->isGroupValid($classAnnotation)) {
+            if ($classAnnotation->isGroupValidForProperty($this->group)) {
                 $this->maxDepth = $classAnnotation->getMaxDepth();
 
                 return $classAnnotation;
@@ -178,11 +178,11 @@ class Normalizer
      * Get property annotations.
      *
      * @param string             $objectName
-     * @param ReflectionProperty $classProperty
+     * @param \ReflectionProperty $classProperty
      *
      * @return array
      */
-    private function getPropertyAnnotations($objectName, ReflectionProperty $classProperty)
+    private function getPropertyAnnotations($objectName, \ReflectionProperty $classProperty)
     {
         $propertyName = $classProperty->getName();
 
@@ -203,7 +203,7 @@ class Normalizer
      * Normalization per (reflected) property.
      *
      * @param object             $object
-     * @param ReflectionProperty $property
+     * @param \ReflectionProperty $property
      * @param array              $propertyAnnotations
      * @param Normalize|null     $classAnnotation
      *
@@ -211,7 +211,7 @@ class Normalizer
      */
     private function normalizeProperty(
         $object,
-        ReflectionProperty $property,
+        \ReflectionProperty $property,
         array $propertyAnnotations,
         Normalize $classAnnotation = null
     ) {
@@ -219,7 +219,7 @@ class Normalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
-            if (!$this->isGroupValid($propertyAnnotation)) {
+            if (!$propertyAnnotation->isGroupValidForProperty($this->group)) {
                 continue;
             }
 
@@ -265,30 +265,10 @@ class Normalizer
     }
 
     /**
-     * Check if annotation property 'group' matches up with requested group.
-     *
-     * @param Normalize $propertyAnnotation
-     *
-     * @return bool
-     */
-    private function isGroupValid(Normalize $propertyAnnotation)
-    {
-        $annotationPropertyGroup = $propertyAnnotation->getGroup();
-
-        if ((!empty($this->group) && !in_array($this->group, $annotationPropertyGroup)) ||
-            (empty($this->group) && !empty($annotationPropertyGroup))
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Returns values for properties with the annotation property 'type'.
      *
      * @param object             $object
-     * @param ReflectionProperty $property
+     * @param \ReflectionProperty $property
      * @param mixed              $propertyValue
      * @param Normalize          $propertyAnnotation
      * @param string             $annotationPropertyType
@@ -297,7 +277,7 @@ class Normalizer
      */
     private function getValueForPropertyWithType(
         $object,
-        ReflectionProperty $property,
+        \ReflectionProperty $property,
         $propertyValue,
         Normalize $propertyAnnotation,
         $annotationPropertyType
@@ -313,7 +293,7 @@ class Normalizer
                 PropertyExtractor::FORCE_PROPERTY_GET_METHOD
             );
 
-            if ($propertyValue instanceof DateTime) {
+            if ($propertyValue instanceof \DateTime) {
                 $newPropertyValue = $propertyValue->format($propertyAnnotation->getFormat());
             }
         } elseif ('object' === $annotationPropertyType) {
@@ -451,7 +431,7 @@ class Normalizer
         $objectIdentifier = $this->propertyExtractor->getId($object);
 
         return array_key_exists($objectName, $this->processedObjects) &&
-            array_key_exists($objectIdentifier, $this->processedObjectCache[$objectName]);
+        array_key_exists($objectIdentifier, $this->processedObjectCache[$objectName]);
     }
 
     /**

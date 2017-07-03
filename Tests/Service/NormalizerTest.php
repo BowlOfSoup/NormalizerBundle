@@ -14,12 +14,10 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
-use DateTime;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
-use PHPUnit_Framework_TestCase;
 
-class NormalizerTest extends PHPUnit_Framework_TestCase
+class NormalizerTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @testdox Normalize object, full happy path no type property, still callback
@@ -295,7 +293,7 @@ class NormalizerTest extends PHPUnit_Framework_TestCase
             ->setId(123)
             ->setName('Bowl')
             ->setSurName('Of Soup')
-            ->setDateOfBirth(new DateTime('1980-01-01'))
+            ->setDateOfBirth(new \DateTime('1980-01-01'))
             ->setValidCollectionPropertyWithCallback(array(new SomeClass()));
 
         $social = new Social();

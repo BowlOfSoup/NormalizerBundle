@@ -35,6 +35,10 @@ class ClassExtractor
      */
     public function extractClassAnnotations($object, $annotation)
     {
+        if (!is_object($object)) {
+            return array();
+        }
+
         $annotations = array();
         $reflectedClass = new ReflectionClass($object);
 

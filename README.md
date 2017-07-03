@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b/mini.png)](https://insight.sensiolabs.com/projects/eeab202d-8818-4de4-a66b-f49559d5399b)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg?no-cache=1)](https://php.net/)
 [![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%202.7-green.svg)](https://symfony.com/)
 
@@ -11,7 +10,7 @@ Installation
 Bowl Of Soup Normalizer
 =======================
 
-Besides normalizing objects it features:
+Besides normalizing and serializing objects it features:
 - Working with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
 - Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method.
 - Object caching: If a getId() method is implemented for an object it will cache the normalized object per flow (call to normalize()).
@@ -20,6 +19,54 @@ Besides normalizing objects it features:
   - In Symfony prod mode, annotations are cached completely (after first run).
 
 The main features are described in the corresponding annotations.
+
+What is serialization/normalization?
+------------------------------------
+
+![visual serialization/normalization](https://symfony.com/doc/current/_images/serializer_workflow.png)
+(Source: [Symfony Serializer](https://symfony.com/doc/current/components/serializer.html))
+
+Serialization of an object is visualized on the right side of the above visual. It consists of two steps,
+normalization and encoding normalized data.
+
+You can call each step separately (normalize, encode) or directly serialize an object.
+
+
+# Serializer
+
+Annotations in your model
+-------------------------
+As we see in the visual the first step in serialization is normalizing. To indicate the way object properties
+need to be normalized the "Normalizer" annotations have to be used. See paragraph "Normalizer" for annotation usage.
+
+There are two encoding supported: **JSON** and **XML**.
+
+These annotations are specific for the encoder step of the serialization process.
+
+### Wrapper element
+When outputting to a specific encoding you can indicate the wrapping element, this element will be the root node.
+You can and should indicate a group (context), use property 'group' to separate context.
+
+    /**
+     * @Bos\Serialize(wrapElement="SomeWrapperElement", group={"default"})
+     */
+    class ClassToBeSerialized
+    {
+
+### Calling the serializer
+The serializer needs to be injected.
+
+    <argument type="service" id="bos.serializer" />
+
+You can input an object or an array. If you input an object, it will normalize first, and thus the "Normalize" annotations are used.
+
+Calling the serializer with a group is optional, but certainly recommended.
+
+    $result = $this->serializer->serialize($someEntity, 'somegroup');
+
+The result will be a blob of data.
+
+# Normalizer
 
 Annotations in your model
 -------------------------
@@ -60,7 +107,6 @@ This can also be used on class level. All properties which are empty, will now n
      */
     class ClassToBeNormalized
     {
- 
 
 ### Group or context support
 
