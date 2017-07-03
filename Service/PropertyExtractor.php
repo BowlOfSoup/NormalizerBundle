@@ -73,7 +73,7 @@ class PropertyExtractor
             $forceGetMethod = true;
         }
 
-        if ('id' !== $propertyName && $object instanceof Proxy) {
+        if ($object instanceof Proxy) {
             // Force initialization of Doctrine proxy.
             $forceGetMethod = true;
         }
