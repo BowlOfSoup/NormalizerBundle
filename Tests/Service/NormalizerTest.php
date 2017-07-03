@@ -274,6 +274,23 @@ class NormalizerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @testdox Normalize object, issue-17 scenario, fallback for DateTime.
+     */
+    public function testNormalizeFallbackDateTime()
+    {
+        $classExtractor = new ClassExtractor(new AnnotationReader());
+        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+
+        $person = $this->getDummyDataSet();
+
+        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
+        $result = $normalizer->normalize($person, 'dateTimeTest');
+
+        $this->assertNotEmpty($result);
+        $this->assertArraySubset($result, array('deceasedDate' => 'Jan. 2020'));
+    }
+
+    /**
      * @return Person
      */
     private function getDummyDataSet()
