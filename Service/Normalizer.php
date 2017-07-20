@@ -257,7 +257,7 @@ class Normalizer
                 $propertyName = $propertyAnnotation->getName();
             }
 
-            $propertyValue = (empty($propertyValue) ? null : $propertyValue);
+            $propertyValue = (is_array($propertyValue) && empty($propertyValue) ? null : $propertyValue);
             $normalizedProperties[$propertyName] = $propertyValue;
         }
 
