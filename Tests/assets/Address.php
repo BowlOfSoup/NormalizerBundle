@@ -139,8 +139,6 @@ class Address
     }
 
     /**
-     * @param Collection $group
-     *
      * @return $this
      */
     public function setGroup(Collection $group)

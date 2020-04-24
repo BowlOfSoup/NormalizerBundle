@@ -9,17 +9,14 @@ use ReflectionProperty;
 class ClassExtractor
 {
     /** @var string */
-    const TYPE = 'class';
+    public const TYPE = 'class';
 
     /** @var bool */
-    const GET_PROPERTIES_ONLY_PRIVATES = true;
+    public const GET_PROPERTIES_ONLY_PRIVATES = true;
 
-    /** @var Reader */
+    /** @var \Doctrine\Common\Annotations\Reader */
     protected $annotationReader;
 
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $annotationReader
-     */
     public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
@@ -28,18 +25,18 @@ class ClassExtractor
     /**
      * Extract annotations set on class level.
      *
-     * @param object $object
-     * @param string $annotation
+     * @param object|array $object
+     * @param object|string $annotation
      *
-     * @return array
+     * @throws \ReflectionException
      */
-    public function extractClassAnnotations($object, $annotation)
+    public function extractClassAnnotations($object, $annotation): array
     {
         if (!is_object($object)) {
-            return array();
+            return [];
         }
 
-        $annotations = array();
+        $annotations = [];
         $reflectedClass = new ReflectionClass($object);
 
         $classAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
@@ -57,24 +54,24 @@ class ClassExtractor
      *
      * @param object $object
      *
-     * @return \ReflectionProperty[]|array
+     * @throws \ReflectionException
      */
-    public function getProperties($object)
+    public function getProperties($object): array
     {
         if (!is_object($object)) {
-            return array();
+            return [];
         }
 
         $reflectedClass = new ReflectionClass($object);
         $classProperties = $this->getClassProperties($reflectedClass);
 
         // Also get (private) variables from parent class.
+        $privateProperties = [];
         while ($reflectedClass = $reflectedClass->getParentClass()) {
-            $classProperties = array_merge(
-                $classProperties,
-                $this->getClassProperties($reflectedClass, static::GET_PROPERTIES_ONLY_PRIVATES)
-            );
+            $privateProperties[] = $this->getClassProperties($reflectedClass, static::GET_PROPERTIES_ONLY_PRIVATES);
         }
+
+        $classProperties = array_merge($classProperties, ...$privateProperties);
 
         return $classProperties;
     }
@@ -82,12 +79,9 @@ class ClassExtractor
     /**
      * Get class properties through reflection.
      *
-     * @param \ReflectionClass $reflectedClass
-     * @param bool             $onlyPrivates
-     *
      * @return \ReflectionProperty[]
      */
-    private function getClassProperties(ReflectionClass $reflectedClass, $onlyPrivates = false)
+    private function getClassProperties(ReflectionClass $reflectedClass, bool $onlyPrivates = false): array
     {
         if ($onlyPrivates) {
             return $reflectedClass->getProperties(ReflectionProperty::IS_PRIVATE);

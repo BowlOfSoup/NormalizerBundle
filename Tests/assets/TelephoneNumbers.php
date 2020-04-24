@@ -21,12 +21,12 @@ class TelephoneNumbers
      */
     public function toArray()
     {
-        return array(
+        return [
             'home' => $this->home,
             'mobile' => $this->mobile,
             'work' => $this->work,
             'wife' => $this->wife,
-        );
+        ];
     }
 
     /**

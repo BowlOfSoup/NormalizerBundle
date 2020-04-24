@@ -2,33 +2,34 @@
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
+use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
+use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderXml;
+use PHPUnit\Framework\TestCase;
 
-class ClassExtractorTest extends \PHPUnit_Framework_TestCase
+class EncoderFactoryTest extends TestCase
 {
     /**
      * @testdox Factory returns correct encoder.
      */
-    public function testManufacturingEncoder()
+    public function testManufacturingEncoder(): void
     {
         $this->assertInstanceOf(
-            'BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson',
+            EncoderJson::class,
             EncoderFactory::getEncoder(EncoderFactory::TYPE_JSON)
         );
         $this->assertInstanceOf(
-            'BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderXml',
+            EncoderXml::class,
             EncoderFactory::getEncoder(EncoderFactory::TYPE_XML)
         );
     }
 
-    /**
-     * @testdox Unknown encoder.
-     *
-     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
-     * @expectedExceptionMessage Unknown encoder type.
-     */
-    public function testUnknownEncoder()
+    public function testUnknownEncoder(): void
     {
+        $this->expectException(BosSerializerException::class);
+        $this->expectExceptionMessage('Unknown encoder type.');
+
         EncoderFactory::getEncoder('something');
     }
 }

@@ -3,15 +3,17 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
+use PHPUnit\Framework\TestCase;
 
-class EncoderJsonTest extends \PHPUnit_Framework_TestCase
+class EncoderJsonTest extends TestCase
 {
     /**
      * @testdox Encoder is of correct type.
      */
-    public function testType()
+    public function testType(): void
     {
         $encoderJson = new EncoderJson();
 
@@ -21,34 +23,34 @@ class EncoderJsonTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Encoder encodes successfully.
      */
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $encoderJson = new EncoderJson();
         $encoderJson->setWrapElement('data');
         $encoderJson->setOptions(JSON_ERROR_UTF8);
 
-        $normalizedString = array(
+        $normalizedString = [
             'id' => 123,
             'name_value' => 'Bowl',
             'surName' => 'Of Soup',
             'initials' => null,
             'dateOfBirth' => '1980-01-01',
             'dateOfRegistration' => 'Apr. 2015',
-            'addresses' => array(
-                array(
+            'addresses' => [
+                [
                     'street' => 'Dummy Street',
                     'number' => null,
                     'postalCode' => null,
                     'city' => 'The City Is: Amsterdam',
-                ),
-                array(
+                ],
+                [
                     'street' => null,
                     'number' => 4,
                     'postalCode' => '1234AB',
                     'city' => 'The City Is: ',
-                ),
-            ),
-        );
+                ],
+            ],
+        ];
 
         $result = $encoderJson->encode($normalizedString);
 
@@ -63,18 +65,14 @@ class EncoderJsonTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @testdox Encoder encodes with error.
-     *
-     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
-     * @expectedExceptionMessage Error when encoding JSON: Recursion detected
      */
-    public function testError()
+    public function testError(): void
     {
-        if (version_compare(PHP_VERSION, '5.5', '<')) {
-            $this->markTestSkipped();
-        }
+        $this->expectException(BosSerializerException::class);
+        $this->expectExceptionMessage('Error when encoding JSON: Recursion detected');
 
         $o = new \stdClass();
-        $o->arr = array();
+        $o->arr = [];
         $o->arr[] = $o;
 
         $encoderJson = new EncoderJson();
@@ -84,21 +82,23 @@ class EncoderJsonTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox json_last_error_msg does not exists.
      */
-    public function testJsonLastErrorMsgMethodDoesNotExists()
+    public function testJsonLastErrorMsgMethodDoesNotExists(): void
     {
-        $normalizedData = array(
+        $normalizedData = [
             'id' => 123,
-        );
+        ];
 
         $mockBuilder = $this
-            ->getMockBuilder('BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson')
+            ->getMockBuilder(EncoderJson::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('jsonLastErrorMsgExists'));
+            ->setMethods(['jsonLastErrorMsgExists']);
+
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson $encoderJson */
         $encoderJson = $mockBuilder->getMock();
         $encoderJson
             ->expects($this->any())
             ->method('jsonLastErrorMsgExists')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $this->assertSame('{"id":123}', $encoderJson->encode($normalizedData));
     }
@@ -106,21 +106,21 @@ class EncoderJsonTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Populate option from annotation.
      */
-    public function testPopulate()
+    public function testPopulate(): void
     {
         $serializeAnnotation = new Serialize(
-            array(
+            [
                 'wrapElement' => 'test',
-            )
+            ]
         );
 
         $encoderJson = new EncoderJson();
         $encoderJson->populateFromAnnotation($serializeAnnotation);
 
         $result = $encoderJson->encode(
-            array(
+            [
                 'id' => 123,
-            )
+            ]
         );
 
         $this->assertSame('{"test":{"id":123}}', $result);

@@ -15,13 +15,13 @@ class Normalizer
     protected $propertyExtractor;
 
     /** @var array */
-    private $processedObjects = array();
+    private $processedObjects = [];
 
     /** @var array */
-    private $processedObjectCache = array();
+    private $processedObjectCache = [];
 
     /** @var array */
-    private $annotationCache = array();
+    private $annotationCache = [];
 
     /** @var int */
     private $processedDepth = 0;
@@ -32,10 +32,6 @@ class Normalizer
     /** @var string|null */
     private $group = null;
 
-    /**
-     * @param ClassExtractor    $classExtractor
-     * @param PropertyExtractor $propertyExtractor
-     */
     public function __construct(
         ClassExtractor $classExtractor,
         PropertyExtractor $propertyExtractor
@@ -47,17 +43,21 @@ class Normalizer
     /**
      * Normalize an object or an array of objects, for a specific group.
      *
-     * @param mixed       $data
-     * @param string|null $group
+     * @param mixed $data
      *
-     * @return array
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
      */
-    public function normalize($data, $group = null)
+    public function normalize($data, string $group = null): array
     {
-        $this->group = $group;
-        $normalizedData = array();
+        if (empty($data)) {
+            return [];
+        }
 
-        if (is_array($data) || $data instanceof \Traversable) {
+        $this->group = $group;
+        $normalizedData = [];
+
+        if (is_iterable($data) || $data instanceof \Traversable) {
             foreach ($data as $item) {
                 $normalizedData[] = $this->normalize($item, $group);
             }
@@ -72,11 +72,11 @@ class Normalizer
     /**
      * Resets the caches.
      */
-    private function cleanUp()
+    private function cleanUp(): void
     {
-        $this->processedObjects = array();
-        $this->processedObjectCache = array();
-        $this->annotationCache = array();
+        $this->processedObjects = [];
+        $this->processedObjectCache = [];
+        $this->annotationCache = [];
         $this->maxDepth = null;
     }
 
@@ -86,13 +86,12 @@ class Normalizer
      * In this method, 'new Normalize(array())' is used for PHP < 5.5 support.
      * Normally we should use 'Normalize::class'
      *
-     * @param object $object
-     *
-     * @return array
+     * @throws \ReflectionException
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
-    private function normalizeObject($object)
+    private function normalizeObject(object $object): array
     {
-        $normalizedProperties = array();
+        $normalizedProperties = [];
         $objectName = get_class($object);
         $objectIdentifier = $this->propertyExtractor->getId($object);
 
@@ -105,9 +104,10 @@ class Normalizer
         ) {
             return $this->processedObjectCache[$objectName][$objectIdentifier];
         }
-        $this->processedObjectCache[$objectName][$objectIdentifier] = array();
+        $this->processedObjectCache[$objectName][$objectIdentifier] = [];
 
         $classProperties = $this->classExtractor->getProperties($object);
+        $normalizedClassProperties = [];
         foreach ($classProperties as $classProperty) {
             $propertyAnnotations = $this->getPropertyAnnotations($objectName, $classProperty);
             if (empty($propertyAnnotations)) {
@@ -116,16 +116,14 @@ class Normalizer
 
             $classProperty->setAccessible(true);
 
-            $normalizedProperties = array_merge(
-                $normalizedProperties,
-                $this->normalizeProperty(
-                    $object,
-                    $classProperty,
-                    $propertyAnnotations,
-                    $this->getClassAnnotation($objectName, $object)
-                )
+            $normalizedClassProperties[] = $this->normalizeProperty(
+                $object,
+                $classProperty,
+                $propertyAnnotations,
+                $this->getClassAnnotation($objectName, $object)
             );
         }
+        $normalizedProperties = array_merge($normalizedProperties, ...$normalizedClassProperties);
 
         // Cache object
         if (null !== $objectIdentifier) {
@@ -145,17 +143,14 @@ class Normalizer
      * In this method, 'new Normalize(array())' is used for PHP < 5.5 support,
      * Normally we should use 'Normalize::class'
      *
-     * @param string $objectName
-     * @param object $object
-     *
-     * @return Normalize|null
+     * @throws \ReflectionException
      */
-    private function getClassAnnotation($objectName, $object)
+    private function getClassAnnotation(string $objectName, object $object): ?Normalize
     {
         if (isset($this->annotationCache[ClassExtractor::TYPE][$objectName])) {
             $classAnnotations = $this->annotationCache[ClassExtractor::TYPE][$objectName];
         } else {
-            $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Normalize(array()));
+            $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Normalize([]));
             $this->annotationCache[ClassExtractor::TYPE][$objectName] = $classAnnotations;
         }
         if (empty($classAnnotations)) {
@@ -174,15 +169,7 @@ class Normalizer
         return null;
     }
 
-    /**
-     * Get property annotations.
-     *
-     * @param string             $objectName
-     * @param \ReflectionProperty $classProperty
-     *
-     * @return array
-     */
-    private function getPropertyAnnotations($objectName, \ReflectionProperty $classProperty)
+    private function getPropertyAnnotations(string $objectName, \ReflectionProperty $classProperty): array
     {
         $propertyName = $classProperty->getName();
 
@@ -191,7 +178,7 @@ class Normalizer
         } else {
             $propertyAnnotations = $this->propertyExtractor->extractPropertyAnnotations(
                 $classProperty,
-                new Normalize(array())
+                new Normalize([])
             );
             $this->annotationCache[PropertyExtractor::TYPE][$objectName][$propertyName] = $propertyAnnotations;
         }
@@ -202,20 +189,16 @@ class Normalizer
     /**
      * Normalization per (reflected) property.
      *
-     * @param object             $object
-     * @param \ReflectionProperty $property
-     * @param array              $propertyAnnotations
-     * @param Normalize|null     $classAnnotation
-     *
-     * @return array
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
      */
     private function normalizeProperty(
-        $object,
+        object $object,
         \ReflectionProperty $property,
         array $propertyAnnotations,
         Normalize $classAnnotation = null
-    ) {
-        $normalizedProperties = array();
+    ): array {
+        $normalizedProperties = [];
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
@@ -264,20 +247,19 @@ class Normalizer
     /**
      * Returns values for properties with the annotation property 'type'.
      *
-     * @param object              $object
-     * @param \ReflectionProperty $property
-     * @param mixed               $propertyValue
-     * @param Normalize           $propertyAnnotation
-     * @param string              $annotationPropertyType
+     * @param mixed $propertyValue
+     *
+     * @throws \ReflectionException
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
     private function getValueForPropertyWithType(
-        $object,
+        object $object,
         \ReflectionProperty $property,
         $propertyValue,
         Normalize $propertyAnnotation,
-        $annotationPropertyType
+        string $annotationPropertyType
     ) {
         $newPropertyValue = null;
         $annotationPropertyType = strtolower($annotationPropertyType);
@@ -296,13 +278,10 @@ class Normalizer
     /**
      * Returns values for properties with annotation type 'datetime'.
      *
-     * @param object                                            $object
-     * @param \ReflectionProperty                               $property
-     * @param \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation
-     *
-     * @return string|null
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
      */
-    private function getValueForPropertyWithDateTime($object, $property, Normalize $propertyAnnotation)
+    private function getValueForPropertyWithDateTime(object $object, \ReflectionProperty $property, Normalize $propertyAnnotation): ?string
     {
         $annotationPropertyCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationPropertyCallback)) {
@@ -329,13 +308,14 @@ class Normalizer
     /**
      * Returns values for properties with annotation type 'object'.
      *
-     * @param object    $object
-     * @param mixed     $propertyValue
-     * @param Normalize $propertyAnnotation
+     * @param mixed $propertyValue
+     *
+     * @throws \ReflectionException
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
-    private function getValueForPropertyWithTypeObject($object, $propertyValue, Normalize $propertyAnnotation)
+    private function getValueForPropertyWithTypeObject(object $object, $propertyValue, Normalize $propertyAnnotation)
     {
         if ($this->hasMaxDepth()) {
             return $this->getValueForMaxDepth($propertyValue);
@@ -343,7 +323,7 @@ class Normalizer
         ++$this->processedDepth;
 
         $annotationCallback = $propertyAnnotation->getCallback();
-        if (!empty($annotationCallback) && is_callable(array($propertyValue, $annotationCallback))) {
+        if (!empty($annotationCallback) && is_callable([$propertyValue, $annotationCallback])) {
             return $this->handleCallbackResult($propertyValue->$annotationCallback(), $propertyAnnotation);
         }
 
@@ -360,14 +340,10 @@ class Normalizer
     /**
      * Normalize a referenced object, handles circular references.
      *
-     * @param object $object
-     * @param object $parentObject
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return array
+     * @throws \ReflectionException
      */
-    private function normalizeReferencedObject($object, $parentObject)
+    private function normalizeReferencedObject(object $object, object $parentObject): ?array
     {
         $normalizedProperty = null;
 
@@ -377,19 +353,16 @@ class Normalizer
 
             if (empty($normalizedProperty)) {
                 return null;
-            };
+            }
         }
 
         if (empty($normalizedProperty)) {
             $normalizedProperty = $this->propertyExtractor->getId($object);
             if (null === $normalizedProperty) {
-                throw new BosNormalizerException(
-                    'Circular reference on: ' .$objectName . ' called from: ' . get_class($parentObject) .
-                    '. If possible, prevent this by adding a getId() method to ' . $objectName
-                );
+                throw new BosNormalizerException('Circular reference on: ' . $objectName . ' called from: ' . get_class($parentObject) . '. If possible, prevent this by adding a getId() method to ' . $objectName);
             }
 
-            return array('id' => $normalizedProperty);
+            return ['id' => $normalizedProperty];
         }
 
         return $normalizedProperty;
@@ -400,14 +373,14 @@ class Normalizer
      *
      * A Collection can be anything that is iteratable, such as a Doctrine ArrayCollection, or just an array.
      *
-     * @param mixed     $propertyValue
-     * @param Normalize $propertyAnnotation
+     * @param mixed $propertyValue
      *
-     * @return array
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
      */
-    private function normalizeReferencedCollection($propertyValue, Normalize $propertyAnnotation)
+    private function normalizeReferencedCollection($propertyValue, Normalize $propertyAnnotation): ?array
     {
-        $normalizedCollection = array();
+        $normalizedCollection = [];
 
         if (!$propertyValue instanceof Collection && !is_array($propertyValue)) {
             return null;
@@ -426,7 +399,7 @@ class Normalizer
             }
             ++$this->processedDepth;
 
-            if (!empty($annotationCallback) && is_callable(array($collectionItem, $annotationCallback))) {
+            if (!empty($annotationCallback) && is_callable([$collectionItem, $annotationCallback])) {
                 $normalizedCollection[] = $this->handleCallbackResult(
                     $collectionItem->$annotationCallback(),
                     $propertyAnnotation
@@ -441,13 +414,7 @@ class Normalizer
         return $normalizedCollection;
     }
 
-    /**
-     * @param object $object
-     * @param string $objectName
-     *
-     * @return bool
-     */
-    private function isCircularReference($object, $objectName)
+    private function isCircularReference(object $object, string $objectName): bool
     {
         $objectIdentifier = $this->propertyExtractor->getId($object);
 
@@ -455,39 +422,33 @@ class Normalizer
         array_key_exists($objectIdentifier, $this->processedObjectCache[$objectName]);
     }
 
-    /**
-     * @return bool
-     */
-    private function hasMaxDepth()
+    private function hasMaxDepth(): bool
     {
         return null !== $this->maxDepth && ($this->processedDepth + 1) > $this->maxDepth;
     }
 
     /**
-     * @param object $object
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return int|string
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
-    private function getValueForMaxDepth($object)
+    private function getValueForMaxDepth(object $object)
     {
         $propertyValue = $this->propertyExtractor->getId($object);
         if (null === $propertyValue) {
-            throw new BosNormalizerException(
-                'Maximal depth reached, but no identifier found. '.
-                'Prevent this by adding a getId() method to ' . get_class($object)
-            );
+            throw new BosNormalizerException('Maximal depth reached, but no identifier found. ' . 'Prevent this by adding a getId() method to ' . get_class($object));
         }
 
         return $propertyValue;
     }
 
     /**
-     * @param mixed     $propertyValue
-     * @param Normalize $propertyAnnotation
+     * @param mixed $propertyValue
      *
-     * @return array|
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
+     *
+     * @return array|string|null
      */
     private function handleCallbackResult($propertyValue, Normalize $propertyAnnotation)
     {
@@ -497,7 +458,7 @@ class Normalizer
 
         if ($propertyValue instanceof Collection || is_array($propertyValue)) {
             $allObjects = true;
-            $normalizedCollection = array();
+            $normalizedCollection = [];
             foreach ($propertyValue as $item) {
                 if (!is_object($item)) {
                     // Values that are not objects will be skipped/cannot be normalized.
@@ -511,7 +472,7 @@ class Normalizer
             }
 
             return $normalizedCollection;
-        } else if (is_object($propertyValue)) {
+        } elseif (is_object($propertyValue)) {
             return $this->normalizeObject($propertyValue);
         }
 
@@ -520,19 +481,11 @@ class Normalizer
 
     /**
      * @param mixed $value
-     * @param \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation
-     * @param \BowlOfSoup\NormalizerBundle\Annotation\Normalize|null $classAnnotation
-     *
-     * @return bool
      */
-    private function skipEmptyValue($value, Normalize $propertyAnnotation, Normalize $classAnnotation = null)
+    private function skipEmptyValue($value, Normalize $propertyAnnotation, Normalize $classAnnotation = null): bool
     {
         $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
 
-        if ((true === $skipEmpty || true === $propertyAnnotation->getSkipEmpty()) && empty($value)) {
-            return true;
-        }
-
-        return false;
+        return empty($value) && (true === $skipEmpty || true === $propertyAnnotation->getSkipEmpty());
     }
 }

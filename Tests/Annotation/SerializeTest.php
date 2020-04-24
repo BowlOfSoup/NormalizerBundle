@@ -3,14 +3,14 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Annotation;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class SerializeTest extends PHPUnit_Framework_TestCase
+class SerializeTest extends TestCase
 {
     /**
      * @testdox Test annotation with valid property sets.
      */
-    public function testSerializeNoValidations()
+    public function testSerializeNoValidations(): void
     {
         $properties = $this->getValidSetOfProperties();
         $serialize = new Serialize($properties);
@@ -22,12 +22,12 @@ class SerializeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Test annotation, validation on type property.
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is not supported.
      */
-    public function testSerializeValidationType()
+    public function testSerializeValidationType(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is not supported.');
+
         $properties = $this->getValidSetOfProperties();
         $properties['type'] = 'dummy';
         new Serialize($properties);
@@ -35,26 +35,23 @@ class SerializeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Test annotation, validation if property input type is valid
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Wrong datatype used for property "group" for annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize"
      */
-    public function testSerializeValidationPropertyType()
+    public function testSerializeValidationPropertyType(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Wrong datatype used for property "group" for annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize"');
+
         $properties = $this->getValidSetOfProperties();
         $properties['group'] = 'dummy';
         new Serialize($properties);
     }
 
-    /**
-     * @return array
-     */
-    private function getValidSetOfProperties()
+    private function getValidSetOfProperties(): array
     {
-        return array(
+        return [
             'wrapElement' => 'data',
-            'group' => array('group1', 'group2'),
+            'group' => ['group1', 'group2'],
             'type' => 'xml',
-        );
+        ];
     }
 }

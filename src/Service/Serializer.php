@@ -8,16 +8,12 @@ use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface;
 
 class Serializer
 {
-    /** @var ClassExtractor */
+    /** @var \BowlOfSoup\NormalizerBundle\Service\ClassExtractor */
     private $classExtractor;
 
-    /** @var Normalizer */
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
     private $normalizer;
 
-    /**
-     * @param ClassExtractor $classExtractor
-     * @param Normalizer     $normalizer
-     */
     public function __construct(
         ClassExtractor $classExtractor,
         Normalizer $normalizer
@@ -27,13 +23,14 @@ class Serializer
     }
 
     /**
-     * @param mixed                   $value
-     * @param string|EncoderInterface $encoding
-     * @param string|null             $group
-    *
-     * @return string
-    */
-    public function serialize($value, $encoding, $group = null)
+     * @param mixed $value
+     * @param string|\BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface $encoding
+     *
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws \ReflectionException
+     */
+    public function serialize($value, $encoding, string $group = null): string
     {
         $serializeAnnotation = null;
 
@@ -58,19 +55,16 @@ class Serializer
      * In this method, 'new Serialize(array())' is used for PHP < 5.5 support,
      * Normally we should use 'Serialize::class'
      *
-     * @param object      $object
-     * @param string|null $group
-     *
-     * @return Serialize|null
+     * @throws \ReflectionException
      */
-    private function getClassAnnotation($object, $group)
+    private function getClassAnnotation(object $object, ?string $group): ?Serialize
     {
-        $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Serialize(array()));
+        $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Serialize([]));
         if (empty($classAnnotations)) {
             return null;
         }
 
-        /** @var Serialize $classAnnotation */
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Serialize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForProperty($group)) {
                 return $classAnnotation;
@@ -81,13 +75,11 @@ class Serializer
     }
 
     /**
-     * @param string|EncoderInterface $encoding
+     * @param string|\BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface $encoding
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return EncoderInterface
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      */
-    private function getEncoder($encoding)
+    private function getEncoder($encoding): EncoderInterface
     {
         if ($encoding instanceof EncoderInterface) {
             return $encoding;

@@ -3,14 +3,14 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Annotation;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class NormalizeTest extends PHPUnit_Framework_TestCase
+class NormalizeTest extends TestCase
 {
     /**
      * @testdox Test annotation with valid property sets.
      */
-    public function testNormalizeNoValidations()
+    public function testNormalizeNoValidations(): void
     {
         $properties = $this->getValidSetOfProperties();
         $normalize = new Normalize($properties);
@@ -27,7 +27,7 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
     /**
      * @testdox Test annotation with valid property sets, default value for format.
      */
-    public function testNormalizeNoValidationsDefaultValueForFormat()
+    public function testNormalizeNoValidationsDefaultValueForFormat(): void
     {
         $properties = $this->getValidSetOfProperties();
         unset($properties['format']);
@@ -38,12 +38,12 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Test annotation, validation on empty property.
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Parameter "name" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" cannot be empty.
      */
-    public function testNormalizeValidationEmpty()
+    public function testNormalizeValidationEmpty(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Parameter "name" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" cannot be empty.');
+
         $properties = $this->getValidSetOfProperties();
         $properties['name'] = '';
         new Normalize($properties);
@@ -51,12 +51,12 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Test annotation, validation on type property.
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is not supported.
      */
-    public function testNormalizeValidationType()
+    public function testNormalizeValidationType(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is not supported.');
+
         $properties = $this->getValidSetOfProperties();
         $properties['type'] = 'dummy';
         new Normalize($properties);
@@ -64,30 +64,27 @@ class NormalizeTest extends PHPUnit_Framework_TestCase
 
     /**
      * @testdox Test annotation, validation if property input type is valid
-     *
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Wrong datatype used for property "group" for annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize"
      */
-    public function testNormalizeValidationPropertyType()
+    public function testNormalizeValidationPropertyType(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Wrong datatype used for property "group" for annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize"');
+
         $properties = $this->getValidSetOfProperties();
         $properties['group'] = 'dummy';
         new Normalize($properties);
     }
 
-    /**
-     * @return array
-     */
-    private function getValidSetOfProperties()
+    private function getValidSetOfProperties(): array
     {
-        return array(
+        return [
             'name' => 'New Name',
-            'group' => array('group1', 'group2'),
+            'group' => ['group1', 'group2'],
             'type' => 'collection',
             'format' => 'Y-m-d',
             'callback' => 'toArray',
             'skipEmpty' => true,
             'maxDepth' => 2,
-        );
+        ];
     }
 }

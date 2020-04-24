@@ -9,10 +9,7 @@ abstract class AbstractEncoder implements EncoderInterface
     /** @var string */
     protected $wrapElement;
 
-    /**
-     * @param string $wrapElement
-     */
-    public function setWrapElement($wrapElement)
+    public function setWrapElement(string $wrapElement): void
     {
         $this->wrapElement = $wrapElement;
     }
@@ -20,7 +17,7 @@ abstract class AbstractEncoder implements EncoderInterface
     /**
      * @inheritdoc
      */
-    public function populateFromAnnotation(Serialize $serializeAnnotation)
+    public function populateFromAnnotation(Serialize $serializeAnnotation): void
     {
         $this->wrapElement = $serializeAnnotation->getWrapElement();
     }

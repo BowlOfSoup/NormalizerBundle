@@ -111,7 +111,7 @@ class Person
      *
      * @Bos\Normalize(group={"default"}, type="collection")
      */
-    protected $nonValidCollectionProperty = array('123', '456');
+    protected $nonValidCollectionProperty = ['123', '456'];
 
     /**
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
@@ -254,8 +254,6 @@ class Person
     }
 
     /**
-     * @param DateTime $dateOfBirth
-     *
      * @return $this
      */
     public function setDateOfBirth(DateTime $dateOfBirth)
@@ -278,8 +276,6 @@ class Person
     }
 
     /**
-     * @param DateTime $dateOfRegistration
-     *
      * @return $this
      */
     public function setDateOfRegistration(DateTime $dateOfRegistration)
@@ -294,7 +290,7 @@ class Person
      */
     public function calculateDeceasedDate()
     {
-       return new \DateTime('2020-01-01');
+        return new \DateTime('2020-01-01');
     }
 
     /**
@@ -306,8 +302,6 @@ class Person
     }
 
     /**
-     * @param Collection $addresses
-     *
      * @return $this
      */
     public function setAddresses(Collection $addresses)
@@ -326,8 +320,6 @@ class Person
     }
 
     /**
-     * @param Social $social
-     *
      * @return $this
      */
     public function setSocial(Social $social)
@@ -346,8 +338,6 @@ class Person
     }
 
     /**
-     * @param TelephoneNumbers $telephoneNumbers
-     *
      * @return $this
      */
     public function setTelephoneNumbers(TelephoneNumbers $telephoneNumbers)
@@ -378,8 +368,6 @@ class Person
     }
 
     /**
-     * @param array $validCollectionPropertyWithCallback
-     *
      * @return $this
      */
     public function setValidCollectionPropertyWithCallback(array $validCollectionPropertyWithCallback)
@@ -440,11 +428,11 @@ class Person
      */
     public function getTestForNormalizingCallbackArray()
     {
-        return array(
+        return [
             '123',
             '456',
             '789',
-        );
+        ];
     }
 
     /**
@@ -455,9 +443,6 @@ class Person
         return $this->testForProxy;
     }
 
-    /**
-     * @param ProxyObject $proxyObject
-     */
     public function setTestForProxy(ProxyObject $proxyObject)
     {
         $this->testForProxy = $proxyObject;

@@ -12,9 +12,9 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('bowl_of_soup_normalizer');
         $treeBuilder
-            ->root('bowl_of_soup_normalizer')
+            ->getRootNode()
             ->children()
             ->booleanNode('register_annotations')->defaultValue(false)->end()
             ->end();

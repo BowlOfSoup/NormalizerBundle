@@ -3,21 +3,19 @@
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
-use Exception;
-use SimpleXMLElement;
 
 class EncoderXml extends AbstractEncoder
 {
     /** @var string */
-    const DEFAULT_WRAP_ELEMENT = 'data';
+    public const DEFAULT_WRAP_ELEMENT = 'data';
 
     /** @var string */
-    const EXCEPTION_PREFIX = 'Error when encoding XML: ';
+    protected const EXCEPTION_PREFIX = 'Error when encoding XML: ';
 
     /**
      * @inheritdoc
      */
-    public function getType()
+    public function getType(): string
     {
         return EncoderFactory::TYPE_XML;
     }
@@ -25,11 +23,9 @@ class EncoderXml extends AbstractEncoder
     /**
      * @inheritdoc
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return string
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      */
-    public function encode($value)
+    public function encode($value): ?string
     {
         if (!is_array($value)) {
             return null;
@@ -39,13 +35,13 @@ class EncoderXml extends AbstractEncoder
             $this->wrapElement = static::DEFAULT_WRAP_ELEMENT;
         }
 
-        $xmlData = new SimpleXMLElement(
+        $xmlData = new \SimpleXMLElement(
             '<?xml version="1.0"?>' . '<' . $this->wrapElement . '></' . $this->wrapElement . '>'
         );
 
         try {
             $xmlData = $this->arrayToXml($value, $xmlData);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new BosSerializerException(static::EXCEPTION_PREFIX . $e->getMessage());
         }
 
@@ -54,13 +50,7 @@ class EncoderXml extends AbstractEncoder
         return $this->makeDom($xmlData);
     }
 
-    /**
-     * @param array            $data
-     * @param SimpleXMLElement $xmlData
-     *
-     * @return SimpleXMLElement
-     */
-    protected function arrayToXml(array $data, SimpleXMLElement $xmlData)
+    protected function arrayToXml(array $data, \SimpleXMLElement $xmlData): \SimpleXMLElement
     {
         foreach ($data as $key => $value) {
             if (is_array($value)) {
@@ -70,7 +60,7 @@ class EncoderXml extends AbstractEncoder
                 $subNode = $xmlData->addChild($key);
                 $this->arrayToXml($value, $subNode);
             } else {
-                $xmlData->addChild("$key", htmlspecialchars("$value"));
+                $xmlData->addChild((string) $key, htmlspecialchars((string) $value));
             }
         }
 
@@ -78,17 +68,15 @@ class EncoderXml extends AbstractEncoder
     }
 
     /**
-     * @param string $xmlData
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      */
-    protected function getError($xmlData)
+    protected function getError(string $xmlData): void
     {
         $errorMessage = '';
 
         libxml_use_internal_errors(true);
         if (false === simplexml_load_string($xmlData)) {
-            foreach(libxml_get_errors() as $error) {
+            foreach (libxml_get_errors() as $error) {
                 $errorMessage .= ', ' . $error->message;
             }
         }
@@ -98,12 +86,7 @@ class EncoderXml extends AbstractEncoder
         }
     }
 
-    /**
-     * @param SimpleXMLElement $xmlData
-     *
-     * @return string
-     */
-    protected function makeDom(SimpleXMLElement $xmlData)
+    protected function makeDom(\SimpleXMLElement $xmlData): string
     {
         $domElement = dom_import_simplexml($xmlData);
 

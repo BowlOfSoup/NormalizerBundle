@@ -3,44 +3,49 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
+use Doctrine\Common\Annotations\AnnotationReader;
+use PHPUnit\Framework\TestCase;
 
-class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
+class PropertyExtractorTest extends TestCase
 {
     /**
      * @testdox Extracting property annotations.
      */
-    public function testExtractPropertyAnnotations()
+    public function testExtractPropertyAnnotations(): void
     {
-        $annotation = new Normalize(array());
+        $annotation = new Normalize([]);
         $someClass = new SomeClass();
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
 
-        $annotationResult = array($annotation);
+        $annotationResult = [$annotation];
 
+        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
         $mockAnnotationReader = $this
-            ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')
+            ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
-            ->setMethods(array('getPropertyAnnotations'))
+            ->setMethods(['getPropertyAnnotations'])
             ->getMock();
         $mockAnnotationReader
             ->expects($this->once())
             ->method('getPropertyAnnotations')
             ->with($this->equalTo($properties[0]))
-            ->will($this->returnValue($annotationResult));
+            ->willReturn($annotationResult);
 
         $propertyExtractor = new PropertyExtractor($mockAnnotationReader);
         $result = $propertyExtractor->extractPropertyAnnotations($properties[0], get_class($annotation));
 
-        $this->assertArraySubset(array($annotation), $result);
+        ArraySubset::assert([$annotation], $result);
     }
 
     /**
      * @testdox Get a value for a property.
      */
-    public function testGetPropertyValue()
+    public function testGetPropertyValue(): void
     {
         $someClass = new SomeClass();
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
@@ -56,7 +61,7 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Get a value for a property, force get method
      */
-    public function testGetPropertyValueForceGetMethod()
+    public function testGetPropertyValueForceGetMethod(): void
     {
         $someClass = new SomeClass();
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
@@ -76,7 +81,7 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Get a value for a property, force get method, no method available, force get from public/protected.
      */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailable()
+    public function testGetPropertyValueForceGetMethodNoMethodAvailable(): void
     {
         $someClass = new SomeClass();
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
@@ -95,12 +100,12 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @testdox Get a value for a property, force get method, no method available, force get, but not public/protected.
-     *
-     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     * @expectedExceptionMessage Unable to get property value. No get() method found for property property76
      */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailableNoAccess()
+    public function testGetPropertyValueForceGetMethodNoMethodAvailableNoAccess(): void
     {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Unable to get property value. No get() method found for property property76');
+
         $someClass = new SomeClass();
         $properties = $this->getStubClassExtractor()->getProperties($someClass);
         foreach ($properties as $property) {
@@ -116,12 +121,12 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @testdox Get a value for a property, force get method, no method available, force get, is Doctrine Proxy.
-     *
-     * @expectedException \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     * @expectedExceptionMessage Unable to initiate Doctrine proxy, not get() method found for property proxyProperty
      */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy()
+    public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy(): void
     {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Unable to initiate Doctrine proxy, not get() method found for property proxyProperty');
+
         $proxyObject = new ProxyObject();
         $properties = $this->getStubClassExtractor()->getProperties($proxyObject);
         foreach ($properties as $property) {
@@ -137,7 +142,7 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Get a value for a property, Doctrine Proxy, force get method, assert ID = integer.
      */
-    public function testGetPropertyDoctrineProxyForceGetMethodAssertIdInteger()
+    public function testGetPropertyDoctrineProxyForceGetMethodAssertIdInteger(): void
     {
         $result = null;
 
@@ -158,7 +163,7 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Get a value for a property by specifying method.
      */
-    public function testGetPropertyValueByMethod()
+    public function testGetPropertyValueByMethod(): void
     {
         $someClass = new SomeClass();
         $result = $this->getStubPropertyExtractor()->getPropertyValueByMethod($someClass, 'getProperty32');
@@ -169,18 +174,18 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Get a value for a property by specifying method, no method available.
      */
-    public function testGetPropertyValueByMethodNoMethodAvailable()
+    public function testGetPropertyValueByMethodNoMethodAvailable(): void
     {
         $someClass = new SomeClass();
         $result = $this->getStubPropertyExtractor()->getPropertyValueByMethod($someClass, 'getProperty53');
 
-        $this->assertSame(null, $result);
+        $this->assertNull($result);
     }
 
     /**
      * @testdox Get a value for a property by specifying method, no method available.
      */
-    public function testGetId()
+    public function testGetId(): void
     {
         $someClass = new SomeClass();
         $result = $this->getStubPropertyExtractor()->getId($someClass);
@@ -188,9 +193,8 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(777, $result);
     }
 
-
     /**
-     * @return \BowlOfSoup\NormalizerBundle\Service\ClassExtractor
+     * @return \PHPUnit\Framework\MockObject\MockObject|\BowlOfSoup\NormalizerBundle\Service\ClassExtractor
      */
     private function getStubClassExtractor()
     {
@@ -202,7 +206,7 @@ class PropertyExtractorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \BowlOfSoup\NormalizerBundle\Service\PropertyExtractor
+     * @return \PHPUnit\Framework\MockObject\MockObject|\BowlOfSoup\NormalizerBundle\Service\PropertyExtractor
      */
     private function getStubPropertyExtractor()
     {

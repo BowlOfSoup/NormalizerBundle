@@ -11,18 +11,15 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
 class Serialize extends AbstractAnnotation
 {
     /** @var array */
-    private $supportedProperties = array(
-        'group' => array('type' => 'array'),
-        'type' => array('type' => 'string', 'assert' => array('xml', 'json')),
-        'wrapElement' => array('type' => 'string'),
-    );
+    private $supportedProperties = [
+        'group' => ['type' => 'array'],
+        'type' => ['type' => 'string', 'assert' => ['xml', 'json']],
+        'wrapElement' => ['type' => 'string'],
+    ];
 
     /** @var string */
     private $wrapElement;
 
-    /**
-     * @param array $properties
-     */
     public function __construct(array $properties)
     {
         foreach ($this->supportedProperties as $supportedPropertyKey => $supportedPropertyOptions) {
@@ -32,10 +29,7 @@ class Serialize extends AbstractAnnotation
         }
     }
 
-    /**
-     * @return string
-     */
-    public function getWrapElement()
+    public function getWrapElement(): string
     {
         return $this->wrapElement;
     }

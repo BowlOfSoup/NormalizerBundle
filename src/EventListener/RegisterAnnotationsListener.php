@@ -20,25 +20,22 @@ class RegisterAnnotationsListener implements EventSubscriberInterface
     }
 
     /**
-     * @param KernelEvent $event
+     * @inheritdoc
      */
-    public function registerAnnotations(KernelEvent $event)
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'kernel.request' => [
+                ['registerAnnotations', 0],
+            ],
+        ];
+    }
+
+    public function registerAnnotations(KernelEvent $event): void
     {
         if ($this->parameterRegisterAnnotations) {
             AnnotationRegistry::registerFile(__DIR__ . '/../Annotation/Normalize.php');
             AnnotationRegistry::registerAutoloadNamespace('BowlOfSoup\NormalizerBundle\Annotation', __DIR__);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            'kernel.request' => array(
-                array('registerAnnotations', 0),
-            ),
-        );
     }
 }

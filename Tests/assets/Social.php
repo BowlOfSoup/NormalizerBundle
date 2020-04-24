@@ -79,6 +79,7 @@ class Social
 
     /**
      * @param string $facebook
+     *
      * @return $this
      */
     public function setFacebook($facebook)

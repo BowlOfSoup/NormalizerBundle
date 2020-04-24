@@ -8,39 +8,32 @@
         convertWarningsToExceptions = "true"
         processIsolation            = "false"
         stopOnFailure               = "false"
-        syntaxCheck                 = "false"
-        bootstrap                   = "Tests/bootstrap.php">
+        bootstrap                   = "tests/bootstrap.php">
 
     <testsuites>
         <testsuite name="Bowl Of Soup Normalizer Test Suite">
-            <directory>Tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
-        <whitelist>
-            <directory>.</directory>
-            <exclude>
-                <file>BowlOfSoupNormalizerBundle.php</file>
-                <directory>DependencyInjection</directory>
-                <directory>EventListener</directory>
-                <directory>Exception</directory>
-                <directory>Resources</directory>
-                <directory>Tests</directory>
-                <directory>vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
-
-    <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src</directory>
+            <exclude>
+                <file>BowlOfSoupNormalizerBundle.php</file>
+                <directory>src/DependencyInjection</directory>
+                <directory>src/EventListener</directory>
+                <directory>src/Exception</directory>
+                <directory>src/Resources</directory>
+                <directory>tests</directory>
+                <directory>vendor</directory>
+            </exclude>
         </whitelist>
     </filter>
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
         <log type="coverage-clover" target="Tests/coverage/clover.xml"/>
-        <log type="coverage-html" target="Tests/coverage" charset="UTF-8" highlight="false" />
+        <log type="coverage-html" target="Tests/coverage" />
     </logging>
 </phpunit>

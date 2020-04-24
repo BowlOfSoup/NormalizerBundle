@@ -11,8 +11,9 @@ use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use Doctrine\Common\Annotations\AnnotationReader;
+use PHPUnit\Framework\TestCase;
 
-class SerializerTest extends \PHPUnit_Framework_TestCase
+class SerializerTest extends TestCase
 {
     /** @var \BowlOfSoup\NormalizerBundle\Service\ClassExtractor */
     private $classExtractor;
@@ -23,7 +24,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /** @var \BowlOfSoup\NormalizerBundle\Service\Serializer */
     private $serializer;
 
-    public function setUp()
+    protected function setUp(): void
     {
         $this->classExtractor = new ClassExtractor(new AnnotationReader());
         $this->normalizer = new Normalizer($this->classExtractor, new PropertyExtractor(new AnnotationReader()));
@@ -33,7 +34,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Serialize array, with class annotation.
      */
-    public function testSerializeSuccess()
+    public function testSerializeSuccess(): void
     {
         $this->assertSame(
             '{"wrapperElement":{"id":123,"name_value":"Bowl Of Soup","surName":null,"initials":null,"dateOfBirth":null,"dateOfRegistration":"Apr. 2015","addresses":null,"social":{"twitter":"@bos"},"telephoneNumbers":null,"hobbies":null,"validEmptyObjectProperty":null,"nonValidCollectionProperty":null,"validCollectionPropertyWithCallback":null,"testForNormalizingCallback":[{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},{"street":null,"number":4,"postalCode":"1234AB","city":"The City Is: "}],"testForNormalizingCallbackObject":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},"testForNormalizingCallbackString":"asdasd","testForNormalizingCallbackArray":["123","456","789"],"testForProxy":null}}',
@@ -44,7 +45,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Serialize array, with class annotation, wrong group.
      */
-    public function testSerializeSuccessUnknownGroupForClassAnnotation()
+    public function testSerializeSuccessUnknownGroupForClassAnnotation(): void
     {
         $this->assertSame(
             '{"addresses":null}',
@@ -55,7 +56,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * Serialize array, with class annotation and custom encoder settings.
      */
-    public function testSerializeWithCustomEncoder()
+    public function testSerializeWithCustomEncoder(): void
     {
         $encoderJson = new EncoderJson();
         $encoderJson->setOptions(JSON_FORCE_OBJECT);
@@ -69,7 +70,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
     /**
      * @testdox Serialize array, no class annotation.
      */
-    public function testSerializeNoClassAnnotation()
+    public function testSerializeNoClassAnnotation(): void
     {
         $social = new Social();
         $social->setTwitter('@bos');
@@ -80,10 +81,7 @@ class SerializerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @return \BowlOfSoup\NormalizerBundle\Tests\assets\Person
-     */
-    private function getPersonObject()
+    private function getPersonObject(): Person
     {
         $person = new Person();
         $person->setId(123);

@@ -4,24 +4,21 @@ namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Persistence\Proxy;
 use ReflectionException;
 use ReflectionProperty;
 
 class PropertyExtractor
 {
     /** @var string */
-    const TYPE = 'property';
+    public const TYPE = 'property';
 
     /** @var bool */
-    const FORCE_PROPERTY_GET_METHOD = true;
+    public const FORCE_PROPERTY_GET_METHOD = true;
 
-    /** @var Reader */
+    /** @var \Doctrine\Common\Annotations\Reader */
     protected $annotationReader;
 
-    /**
-     * @param \Doctrine\Common\Annotations\Reader $annotationReader
-     */
     public function __construct(Reader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
@@ -30,14 +27,11 @@ class PropertyExtractor
     /**
      * Extract all annotations for a (reflected) class property.
      *
-     * @param \ReflectionProperty $objectProperty
-     * @param string              $annotation
-     *
-     * @return array
+     * @param string|object $annotation
      */
-    public function extractPropertyAnnotations(ReflectionProperty $objectProperty, $annotation)
+    public function extractPropertyAnnotations(ReflectionProperty $objectProperty, $annotation): array
     {
-        $annotations = array();
+        $annotations = [];
 
         $propertyAnnotations = $this->annotationReader->getPropertyAnnotations($objectProperty);
         foreach ($propertyAnnotations as $propertyAnnotation) {
@@ -52,18 +46,14 @@ class PropertyExtractor
     /**
      * Returns a value for a (reflected) property.
      *
-     * @param object             $object
-     * @param ReflectionProperty $property
-     * @param bool               $forceGetMethod
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
     public function getPropertyValue(
-        $object,
+        object $object,
         ReflectionProperty $property,
-        $forceGetMethod = false
+        bool $forceGetMethod = false
     ) {
         $propertyName = $property->getName();
         $propertyValue = null;
@@ -80,7 +70,7 @@ class PropertyExtractor
 
         if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
             $getMethodName = 'get' . ucfirst($propertyName);
-            if (is_callable(array($object, $getMethodName))) {
+            if (is_callable([$object, $getMethodName])) {
                 return $object->$getMethodName();
             }
 
@@ -89,14 +79,10 @@ class PropertyExtractor
             }
 
             if ($object instanceof Proxy) {
-                throw new BosNormalizerException(
-                    'Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName
-                );
+                throw new BosNormalizerException('Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName);
             }
 
-            throw new BosNormalizerException(
-                'Unable to get property value. No get() method found for property ' . $propertyName
-            );
+            throw new BosNormalizerException('Unable to get property value. No get() method found for property ' . $propertyName);
         }
 
         return $propertyValue;
@@ -105,14 +91,11 @@ class PropertyExtractor
     /**
      * Returns a value by specified method.
      *
-     * @param object $object
-     * @param string $method
-     *
      * @return mixed
      */
-    public function getPropertyValueByMethod($object, $method)
+    public function getPropertyValueByMethod(object $object, string $method)
     {
-        if (is_callable(array($object, $method))) {
+        if (is_callable([$object, $method])) {
             return $object->$method();
         }
 
@@ -122,11 +105,9 @@ class PropertyExtractor
     /**
      * Gets the id from an object if available through getter.
      *
-     * @param object $object
-     *
      * @return string|int|null
      */
-    public function getId($object)
+    public function getId(object $object)
     {
         return $this->getPropertyValueByMethod($object, 'getId');
     }
