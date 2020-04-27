@@ -32,8 +32,8 @@ before_script:
     - composer install
 
 script:
-    - mkdir -p Tests/coverage
-    - vendor/bin/phpunit
+    - mkdir -p tests/coverage
+    - ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests
 
 after_script:
     - php vendor/bin/coveralls -v

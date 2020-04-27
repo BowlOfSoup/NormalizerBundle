@@ -22,7 +22,6 @@
     "php-coveralls/php-coveralls": "^2.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master",
     "doctrine/common": "~2.12",
     "doctrine/collections": "1.*",
     "phpunit/phpunit": "^8.5",
