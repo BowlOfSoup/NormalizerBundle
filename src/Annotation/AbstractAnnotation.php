@@ -32,7 +32,7 @@ abstract class AbstractAnnotation
     /**
      * Check if annotation property 'group' matches up with requested group.
      */
-    public function isGroupValidForProperty(?string $group): bool
+    public function isGroupValidForConstruct(?string $group): bool
     {
         $annotationGroup = $this->getGroup();
 

@@ -18,5 +18,6 @@ if (!includeIfExists(__DIR__ . '/../../../../vendor/autoload.php') &&
 
 if (class_exists('Doctrine\Common\Annotations\AnnotationRegistry')) {
     \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../src/Annotation/Normalize.php');
+    \Doctrine\Common\Annotations\AnnotationRegistry::registerFile(__DIR__ . '/../src/Annotation/Serialize.php');
     \Doctrine\Common\Annotations\AnnotationRegistry::registerAutoloadNamespace('BowlOfSoup\NormalizerBundle\Annotation', __DIR__);
 }

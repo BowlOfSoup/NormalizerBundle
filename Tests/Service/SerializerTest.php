@@ -2,21 +2,19 @@
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
-use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
-use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
+use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class SerializerTest extends TestCase
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\ClassExtractor */
-    private $classExtractor;
+    use NormalizerTestTrait;
 
     /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
     private $normalizer;
@@ -26,9 +24,8 @@ class SerializerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->classExtractor = new ClassExtractor(new AnnotationReader());
-        $this->normalizer = new Normalizer($this->classExtractor, new PropertyExtractor(new AnnotationReader()));
-        $this->serializer = new Serializer($this->classExtractor, $this->normalizer);
+        $this->normalizer = $this->getNormalizer();
+        $this->serializer = new Serializer(new ClassExtractor(new AnnotationReader()), $this->normalizer);
     }
 
     /**

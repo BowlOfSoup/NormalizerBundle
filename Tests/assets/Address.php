@@ -147,4 +147,12 @@ class Address
 
         return $this;
     }
+
+    /**
+     * @Bos\Normalize(group={"default"})
+     */
+    public function getSpecialNotesForDelivery()
+    {
+        return 'some special string';
+    }
 }

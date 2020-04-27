@@ -3,9 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
-use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
@@ -16,12 +14,23 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
+use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 
 class NormalizerTest extends TestCase
 {
+    use NormalizerTestTrait;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
+    private $normalizer;
+
+    protected function setUp(): void
+    {
+        $this->normalizer = $this->getNormalizer();
+    }
+
     /**
      * @testdox Normalize object, full happy path no type property, still callback
      *
@@ -29,13 +38,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccess(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'default');
+        $result = $this->normalizer->normalize($person, 'default');
 
         $expectedResult = $this->getSuccessResult();
 
@@ -48,13 +53,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeArraySuccess(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $arrayOfObjects = [$this->getDummyDataSet(), $this->getDummyDataSet()];
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($arrayOfObjects, 'default');
+        $result = $this->normalizer->normalize($arrayOfObjects, 'default');
 
         $expectedResult = $this->getSuccessResult();
 
@@ -68,13 +69,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessDifferentGroup(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'anotherGroup');
+        $result = $this->normalizer->normalize($person, 'anotherGroup');
 
         $expectedResult = [
             'surName' => 'Of Soup',
@@ -89,14 +86,10 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessNoGroup(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
         $person->setGender('male');
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person);
+        $result = $this->normalizer->normalize($person);
 
         $expectedResult = [
             'gender' => 'male',
@@ -111,11 +104,7 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNoGroupMatch(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize(new Person(), 'SomeUnknownGroup');
+        $result = $this->normalizer->normalize(new Person(), 'SomeUnknownGroup');
 
         $this->assertSame(gettype([]), gettype($result));
         $this->assertEmpty($result);
@@ -126,13 +115,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNoAnnotations(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $someClass = new SomeClass();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($someClass);
+        $result = $this->normalizer->normalize($someClass);
 
         $this->assertSame(gettype([]), gettype($result));
         $this->assertEmpty($result);
@@ -143,13 +128,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNullObject(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $someClass = null;
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($someClass);
+        $result = $this->normalizer->normalize($someClass);
 
         $this->assertSame(gettype([]), gettype($result));
         $this->assertEmpty($result);
@@ -163,22 +144,20 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
 
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-
-        /** @var \BowlOfSoup\NormalizerBundle\Service\PropertyExtractor $stubPropertyExtractor */
-        $stubPropertyExtractor = $this
-            ->getMockBuilder(PropertyExtractor::class)
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        $this->classExtractor = $this
+            ->getMockBuilder(ClassExtractor::class)
             ->setConstructorArgs([new AnnotationReader()])
             ->setMethods(['getId'])
             ->getMock();
-        $stubPropertyExtractor
+        $this->classExtractor
             ->expects($this->any())
             ->method('getId')
             ->willReturn(null);
 
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $stubPropertyExtractor);
+        $normalizer = $this->getNormalizer();
         $normalizer->normalize($person, 'default');
     }
 
@@ -187,13 +166,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessMaxDepth0(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'maxDepthTestDepth0');
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth0');
 
         $expectedResult = [
             'social' => '546',
@@ -208,13 +183,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessMaxDepth1(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'maxDepthTestDepth1');
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth1');
 
         $expectedResult = [
             'addresses' => [
@@ -245,27 +216,19 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Address');
 
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $normalizer->normalize($person, 'maxDepthTestDepthNoIdentifier');
+        $this->normalizer->normalize($person, 'maxDepthTestDepthNoIdentifier');
     }
 
     /**
-     * @testdox Normalize object,
+     * @testdox Normalize object, no content in collection, because group is not in collection/object.
      */
     public function testNormalizeNoContentForCollection(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'noContentForCollectionTest');
+        $result = $this->normalizer->normalize($person, 'noContentForCollectionTest');
 
         $expectedResult = [
             'addresses' => [
@@ -284,13 +247,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeFallbackDateTime(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'dateTimeTest');
+        $result = $this->normalizer->normalize($person, 'dateTimeTest');
 
         $this->assertNotEmpty($result);
         ArraySubset::assert($result, ['deceasedDate' => 'Jan. 2020']);
