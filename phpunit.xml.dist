@@ -8,10 +8,10 @@
         convertWarningsToExceptions = "true"
         processIsolation            = "false"
         stopOnFailure               = "false"
-        bootstrap                   = "./tests/bootstrap.php">
+        bootstrap                   = "tests/bootstrap.php">
 
     <testsuites>
-        <testsuite name="Bowl Of Soup Normalizer Test Suite">
+        <testsuite name="BowlOfSoup Normalizer">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
@@ -33,7 +33,7 @@
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="true"/>
-        <log type="coverage-clover" target="Tests/coverage/clover.xml"/>
-        <log type="coverage-html" target="Tests/coverage" />
+        <log type="coverage-clover" target="tests/coverage/clover.xml"/>
+        <log type="coverage-html" target="tests/coverage" />
     </logging>
 </phpunit>
