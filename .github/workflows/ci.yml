@@ -11,4 +11,5 @@ jobs:
       - uses: php-actions/composer@v1
       - uses: php-actions/phpunit@v1
         with:
-          config: phpunit.xml.dist
+          config: phpunit.xml
+          bootstrap: tests/bootstrap.php

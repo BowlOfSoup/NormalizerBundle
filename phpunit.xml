@@ -11,14 +11,14 @@
         bootstrap                   = "tests/bootstrap.php">
 
     <testsuites>
-        <testsuite name="BowlOfSoup Normalizer">
+        <testsuite name="full">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">src</directory>
             <exclude>
                 <file>BowlOfSoupNormalizerBundle.php</file>
                 <directory>src/DependencyInjection</directory>
