@@ -144,7 +144,7 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
             ->setConstructorArgs([new AnnotationReader()])
