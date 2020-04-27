@@ -33,7 +33,7 @@ before_script:
 
 script:
     - mkdir -p tests/coverage
-    - ./vendor/bin/phpunit
+    - php vendor/bin/phpunit
 
 after_script:
     - php vendor/bin/coveralls -v
