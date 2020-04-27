@@ -7,7 +7,8 @@
         convertNoticesToExceptions  = "true"
         convertWarningsToExceptions = "true"
         processIsolation            = "false"
-        stopOnFailure               = "false">
+        stopOnFailure               = "false"
+        bootstrap                   = "./tests/bootstrap.php">
 
     <testsuites>
         <testsuite name="Bowl Of Soup Normalizer Test Suite">
