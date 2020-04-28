@@ -1,4 +1,5 @@
 /composer.lock
 /vendor/
-/Tests/coverage/
+/tests/coverage/
 /build/
+*.cache

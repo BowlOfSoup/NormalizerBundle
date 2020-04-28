@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%205.3-blue.svg?no-cache=1)](https://php.net/)
-[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%202.7-green.svg)](https://symfony.com/)
+[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-blue.svg?no-cache=1)](https://php.net/)
+[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%203.4-green.svg)](https://symfony.com/)
 
 Installation
 ------------
@@ -23,7 +23,7 @@ The main features are described in the corresponding annotations.
 What is serialization/normalization?
 ------------------------------------
 
-![visual serialization/normalization](https://symfony.com/doc/current/_images/serializer_workflow.png)
+![visual serialization/normalization](https://symfony.com/doc/current/_images/components/serializer/serializer_workflow.svg)
 (Source: [Symfony Serializer](https://symfony.com/doc/current/components/serializer.html))
 
 Serialization of an object is visualized on the right side of the above visual. It consists of two steps,
