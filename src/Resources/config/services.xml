@@ -6,7 +6,7 @@
     <services>
         <defaults autowire="true" autoconfigure="true"/>
 
-        <prototype namespace="BowlOfSoup\NormalizerBundle\" resource="../../src/*" exclude="../src/{DependencyInjection,Exception,Model}"/>
+        <prototype namespace="BowlOfSoup\NormalizerBundle\" resource="../../../src/*" exclude="../src/{DependencyInjection,Exception,Model}"/>
 
         <service class="BowlOfSoup\NormalizerBundle\EventListener\RegisterAnnotationsListener" id="bos.event_listener.register_annotations">
             <tag name="kernel.event_subscriber"/>
