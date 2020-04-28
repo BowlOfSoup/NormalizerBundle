@@ -10,6 +10,8 @@ use Doctrine\Common\Collections\Collection;
 /**
  * @Bos\Normalize(group={"maxDepthTestDepth0"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1"}, maxDepth=1)
+ * @Bos\Normalize(group={"maxDepthTestDepth0OnMethod"}, maxDepth=0)
+ * @Bos\Normalize(group={"maxDepthTestDepth1OnMethod"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
  * @Bos\Serialize(wrapElement="wrapperElement", group={"default"})
  */
@@ -76,6 +78,7 @@ class Person
      *
      * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
+     * @Bos\Normalize(group={"anotherGroup"}, type="collection")
      */
     private $addresses;
 
@@ -247,6 +250,8 @@ class Person
 
     /**
      * @return string
+     *
+     * @Bos\Normalize(type="DateTime", name="dateOfBirth")
      */
     public function getDateOfBirth()
     {
@@ -286,15 +291,19 @@ class Person
     }
 
     /**
-     * @return \DateTime
+     * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y")
+     * @Bos\Normalize(group={"methodWithCallback"}, type="DateTime", format="M. Y", callback="getAddresses")
      */
-    public function calculateDeceasedDate()
+    public function calculateDeceasedDate(): \DateTime
     {
         return new \DateTime('2020-01-01');
     }
 
     /**
      * @return Collection
+     *
+     * @Bos\Normalize(type="collection", group={"maxDepthTestDepth0OnMethod"})
+     * @Bos\Normalize(type="collection", group={"maxDepthTestDepth1OnMethod"})
      */
     public function getAddresses()
     {
@@ -313,6 +322,8 @@ class Person
 
     /**
      * @return Social
+     *
+     * @Bos\Normalize(type="object", group={"circRefMethod"})
      */
     public function getSocial()
     {
@@ -331,6 +342,8 @@ class Person
 
     /**
      * @return TelephoneNumbers
+     *
+     * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
      */
     public function getTelephoneNumbers()
     {

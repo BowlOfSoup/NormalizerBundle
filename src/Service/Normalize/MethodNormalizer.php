@@ -118,7 +118,7 @@ class MethodNormalizer extends AbstractNormalizer
 
             $annotationName = $methodAnnotation->getName();
             if (!empty($annotationName)) {
-                $methodValue = $methodAnnotation->getName();
+                $methodName = $methodAnnotation->getName();
             }
 
             $methodValue = (is_array($methodValue) && empty($methodValue) ? null : $methodValue);

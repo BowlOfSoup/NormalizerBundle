@@ -40,23 +40,6 @@ class MethodExtractor extends AbstractExtractor
         }
 
         $reflectedClass = new \ReflectionClass($object);
-        $classMethods = $this->getClassMethods($reflectedClass);
-
-        // Also get (private) methods from parent class.
-        $privateMethods = [];
-        while ($reflectedClass = $reflectedClass->getParentClass()) {
-            $privateMethods[] = $this->getClassMethods($reflectedClass, static::GET_ONLY_PRIVATES);
-        }
-
-        return array_merge($classMethods, ...$privateMethods);
-    }
-
-    private function getClassMethods(\ReflectionClass $reflectedClass, bool $onlyPrivates = false): array
-    {
-        if ($onlyPrivates) {
-            return $reflectedClass->getMethods(\ReflectionMethod::IS_PRIVATE);
-        }
-
         return $reflectedClass->getMethods(
             \ReflectionMethod::IS_PUBLIC |
             \ReflectionMethod::IS_PROTECTED |
