@@ -1,41 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        https://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service class="BowlOfSoup\NormalizerBundle\EventListener\RegisterAnnotationsListener" id="bow.event_listener.register_annotations">
+        <defaults autowire="true" autoconfigure="true"/>
+
+        <prototype namespace="BowlOfSoup\NormalizerBundle\" resource="../src/*" exclude="../src/{DependencyInjection,Exception,Model}"/>
+
+        <service class="BowlOfSoup\NormalizerBundle\EventListener\RegisterAnnotationsListener" id="bos.event_listener.register_annotations">
             <tag name="kernel.event_subscriber"/>
             <argument>%bowl_of_soup_normalizer.register_annotations%</argument>
         </service>
 
-        <service class="Doctrine\Common\Annotations\AnnotationReader" id="bos.doctrine.annotation_reader" />
-
-        <service class="Doctrine\Common\Annotations\CachedReader" id="bos.doctrine.cached_reader">
-            <argument type="service" id="bos.doctrine.annotation_reader" />
-            <argument type="service" id="bos.doctrine.filesystem_cache" />
-            <argument type="string">%kernel.debug%</argument>
-        </service>
-
-        <service class="Doctrine\Common\Cache\FilesystemCache" id="bos.doctrine.filesystem_cache">
-            <argument type="string">%kernel.cache_dir%/annotations</argument>
-        </service>
-
-        <service class="BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor" id="bos.class_extractor">
-            <argument type="service" id="bos.doctrine.cached_reader" />
-        </service>
-
-        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer">
-            <argument type="service" id="bos.class_extractor" />
-            <argument type="service" id="bos.property_extractor" />
-        </service>
-
-        <service class="BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor" id="bos.property_extractor">
-            <argument type="service" id="bos.doctrine.cached_reader" />
-        </service>
-
-        <service class="BowlOfSoup\NormalizerBundle\Service\Serializer" id="bos.serializer">
-            <argument type="service" id="bos.class_extractor" />
-            <argument type="service" id="bos.normalizer" />
-        </service>
+        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer" autowire="true"/>
     </services>
 </container>
