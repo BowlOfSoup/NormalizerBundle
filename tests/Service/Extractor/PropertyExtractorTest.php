@@ -28,6 +28,17 @@ class PropertyExtractorTest extends TestCase
     }
 
     /**
+     * @testdox Try to get methods from a non-object.
+     */
+    public function testGetMethodsForNothing(): void
+    {
+        $result = $this->propertyExtractor->getProperties('foo');
+
+        $this->assertEmpty($result);
+        $this->assertIsArray($result);
+    }
+
+    /**
      * @testdox Get all properties of a class.
      */
     public function testGetProperties()

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepth0OnMethod"}, maxDepth=0)
+ * @Bos\Normalize(group={"maxDepthTestDepth0OnMethodWithObject"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1OnMethod"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
  * @Bos\Serialize(wrapElement="wrapperElement", group={"default"})
@@ -100,7 +101,7 @@ class Person
     /**
      * @var Hobbies
      *
-     * @Bos\Normalize(group={"default"}, type="collection")
+     * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="collection")
      */
     private $hobbies;
 
@@ -300,6 +301,22 @@ class Person
     }
 
     /**
+     * @Bos\Normalize(group={"methodWithCallbackAndNoType"}, callback="getAddresses")
+     */
+    public function calculateDeceasedDate2(): \DateTime
+    {
+        return new \DateTime('2020-01-01');
+    }
+
+    /**
+     * @Bos\Normalize(group={"dateTimeStringTest"}, type="DateTime")
+     */
+    public function calculateDeceasedDateAsString(): string
+    {
+        return '2020-01-01';
+    }
+
+    /**
      * @return Collection
      *
      * @Bos\Normalize(type="collection", group={"maxDepthTestDepth0OnMethod"})
@@ -324,6 +341,8 @@ class Person
      * @return Social
      *
      * @Bos\Normalize(type="object", group={"circRefMethod"})
+     * @Bos\Normalize(type="object", group={"maxDepthTestDepth0OnMethodWithObject"})
+     * @Bos\Normalize(type="object", group={"callbackOnMethodWithObject"}, callback="getAddresses")
      */
     public function getSocial()
     {
@@ -459,5 +478,13 @@ class Person
     public function setTestForProxy(ProxyObject $proxyObject)
     {
         $this->testForProxy = $proxyObject;
+    }
+
+    /**
+     * @Bos\Normalize(type="object", group={"emptyObjectOnMethod"})
+     */
+    private function thisHoldsNoValue(): string
+    {
+        return '';
     }
 }

@@ -154,8 +154,16 @@ class Address
      * @Bos\Normalize(group={"default"})
      * @Bos\Normalize(group={"anotherGroup"})
      */
-    public function getSpecialNotesForDelivery()
+    public function getSpecialNotesForDelivery(): string
     {
         return 'some special string';
+    }
+
+    /**
+     * @Bos\Normalize(group={"default"}, skipEmpty=true)
+     */
+    public function getRouteToFrontDoor(): string
+    {
+        return '';
     }
 }

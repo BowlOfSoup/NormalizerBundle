@@ -9,14 +9,14 @@ class Hobbies
     /**
      * @var string
      *
-     * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"default", "duplicateObjectId"})
      */
     private $description;
 
     /**
      * @var HobbyType
      *
-     * @Bos\Normalize(group={"default"}, type="object")
+     * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="object")"}, type="object")
      */
     private $hobbyType;
 

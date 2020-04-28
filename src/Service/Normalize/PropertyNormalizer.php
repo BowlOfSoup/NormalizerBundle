@@ -36,6 +36,8 @@ class PropertyNormalizer extends AbstractNormalizer
         $this->sharedNormalizer = $sharedNormalizer;
         $this->group = $group;
 
+        $this->processedDepthObjects[$objectName] = $this->processedDepth;
+
         $classProperties = $this->propertyExtractor->getProperties($object);
         $normalizedProperties = [];
         foreach ($classProperties as $classProperty) {
@@ -215,7 +217,7 @@ class PropertyNormalizer extends AbstractNormalizer
             return $this->handleCallbackResult($propertyValue->$annotationCallback(), $propertyAnnotation);
         }
 
-        if (null === $propertyValue) {
+        if (empty($propertyValue)) {
             return null;
         }
 

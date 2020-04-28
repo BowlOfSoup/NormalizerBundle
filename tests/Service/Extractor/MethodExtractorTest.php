@@ -26,6 +26,17 @@ class MethodExtractorTest extends TestCase
     }
 
     /**
+     * @testdox Try to get methods from a non-object.
+     */
+    public function testGetMethodsForNothing(): void
+    {
+        $result = $this->methodExtractor->getMethods('foo');
+
+        $this->assertEmpty($result);
+        $this->assertIsArray($result);
+    }
+
+    /**
      * @testdox Get all methods of a class.
      */
     public function testGetMethods()

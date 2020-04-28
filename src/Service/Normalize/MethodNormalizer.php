@@ -204,7 +204,7 @@ class MethodNormalizer extends AbstractNormalizer
             $this->callbackException($method->getName());
         }
 
-        if (null === $methodValue) {
+        if (empty($methodValue)) {
             return null;
         }
 

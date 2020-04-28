@@ -214,6 +214,23 @@ class NormalizerTest extends TestCase
     }
 
     /**
+     * @testdox Normalize object, with limited depth to 0, with type: object.
+     */
+    public function testNormalizeSuccessMaxDepth0AndTypeObject(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth0OnMethodWithObject');
+
+        $expectedResult = [
+            'getSocial' => 546,
+        ];
+
+        $this->assertNotEmpty($result);
+        ArraySubset::assert($expectedResult, $result);
+    }
+
+    /**
      * @testdox Normalize object, with limited depth to 0, on a method
      */
     public function testNormalizeSuccessMaxDepth0OnMethod(): void
@@ -350,6 +367,95 @@ class NormalizerTest extends TestCase
         $this->normalizer->normalize($person, 'methodWithCallback');
     }
 
+    /**
+     * @testdox Not possible to normalize a method with no type configured, and a callback.
+     */
+    public function testCallbackOnMethodWithNoType(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('A callback is set on method calculateDeceasedDate2. Callbacks are not allowed on methods.');
+
+        $person = $this->getDummyDataSet();
+
+        $this->normalizer->normalize($person, 'methodWithCallbackAndNoType');
+    }
+
+    /**
+     * @testdox Not possible to normalize a method with type object configured, and a callback.
+     */
+    public function testCallbackOnMethodWithTypeObject(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('A callback is set on method getSocial. Callbacks are not allowed on methods.');
+
+        $person = $this->getDummyDataSet();
+
+        $this->normalizer->normalize($person, 'callbackOnMethodWithObject');
+    }
+
+
+    /**
+     * @testdox Try to normalize a DateTime type, which is not a \DateTime.
+     */
+    public function testNormalizeDateTimeString(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $this->assertSame(
+            ['calculateDeceasedDateAsString' => null],
+            $this->normalizer->normalize($person, 'dateTimeStringTest')
+        );
+    }
+
+    /**
+     * @testdox Test an object being cached.
+     */
+    public function testObjectBeingCached(): void
+    {
+        $person = $this->getDummyDataSetWithDuplicateObjectById();
+
+        $result = $this->normalizer->normalize($person, 'duplicateObjectId');
+
+        $this->assertSame([
+            'hobbies' => [
+                [
+                    'description' => 'Fixing washing machines',
+                    'hobbyType' => [
+                        'id' => 1,
+                        'name' => 'Technical',
+                    ],
+                ],
+                [
+                    'description' => 'Volleyball',
+                    'hobbyType' => [
+                        'id' => 2,
+                        'name' => 'Sport',
+                    ],
+                ],
+                [
+                    'description' => 'Fixing Computers',
+                    'hobbyType' => [
+                        'id' => 1,
+                        'name' => 'Technical',
+                    ],
+                ],
+            ],
+        ], $result);
+    }
+
+    /**
+     * @testdox Try to normalize a method with an object type, which does not hold any value.
+     */
+    public function testNormalizeMethodWithObjectAndAnEmptyValue(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $this->assertSame(
+            ['thisHoldsNoValue' => null],
+            $this->normalizer->normalize($person, 'emptyObjectOnMethod')
+        );
+    }
+
     private function getDummyDataSet(): Person
     {
         $groupCollection = new ArrayCollection();
@@ -429,6 +535,46 @@ class NormalizerTest extends TestCase
         $person->setHobbies($hobbyCollection);
 
         $person->setTestForProxy(new ProxyObject());
+
+        return $person;
+    }
+
+    private function getDummyDataSetWithDuplicateObjectById(): Person
+    {
+        $person = new Person();
+        $person
+            ->setId(123)
+            ->setName('Bowl')
+            ->setSurName('Of Soup')
+            ->setDateOfBirth(new \DateTime('1980-01-01'))
+            ->setValidCollectionPropertyWithCallback([new SomeClass()]);
+
+        $hobbyCollection = new ArrayCollection();
+
+        $hobbyType = new HobbyType();
+        $hobbyType->setId(1);
+        $hobbyType->setName('Technical');
+
+        $hobbyType2 = new HobbyType();
+        $hobbyType2->setId(2);
+        $hobbyType2->setName('Sport');
+
+        $hobbies1 = new Hobbies();
+        $hobbies1->setDescription('Fixing washing machines');
+        $hobbies1->setHobbyType($hobbyType);
+        $hobbyCollection->add($hobbies1);
+
+        $hobbies2 = new Hobbies();
+        $hobbies2->setDescription('Volleyball');
+        $hobbies2->setHobbyType($hobbyType2);
+        $hobbyCollection->add($hobbies2);
+
+        $hobbies3 = new Hobbies();
+        $hobbies3->setDescription('Fixing Computers');
+        $hobbies3->setHobbyType($hobbyType);
+        $hobbyCollection->add($hobbies3);
+
+        $person->setHobbies($hobbyCollection);
 
         return $person;
     }

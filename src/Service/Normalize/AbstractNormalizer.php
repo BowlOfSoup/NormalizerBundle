@@ -30,6 +30,9 @@ abstract class AbstractNormalizer
     /** @var int */
     protected $processedDepth = 0;
 
+    /** @var array */
+    public $processedDepthObjects = [];
+
     public function __construct(
         ClassExtractor $classExtractor
     ) {
@@ -220,6 +223,10 @@ abstract class AbstractNormalizer
     private function isCircularReference(object $object, string $objectName): bool
     {
         $objectIdentifier = $this->classExtractor->getId($object);
+
+        if (isset($this->processedDepthObjects[$objectName]) && $this->processedDepth <= $this->processedDepthObjects[$objectName]) {
+            return false;
+        }
 
         return ObjectCache::hasObjectByNameAndIdentifier($objectName, $objectIdentifier);
     }

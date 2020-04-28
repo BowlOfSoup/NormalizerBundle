@@ -5,17 +5,18 @@
 
 Installation
 ------------
-    composer require bowlofsoup/normalizer-bundle 1.*
+    composer require bowlofsoup/normalizer-bundle
 
 Bowl Of Soup Normalizer
 =======================
 
-Besides normalizing and serializing objects it features:
-- Working with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
+- Normalizes properties and methods (public, protected, private)
+- Serialized normalized content
+- Works with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
 - Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method.
-- Object caching: If a getId() method is implemented for an object it will cache the normalized object per flow (call to normalize()).
-- Annotation caching:
-  - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow. (call to normalize()).
+- Object caching: If a getId() method is implemented for an object it will cache the normalized object per normalize command.
+- Annotation caching, this means speed!
+  - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow (per normalize command).
   - In Symfony prod mode, annotations are cached completely (after first run).
 
 The main features are described in the corresponding annotations.
@@ -36,12 +37,15 @@ You can call each step separately (normalize, encode) or directly serialize an o
 
 Annotations in your model
 -------------------------
-As we see in the visual the first step in serialization is normalizing. To indicate the way object properties
+As we see in the visual the first step in serialization is normalizing. To indicate the way object properties and methods
 need to be normalized the "Normalizer" annotations have to be used. See paragraph "Normalizer" for annotation usage.
 
-There are two encoding supported: **JSON** and **XML**.
+For serialization two encodings are supported: **JSON** and **XML**.
 
-These annotations are specific for the encoder step of the serialization process.
+### Use statement and alias
+On top of the object you want to serialize:
+
+    use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 
 ### Wrapper element
 When outputting to a specific encoding you can indicate the wrapping element, this element will be the root node.
@@ -54,7 +58,7 @@ You can and should indicate a group (context), use property 'group' to separate 
     {
 
 ### Calling the serializer
-The serializer needs to be injected.
+The serializer can be injected, but also auto-wired.
 
     <argument type="service" id="bos.serializer" />
 
@@ -64,13 +68,15 @@ Calling the serializer with a group is optional, but certainly recommended.
 
     $result = $this->serializer->serialize($someEntity, 'somegroup');
 
-The result will be a blob of data.
+The result will be a string of data.
 
 # Normalizer
 
 Annotations in your model
 -------------------------
 The normalizer uses annotations to indicate how the data should be represented. You can use the following annotations properties:
+
+These properties can be used on class/object *properties* and *methods*.
 
 ### Use statement and alias
     BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -155,6 +161,8 @@ if used together with type="object", the callback is the method that is bound to
      */
     private $propertyToBeNormalized
  
+*Note: callbacks can't be used on methods, since a method can surely function as callback.*
+
 ### Normalize callback output
 It is possible to normalize output from a callback method.
 E.g. if you return an array with objects or just a single object from a callback method it will also normalize those objects.
@@ -166,10 +174,12 @@ E.g. if you return an array with objects or just a single object from a callback
      */
     private $propertyToBeNormalized
 
+*Note: callbacks can't be used on methods.* 
+
 ### Normalize collections
 If you have property which contains collection of other entities, you can use the type 'collection'. If you specify a callback, it will be applied to each item of the collection and placed to the result array.
 
-_See paragraph Type_
+_See paragraph: Type_
 
 ### Usage in multiple context
 As you can see, per group you can specify different outcomes.
@@ -187,11 +197,11 @@ As you can see, per group you can specify different outcomes.
     private $propertyToBeNormalized
  
 ### Calling the normalizer
-The normalizer needs to be injected.
+The normalizer needs to be injected, but can also be auto-wired.
 
     <argument type="service" id="bos.normalizer" />
         
-Calling the normalizer with a group is optional, but certainly recommended. The result will be an array.
+Calling the normalizer with a group is optional, but certainly recommended. The result will be an *array*.
 
     $result = $this->normalizer->normalize($someEntity, 'somegroup');
     $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');
