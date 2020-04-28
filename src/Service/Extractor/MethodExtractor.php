@@ -40,6 +40,7 @@ class MethodExtractor extends AbstractExtractor
         }
 
         $reflectedClass = new \ReflectionClass($object);
+
         return $reflectedClass->getMethods(
             \ReflectionMethod::IS_PUBLIC |
             \ReflectionMethod::IS_PROTECTED |

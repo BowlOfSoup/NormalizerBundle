@@ -81,8 +81,8 @@ class NormalizerTest extends TestCase
                 ],
                 [
                     'getSpecialNotesForDelivery' => 'some special string',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $this->assertNotEmpty($result);
@@ -194,7 +194,6 @@ class NormalizerTest extends TestCase
         $normalizer = $this->getNormalizer();
         $normalizer->normalize($person, 'circRefMethod');
     }
-
 
     /**
      * @testdox Normalize object, with limited depth to 0.
@@ -392,7 +391,6 @@ class NormalizerTest extends TestCase
 
         $this->normalizer->normalize($person, 'callbackOnMethodWithObject');
     }
-
 
     /**
      * @testdox Try to normalize a DateTime type, which is not a \DateTime.
