@@ -1,14 +1,13 @@
 <?php
 
-namespace BowlOfSoup\NormalizerBundle\Service;
+declare(strict_types=1);
+
+namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use Doctrine\Common\Annotations\Reader;
 use Doctrine\Persistence\Proxy;
-use ReflectionException;
-use ReflectionProperty;
 
-class PropertyExtractor
+class PropertyExtractor extends AbstractExtractor
 {
     /** @var string */
     public const TYPE = 'property';
@@ -16,12 +15,47 @@ class PropertyExtractor
     /** @var bool */
     public const FORCE_PROPERTY_GET_METHOD = true;
 
-    /** @var \Doctrine\Common\Annotations\Reader */
-    protected $annotationReader;
-
-    public function __construct(Reader $annotationReader)
+    /**
+     * Get all properties for a given class.
+     *
+     * @param object|string $object
+     *
+     * @throws \ReflectionException
+     */
+    public function getProperties($object): array
     {
-        $this->annotationReader = $annotationReader;
+        if (!is_object($object)) {
+            return [];
+        }
+
+        $reflectedClass = new \ReflectionClass($object);
+        $classProperties = $this->getClassProperties($reflectedClass);
+
+        // Also get (private) variables from parent class.
+        $privateProperties = [];
+        while ($reflectedClass = $reflectedClass->getParentClass()) {
+            $privateProperties[] = $this->getClassProperties($reflectedClass, static::GET_ONLY_PRIVATES);
+        }
+
+        return array_merge($classProperties, ...$privateProperties);
+    }
+
+    /**
+     * Get class properties through reflection.
+     *
+     * @return \ReflectionProperty[]
+     */
+    private function getClassProperties(\ReflectionClass $reflectedClass, bool $onlyPrivates = false): array
+    {
+        if ($onlyPrivates) {
+            return $reflectedClass->getProperties(\ReflectionProperty::IS_PRIVATE);
+        }
+
+        return $reflectedClass->getProperties(
+            \ReflectionProperty::IS_PUBLIC |
+            \ReflectionProperty::IS_PROTECTED |
+            \ReflectionProperty::IS_PRIVATE
+        );
     }
 
     /**
@@ -29,7 +63,7 @@ class PropertyExtractor
      *
      * @param string|object $annotation
      */
-    public function extractPropertyAnnotations(ReflectionProperty $objectProperty, $annotation): array
+    public function extractPropertyAnnotations(\ReflectionProperty $objectProperty, $annotation): array
     {
         $annotations = [];
 
@@ -52,14 +86,14 @@ class PropertyExtractor
      */
     public function getPropertyValue(
         object $object,
-        ReflectionProperty $property,
+        \ReflectionProperty $property,
         bool $forceGetMethod = false
     ) {
         $propertyName = $property->getName();
         $propertyValue = null;
         try {
             $propertyValue = $property->getValue($object);
-        } catch (ReflectionException $e) {
+        } catch (\ReflectionException $e) {
             $forceGetMethod = true;
         }
 
@@ -100,15 +134,5 @@ class PropertyExtractor
         }
 
         return null;
-    }
-
-    /**
-     * Gets the id from an object if available through getter.
-     *
-     * @return string|int|null
-     */
-    public function getId(object $object)
-    {
-        return $this->getPropertyValueByMethod($object, 'getId');
     }
 }

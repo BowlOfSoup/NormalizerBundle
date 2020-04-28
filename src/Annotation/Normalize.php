@@ -6,7 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  * Register normalization properties.
  *
  * @Annotation
- * @Target({"CLASS","PROPERTY"})
+ * @Target({"CLASS","PROPERTY","METHOD"})
  */
 class Normalize extends AbstractAnnotation
 {

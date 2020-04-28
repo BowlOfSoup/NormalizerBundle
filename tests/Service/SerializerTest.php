@@ -2,21 +2,19 @@
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
-use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
-use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
+use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class SerializerTest extends TestCase
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\ClassExtractor */
-    private $classExtractor;
+    use NormalizerTestTrait;
 
     /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
     private $normalizer;
@@ -26,9 +24,8 @@ class SerializerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->classExtractor = new ClassExtractor(new AnnotationReader());
-        $this->normalizer = new Normalizer($this->classExtractor, new PropertyExtractor(new AnnotationReader()));
-        $this->serializer = new Serializer($this->classExtractor, $this->normalizer);
+        $this->normalizer = $this->getNormalizer();
+        $this->serializer = new Serializer(new ClassExtractor(new AnnotationReader()), $this->normalizer);
     }
 
     /**
@@ -37,7 +34,7 @@ class SerializerTest extends TestCase
     public function testSerializeSuccess(): void
     {
         $this->assertSame(
-            '{"wrapperElement":{"id":123,"name_value":"Bowl Of Soup","surName":null,"initials":null,"dateOfBirth":null,"dateOfRegistration":"Apr. 2015","addresses":null,"social":{"twitter":"@bos"},"telephoneNumbers":null,"hobbies":null,"validEmptyObjectProperty":null,"nonValidCollectionProperty":null,"validCollectionPropertyWithCallback":null,"testForNormalizingCallback":[{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},{"street":null,"number":4,"postalCode":"1234AB","city":"The City Is: "}],"testForNormalizingCallbackObject":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},"testForNormalizingCallbackString":"asdasd","testForNormalizingCallbackArray":["123","456","789"],"testForProxy":null}}',
+            '{"wrapperElement":{"id":123,"name_value":"Bowl Of Soup","surName":null,"initials":null,"dateOfBirth":null,"dateOfRegistration":"Apr. 2015","addresses":null,"social":{"twitter":"@bos"},"telephoneNumbers":null,"hobbies":null,"validEmptyObjectProperty":null,"nonValidCollectionProperty":null,"validCollectionPropertyWithCallback":null,"testForNormalizingCallback":[{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam","getSpecialNotesForDelivery":"some special string"},{"street":null,"number":4,"postalCode":"1234AB","city":"The City Is: ","getSpecialNotesForDelivery":"some special string"}],"testForNormalizingCallbackObject":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam","getSpecialNotesForDelivery":"some special string"},"testForNormalizingCallbackString":"asdasd","testForNormalizingCallbackArray":["123","456","789"],"testForProxy":null}}',
             $this->serializer->serialize($this->getPersonObject(), EncoderFactory::TYPE_JSON, 'default')
         );
     }
@@ -62,7 +59,7 @@ class SerializerTest extends TestCase
         $encoderJson->setOptions(JSON_FORCE_OBJECT);
 
         $this->assertSame(
-            '{"wrapperElement":{"id":123,"name_value":"Bowl Of Soup","surName":null,"initials":null,"dateOfBirth":null,"dateOfRegistration":"Apr. 2015","addresses":null,"social":{"twitter":"@bos"},"telephoneNumbers":null,"hobbies":null,"validEmptyObjectProperty":null,"nonValidCollectionProperty":null,"validCollectionPropertyWithCallback":null,"testForNormalizingCallback":{"0":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},"1":{"street":null,"number":4,"postalCode":"1234AB","city":"The City Is: "}},"testForNormalizingCallbackObject":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam"},"testForNormalizingCallbackString":"asdasd","testForNormalizingCallbackArray":{"0":"123","1":"456","2":"789"},"testForProxy":null}}',
+            '{"wrapperElement":{"id":123,"name_value":"Bowl Of Soup","surName":null,"initials":null,"dateOfBirth":null,"dateOfRegistration":"Apr. 2015","addresses":null,"social":{"twitter":"@bos"},"telephoneNumbers":null,"hobbies":null,"validEmptyObjectProperty":null,"nonValidCollectionProperty":null,"validCollectionPropertyWithCallback":null,"testForNormalizingCallback":{"0":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam","getSpecialNotesForDelivery":"some special string"},"1":{"street":null,"number":4,"postalCode":"1234AB","city":"The City Is: ","getSpecialNotesForDelivery":"some special string"}},"testForNormalizingCallbackObject":{"street":"Dummy Street","number":null,"postalCode":null,"city":"The City Is: Amsterdam","getSpecialNotesForDelivery":"some special string"},"testForNormalizingCallbackString":"asdasd","testForNormalizingCallbackArray":{"0":"123","1":"456","2":"789"},"testForProxy":null}}',
             $this->serializer->serialize($this->getPersonObject(), $encoderJson, 'default')
         );
     }

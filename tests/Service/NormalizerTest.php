@@ -3,9 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use BowlOfSoup\NormalizerBundle\Service\ClassExtractor;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
-use BowlOfSoup\NormalizerBundle\Service\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
@@ -16,12 +14,23 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
+use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 
 class NormalizerTest extends TestCase
 {
+    use NormalizerTestTrait;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
+    private $normalizer;
+
+    protected function setUp(): void
+    {
+        $this->normalizer = $this->getNormalizer();
+    }
+
     /**
      * @testdox Normalize object, full happy path no type property, still callback
      *
@@ -29,13 +38,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccess(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'default');
+        $result = $this->normalizer->normalize($person, 'default');
 
         $expectedResult = $this->getSuccessResult();
 
@@ -48,13 +53,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeArraySuccess(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $arrayOfObjects = [$this->getDummyDataSet(), $this->getDummyDataSet()];
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($arrayOfObjects, 'default');
+        $result = $this->normalizer->normalize($arrayOfObjects, 'default');
 
         $expectedResult = $this->getSuccessResult();
 
@@ -68,16 +69,20 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessDifferentGroup(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'anotherGroup');
+        $result = $this->normalizer->normalize($person, 'anotherGroup');
 
         $expectedResult = [
             'surName' => 'Of Soup',
+            'addresses' => [
+                [
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+                [
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+            ],
         ];
 
         $this->assertNotEmpty($result);
@@ -89,17 +94,14 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessNoGroup(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
         $person->setGender('male');
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person);
+        $result = $this->normalizer->normalize($person);
 
         $expectedResult = [
             'gender' => 'male',
+            'dateOfBirth' => '1980-01-01',
         ];
 
         $this->assertNotEmpty($result);
@@ -111,11 +113,7 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNoGroupMatch(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize(new Person(), 'SomeUnknownGroup');
+        $result = $this->normalizer->normalize(new Person(), 'SomeUnknownGroup');
 
         $this->assertSame(gettype([]), gettype($result));
         $this->assertEmpty($result);
@@ -126,15 +124,11 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNoAnnotations(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $someClass = new SomeClass();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($someClass);
+        $result = $this->normalizer->normalize($someClass);
 
-        $this->assertSame(gettype([]), gettype($result));
+        $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
 
@@ -143,43 +137,62 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeNullObject(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $someClass = null;
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($someClass);
+        $result = $this->normalizer->normalize($someClass);
 
-        $this->assertSame(gettype([]), gettype($result));
+        $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
 
     /**
-     * @testdox Normalize object, Circular reference, no fallback (hack!).
+     * @testdox Normalize object, Circular reference, no fallback.
      */
     public function testNormalizeCircularReferenceNoFallback(): void
     {
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
 
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-
-        /** @var \BowlOfSoup\NormalizerBundle\Service\PropertyExtractor $stubPropertyExtractor */
-        $stubPropertyExtractor = $this
-            ->getMockBuilder(PropertyExtractor::class)
+        /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        $this->classExtractor = $this
+            ->getMockBuilder(ClassExtractor::class)
             ->setConstructorArgs([new AnnotationReader()])
             ->setMethods(['getId'])
             ->getMock();
-        $stubPropertyExtractor
+        $this->classExtractor
             ->expects($this->any())
             ->method('getId')
             ->willReturn(null);
 
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $stubPropertyExtractor);
+        $normalizer = $this->getNormalizer();
         $normalizer->normalize($person, 'default');
+    }
+
+    /**
+     * @testdox Normalize object, Circular reference, no fallback.
+     */
+    public function testNormalizeCircularReferenceNoFallbackOnMethods(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
+
+        /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        $this->classExtractor = $this
+            ->getMockBuilder(ClassExtractor::class)
+            ->setConstructorArgs([new AnnotationReader()])
+            ->setMethods(['getId'])
+            ->getMock();
+        $this->classExtractor
+            ->expects($this->any())
+            ->method('getId')
+            ->willReturn(null);
+
+        $person = $this->getDummyDataSet();
+
+        $normalizer = $this->getNormalizer();
+        $normalizer->normalize($person, 'circRefMethod');
     }
 
     /**
@@ -187,13 +200,9 @@ class NormalizerTest extends TestCase
      */
     public function testNormalizeSuccessMaxDepth0(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'maxDepthTestDepth0');
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth0');
 
         $expectedResult = [
             'social' => '546',
@@ -204,20 +213,76 @@ class NormalizerTest extends TestCase
     }
 
     /**
+     * @testdox Normalize object, with limited depth to 0, with type: object.
+     */
+    public function testNormalizeSuccessMaxDepth0AndTypeObject(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth0OnMethodWithObject');
+
+        $expectedResult = [
+            'getSocial' => 546,
+        ];
+
+        $this->assertNotEmpty($result);
+        ArraySubset::assert($expectedResult, $result);
+    }
+
+    /**
+     * @testdox Normalize object, with limited depth to 0, on a method
+     */
+    public function testNormalizeSuccessMaxDepth0OnMethod(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Address');
+
+        $person = $this->getDummyDataSet();
+
+        $this->assertEmpty($this->normalizer->normalize($person, 'maxDepthTestDepth0OnMethod'));
+    }
+
+    /**
      * @testdox Normalize object, with limited depth to 1.
      */
     public function testNormalizeSuccessMaxDepth1(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'maxDepthTestDepth1');
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth1');
 
         $expectedResult = [
             'addresses' => [
+                [
+                    'group' => [
+                        786,
+                        346,
+                    ],
+                ],
+                [
+                    'group' => [
+                        786,
+                        346,
+                    ],
+                ],
+            ],
+        ];
+
+        $this->assertNotEmpty($result);
+        ArraySubset::assert($result, $expectedResult);
+    }
+
+    /**
+     * @testdox Normalize object, with limited depth to 1.
+     */
+    public function testNormalizeSuccessMaxDepth1OnMethod(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, 'maxDepthTestDepth1OnMethod');
+
+        $expectedResult = [
+            'getAddresses' => [
                 [
                     'group' => [
                         786,
@@ -245,27 +310,19 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Address');
 
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $normalizer->normalize($person, 'maxDepthTestDepthNoIdentifier');
+        $this->normalizer->normalize($person, 'maxDepthTestDepthNoIdentifier');
     }
 
     /**
-     * @testdox Normalize object,
+     * @testdox Normalize object, no content in collection, because group is not in collection/object.
      */
     public function testNormalizeNoContentForCollection(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
-
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'noContentForCollectionTest');
+        $result = $this->normalizer->normalize($person, 'noContentForCollectionTest');
 
         $expectedResult = [
             'addresses' => [
@@ -273,6 +330,7 @@ class NormalizerTest extends TestCase
                 null,
             ],
             'social' => null,
+            'getTelephoneNumbers' => null,
         ];
 
         $this->assertNotEmpty($result);
@@ -280,20 +338,120 @@ class NormalizerTest extends TestCase
     }
 
     /**
-     * @testdox Normalize object, issue-17 scenario, fallback for DateTime.
+     * @testdox Normalize object, ISSUE-17 scenario, fallback for DateTime.
      */
     public function testNormalizeFallbackDateTime(): void
     {
-        $classExtractor = new ClassExtractor(new AnnotationReader());
-        $propertyExtractor = new PropertyExtractor(new AnnotationReader());
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, 'dateTimeTest');
+
+        $this->assertNotEmpty($result);
+        ArraySubset::assert($result, [
+            'deceasedDate' => 'Jan. 2020',
+            'calculateDeceasedDate' => 'Jan. 2020',
+        ]);
+    }
+
+    /**
+     * @testdox Not possible to normalize a method using a callback.
+     */
+    public function testCallbackOnMethod(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('A callback is set on method calculateDeceasedDate. Callbacks are not allowed on methods.');
 
         $person = $this->getDummyDataSet();
 
-        $normalizer = new Normalizer($classExtractor, $propertyExtractor);
-        $result = $normalizer->normalize($person, 'dateTimeTest');
+        $this->normalizer->normalize($person, 'methodWithCallback');
+    }
 
-        $this->assertNotEmpty($result);
-        ArraySubset::assert($result, ['deceasedDate' => 'Jan. 2020']);
+    /**
+     * @testdox Not possible to normalize a method with no type configured, and a callback.
+     */
+    public function testCallbackOnMethodWithNoType(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('A callback is set on method calculateDeceasedDate2. Callbacks are not allowed on methods.');
+
+        $person = $this->getDummyDataSet();
+
+        $this->normalizer->normalize($person, 'methodWithCallbackAndNoType');
+    }
+
+    /**
+     * @testdox Not possible to normalize a method with type object configured, and a callback.
+     */
+    public function testCallbackOnMethodWithTypeObject(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('A callback is set on method getSocial. Callbacks are not allowed on methods.');
+
+        $person = $this->getDummyDataSet();
+
+        $this->normalizer->normalize($person, 'callbackOnMethodWithObject');
+    }
+
+    /**
+     * @testdox Try to normalize a DateTime type, which is not a \DateTime.
+     */
+    public function testNormalizeDateTimeString(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $this->assertSame(
+            ['calculateDeceasedDateAsString' => null],
+            $this->normalizer->normalize($person, 'dateTimeStringTest')
+        );
+    }
+
+    /**
+     * @testdox Test an object being cached.
+     */
+    public function testObjectBeingCached(): void
+    {
+        $person = $this->getDummyDataSetWithDuplicateObjectById();
+
+        $result = $this->normalizer->normalize($person, 'duplicateObjectId');
+
+        $this->assertSame([
+            'hobbies' => [
+                [
+                    'description' => 'Fixing washing machines',
+                    'hobbyType' => [
+                        'id' => 1,
+                        'name' => 'Technical',
+                    ],
+                ],
+                [
+                    'description' => 'Volleyball',
+                    'hobbyType' => [
+                        'id' => 2,
+                        'name' => 'Sport',
+                    ],
+                ],
+                [
+                    'description' => 'Fixing Computers',
+                    'hobbyType' => [
+                        'id' => 1,
+                        'name' => 'Technical',
+                    ],
+                ],
+            ],
+        ], $result);
+    }
+
+    /**
+     * @testdox Try to normalize a method with an object type, which does not hold any value.
+     */
+    public function testNormalizeMethodWithObjectAndAnEmptyValue(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $this->assertSame(
+            ['thisHoldsNoValue' => null],
+            $this->normalizer->normalize($person, 'emptyObjectOnMethod')
+        );
     }
 
     private function getDummyDataSet(): Person
@@ -379,6 +537,46 @@ class NormalizerTest extends TestCase
         return $person;
     }
 
+    private function getDummyDataSetWithDuplicateObjectById(): Person
+    {
+        $person = new Person();
+        $person
+            ->setId(123)
+            ->setName('Bowl')
+            ->setSurName('Of Soup')
+            ->setDateOfBirth(new \DateTime('1980-01-01'))
+            ->setValidCollectionPropertyWithCallback([new SomeClass()]);
+
+        $hobbyCollection = new ArrayCollection();
+
+        $hobbyType = new HobbyType();
+        $hobbyType->setId(1);
+        $hobbyType->setName('Technical');
+
+        $hobbyType2 = new HobbyType();
+        $hobbyType2->setId(2);
+        $hobbyType2->setName('Sport');
+
+        $hobbies1 = new Hobbies();
+        $hobbies1->setDescription('Fixing washing machines');
+        $hobbies1->setHobbyType($hobbyType);
+        $hobbyCollection->add($hobbies1);
+
+        $hobbies2 = new Hobbies();
+        $hobbies2->setDescription('Volleyball');
+        $hobbies2->setHobbyType($hobbyType2);
+        $hobbyCollection->add($hobbies2);
+
+        $hobbies3 = new Hobbies();
+        $hobbies3->setDescription('Fixing Computers');
+        $hobbies3->setHobbyType($hobbyType);
+        $hobbyCollection->add($hobbies3);
+
+        $person->setHobbies($hobbyCollection);
+
+        return $person;
+    }
+
     private function getSuccessResult(): array
     {
         return [
@@ -394,12 +592,14 @@ class NormalizerTest extends TestCase
                     'number' => null,
                     'postalCode' => null,
                     'city' => 'The City Is: Amsterdam',
+                    'getSpecialNotesForDelivery' => 'some special string',
                 ],
                 [
                     'street' => null,
                     'number' => 4,
                     'postalCode' => '1234AB',
                     'city' => 'The City Is: ',
+                    'getSpecialNotesForDelivery' => 'some special string',
                 ],
             ],
             'social' => [
@@ -447,12 +647,14 @@ class NormalizerTest extends TestCase
                     'number' => null,
                     'postalCode' => null,
                     'city' => 'The City Is: Amsterdam',
+                    'getSpecialNotesForDelivery' => 'some special string',
                 ],
                 [
                     'street' => null,
                     'number' => 4,
                     'postalCode' => '1234AB',
                     'city' => 'The City Is: ',
+                    'getSpecialNotesForDelivery' => 'some special string',
                 ],
             ],
             'testForNormalizingCallbackObject' => [
@@ -460,6 +662,7 @@ class NormalizerTest extends TestCase
                 'number' => null,
                 'postalCode' => null,
                 'city' => 'The City Is: Amsterdam',
+                'getSpecialNotesForDelivery' => 'some special string',
             ],
             'testForNormalizingCallbackString' => 'asdasd',
             'testForNormalizingCallbackArray' => [

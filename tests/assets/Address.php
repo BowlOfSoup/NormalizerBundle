@@ -132,6 +132,8 @@ class Address
 
     /**
      * @return Collection
+     *
+     * @Bos\Normalize(type="collection", name="group", group={"maxDepthTestDepth1OnMethod"})
      */
     public function getGroup()
     {
@@ -146,5 +148,22 @@ class Address
         $this->group = $group;
 
         return $this;
+    }
+
+    /**
+     * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"anotherGroup"})
+     */
+    public function getSpecialNotesForDelivery(): string
+    {
+        return 'some special string';
+    }
+
+    /**
+     * @Bos\Normalize(group={"default"}, skipEmpty=true)
+     */
+    public function getRouteToFrontDoor(): string
+    {
+        return '';
     }
 }

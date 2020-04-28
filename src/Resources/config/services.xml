@@ -20,7 +20,7 @@
             <argument type="string">%kernel.cache_dir%/annotations</argument>
         </service>
 
-        <service class="BowlOfSoup\NormalizerBundle\Service\ClassExtractor" id="bos.class_extractor">
+        <service class="BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor" id="bos.class_extractor">
             <argument type="service" id="bos.doctrine.cached_reader" />
         </service>
 
@@ -29,7 +29,7 @@
             <argument type="service" id="bos.property_extractor" />
         </service>
 
-        <service class="BowlOfSoup\NormalizerBundle\Service\PropertyExtractor" id="bos.property_extractor">
+        <service class="BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor" id="bos.property_extractor">
             <argument type="service" id="bos.doctrine.cached_reader" />
         </service>
 

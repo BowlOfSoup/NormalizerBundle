@@ -19,4 +19,24 @@ class SomeClass extends AbstractClass
     {
         return 777;
     }
+
+    public function someVeryDifficultMethod(int $input): string
+    {
+        return 'something';
+    }
+
+    protected function itProtec(): callable
+    {
+        return static function () {};
+    }
+
+    private function secret(): object
+    {
+        return new \stdClass();
+    }
+
+    public static function thisIsNotTestable(): int
+    {
+        return 123;
+    }
 }

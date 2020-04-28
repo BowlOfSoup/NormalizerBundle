@@ -151,6 +151,8 @@ class Social
 
     /**
      * @return Person
+     *
+     * @Bos\Normalize(type="object", group={"circRefMethod"})
      */
     public function getPerson()
     {
