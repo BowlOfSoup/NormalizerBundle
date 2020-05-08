@@ -18,17 +18,20 @@
     "doctrine/annotations": "1.*",
     "doctrine/cache": "~1.0",
     "php": ">=7.2",
-    "symfony/framework-bundle": "~3.4|~4.4|~5.0",
-    "php-coveralls/php-coveralls": "^2.0"
+    "symfony/framework-bundle": "~3.4|~4.4|~5.0"
   },
   "require-dev": {
     "doctrine/common": "~2.12",
     "doctrine/collections": "1.*",
+    "php-coveralls/php-coveralls": "^2.0",
     "phpunit/phpunit": "^8.5",
     "friendsofphp/php-cs-fixer": "^2.10"
   },
   "autoload": {
-    "psr-4": { "BowlOfSoup\\NormalizerBundle\\": "src/" }
+    "psr-4": { "BowlOfSoup\\NormalizerBundle\\": "src/" },
+    "classmap": [
+      "tests/NormalizerTestTrait.php"
+    ]
   },
   "autoload-dev": {
     "psr-4": { "BowlOfSoup\\NormalizerBundle\\Tests\\": "tests/" }
