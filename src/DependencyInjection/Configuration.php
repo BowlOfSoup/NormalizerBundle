@@ -13,11 +13,21 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('bowl_of_soup_normalizer');
-        $treeBuilder
-            ->getRootNode()
-            ->children()
-            ->booleanNode('register_annotations')->defaultValue(false)->end()
-            ->end();
+
+        if (is_callable([$treeBuilder, 'getRootNode'])) {
+            $treeBuilder
+                ->getRootNode()
+                ->children()
+                ->booleanNode('register_annotations')->defaultValue(false)->end()
+                ->end();
+        }
+        if (is_callable([$treeBuilder, 'root'])) {
+            $treeBuilder
+                ->root('bowl_of_soup_normalizer')
+                ->children()
+                ->booleanNode('register_annotations')->defaultValue(false)->end()
+                ->end();
+        }
 
         return $treeBuilder;
     }
