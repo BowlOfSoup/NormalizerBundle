@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MethodNormalizer extends AbstractNormalizer
 {
@@ -17,9 +19,10 @@ class MethodNormalizer extends AbstractNormalizer
 
     public function __construct(
         ClassExtractor $classExtractor,
+        TranslatorInterface $translator,
         MethodExtractor $methodExtractor
     ) {
-        parent::__construct($classExtractor);
+        parent::__construct($classExtractor, $translator);
 
         $this->methodExtractor = $methodExtractor;
     }
@@ -40,7 +43,7 @@ class MethodNormalizer extends AbstractNormalizer
         $classMethods = $this->methodExtractor->getMethods($object);
         $normalizedMethods = [];
         foreach ($classMethods as $classMethod) {
-            $methodAnnotations = $this->getMethodAnnotations($objectName, $classMethod);
+            $methodAnnotations = $this->getMethodAnnotations($objectName, $classMethod, Normalize::class);
             if (empty($methodAnnotations)) {
                 continue;
             }
@@ -58,18 +61,15 @@ class MethodNormalizer extends AbstractNormalizer
         return $normalizedMethods;
     }
 
-    private function getMethodAnnotations(string $objectName, \ReflectionMethod $classMethod): array
+    private function getMethodAnnotations(string $objectName, \ReflectionMethod $classMethod, string $annotationClass): array
     {
         $methodName = $classMethod->getName();
 
-        if (isset($this->annotationCache[MethodExtractor::TYPE][$objectName][$methodName])) {
-            $methodAnnotations = $this->annotationCache[MethodExtractor::TYPE][$objectName][$methodName];
+        if (isset($this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName])) {
+            $methodAnnotations = $this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName];
         } else {
-            $methodAnnotations = $this->methodExtractor->extractMethodAnnotations(
-                $classMethod,
-                Normalize::class
-            );
-            $this->annotationCache[MethodExtractor::TYPE][$objectName][$methodName] = $methodAnnotations;
+            $methodAnnotations = $this->methodExtractor->extractMethodAnnotations($classMethod, $annotationClass);
+            $this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName] = $methodAnnotations;
         }
 
         return $methodAnnotations;
@@ -92,6 +92,9 @@ class MethodNormalizer extends AbstractNormalizer
             if (!$methodAnnotation->isGroupValidForConstruct($this->group)) {
                 continue;
             }
+
+            $translateAnnotations = $this->getMethodAnnotations(get_class($object), $method, Translate::class);
+            $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $methodName = $method->getName();
             $methodValue = $method->invoke($object);
@@ -122,6 +125,10 @@ class MethodNormalizer extends AbstractNormalizer
             }
 
             $methodValue = (is_array($methodValue) && empty($methodValue) ? null : $methodValue);
+            if (null !== $translationAnnotation) {
+                $methodValue = $this->translateValue($methodValue, $translationAnnotation);
+            }
+
             $normalizedProperties[$methodName] = $methodValue;
         }
 

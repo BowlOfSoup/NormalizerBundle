@@ -487,4 +487,13 @@ class Person
     {
         return '';
     }
+
+    /**
+     * @Bos\Normalize(group={"translation"})
+     * @Bos\Translate()
+     */
+    protected function translateMeThis(): string
+    {
+        return 'some value';
+    }
 }

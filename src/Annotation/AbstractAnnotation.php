@@ -16,17 +16,9 @@ abstract class AbstractAnnotation
     /** @var array */
     protected $group = [];
 
-    /** @var string */
-    protected $type;
-
     public function getGroup(): array
     {
         return $this->group;
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
     }
 
     /**

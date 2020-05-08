@@ -454,6 +454,13 @@ class NormalizerTest extends TestCase
         );
     }
 
+    public function testNormalizeMethodWithTranslation(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $this->normalizer->normalize($person, 'translation');
+    }
+
     private function getDummyDataSet(): Person
     {
         $groupCollection = new ArrayCollection();

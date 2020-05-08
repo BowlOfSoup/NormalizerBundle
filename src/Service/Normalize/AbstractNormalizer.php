@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
@@ -20,6 +22,9 @@ abstract class AbstractNormalizer
 
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
     protected $classExtractor;
+
+    /** @var \Symfony\Contracts\Translation\TranslatorInterface */
+    protected $translator;
 
     /** @var string */
     protected $group;
@@ -34,9 +39,11 @@ abstract class AbstractNormalizer
     public $processedDepthObjects = [];
 
     public function __construct(
-        ClassExtractor $classExtractor
+        ClassExtractor $classExtractor,
+        TranslatorInterface $translator
     ) {
         $this->classExtractor = $classExtractor;
+        $this->translator = $translator;
     }
 
     public function cleanUp(): void
@@ -218,6 +225,49 @@ abstract class AbstractNormalizer
         }
 
         return $propertyValue;
+    }
+
+    /**
+     * @param \BowlOfSoup\NormalizerBundle\Annotation\Translate[]|array
+     */
+    protected function getTranslationAnnotation(array $translateAnnotations, $emptyGroup = false): ?Translate
+    {
+        if (empty($translateAnnotations)) {
+            return null;
+        }
+
+        $group = ($emptyGroup) ? null : $this->group;
+
+        $translationAnnotation = null;
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Translate $translateAnnotation */
+        foreach ($translateAnnotations as $translateAnnotation) {
+            if (!$translateAnnotation->isGroupValidForConstruct($group)) {
+                continue;
+            }
+
+            // By overwriting the return variable, the last valid annotation on the property/method is taken.
+            $translationAnnotation = $translateAnnotation;
+        }
+        // Annotation found, but no explicit group. Try again with no group.
+        if (null === $translationAnnotation) {
+            return $this->getTranslationAnnotation($translateAnnotations, true);
+        }
+
+        return $translationAnnotation;
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function translateValue($value, Translate $translationAnnotation)
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+
+        return $this->translator->trans($value, [], $translationAnnotation->getDomain(), $translationAnnotation->getLocale());
     }
 
     private function isCircularReference(object $object, string $objectName): bool

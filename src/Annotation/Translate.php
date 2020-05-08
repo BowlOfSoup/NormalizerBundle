@@ -1,27 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
- * Register serialization, encoding properties.
- *
  * @Annotation
- * @Target({"CLASS"})
+ * @Target({"PROPERTY","METHOD"})
  */
-class Serialize extends AbstractAnnotation
+class Translate extends AbstractAnnotation
 {
     /** @var array */
     private $supportedProperties = [
         'group' => ['type' => 'array'],
-        'type' => ['type' => 'string', 'assert' => ['xml', 'json']],
-        'wrapElement' => ['type' => 'string'],
+        'domain' => ['type' => 'string'],
+        'locale' => ['type' => 'string'],
     ];
 
-    /** @var string */
-    private $wrapElement;
+    /** @var string|null */
+    private $domain;
 
-    /** @var string */
-    protected $type;
+    /** @var string|null */
+    private $locale;
 
     public function __construct(array $properties)
     {
@@ -32,13 +32,13 @@ class Serialize extends AbstractAnnotation
         }
     }
 
-    public function getWrapElement(): string
+    public function getDomain(): ?string
     {
-        return $this->wrapElement;
+        return $this->domain;
     }
 
-    public function getType(): string
+    public function getLocale(): ?string
     {
-        return $this->type;
+        return $this->locale;
     }
 }
