@@ -35,6 +35,7 @@ class RegisterAnnotationsListener implements EventSubscriberInterface
     {
         if ($this->parameterRegisterAnnotations) {
             AnnotationRegistry::registerFile(__DIR__ . '/../Annotation/Normalize.php');
+            AnnotationRegistry::registerFile(__DIR__ . '/../Annotation/Serialize.php');
             AnnotationRegistry::registerAutoloadNamespace('BowlOfSoup\NormalizerBundle\Annotation', __DIR__);
         }
     }
