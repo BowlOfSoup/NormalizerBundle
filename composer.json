@@ -31,7 +31,6 @@
   "autoload": {
     "psr-4": { "BowlOfSoup\\NormalizerBundle\\": "src/" },
     "classmap": [
-      "tests/DummyTranslator.php",
       "tests/NormalizerTestTrait.php"
     ]
   },
