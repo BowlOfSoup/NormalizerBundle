@@ -7,17 +7,21 @@ Installation
 ------------
     composer require bowlofsoup/normalizer-bundle
 
+Add the bundle to your `config/bundles.php` file
+
+    BowlOfSoup\NormalizerBundle\BowlOfSoupNormalizerBundle::class => ['all' => true],
+
 Bowl Of Soup Normalizer
 =======================
 
 - Normalizes properties and methods (public, protected, private)
 - Serialized normalized content
-- Works with Symfony and Doctrine as its ORM. Can handle Doctrine proxies.
-- Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method.
-- Object caching: If a getId() method is implemented for an object it will cache the normalized object per normalize command.
+- Works with Symfony and Doctrine as its ORM. Can handle Doctrine proxies
+- Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method
+- Object caching: If a getId() method is implemented for an object it will cache the normalized object per normalize command
 - Annotation caching, this means speed!
-  - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow (per normalize command).
-  - In Symfony prod mode, annotations are cached completely (after first run).
+    - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow (per normalize command)
+    - In Symfony prod mode, annotations are cached completely (after first run)
 
 The main features are described in the corresponding annotations.
 
@@ -31,7 +35,6 @@ Serialization of an object is visualized on the right side of the above visual. 
 normalization and encoding normalized data.
 
 You can call each step separately (normalize, encode) or directly serialize an object.
-
 
 # Serializer
 
