@@ -21,7 +21,8 @@ class Person
     /**
      * @var int
      *
-     * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"default", "translation"})
+     * @Bos\Translate(group={"translation"})
      */
     private $id;
 
@@ -50,6 +51,8 @@ class Person
      * @var string
      *
      * @Bos\Normalize()
+     * @Bos\Normalize(group={"translation"})
+     * @Bos\Translate(group={"translation"})
      */
     private $gender;
 

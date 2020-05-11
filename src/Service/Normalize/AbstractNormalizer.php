@@ -250,7 +250,8 @@ abstract class AbstractNormalizer
         }
         // Annotation found, but no explicit group. Try again with no group.
         if (null === $translationAnnotation) {
-            return $this->getTranslationAnnotation($translateAnnotations, true);
+            // Don't try again if get with no group given to prevent
+            return (!$emptyGroup) ? $this->getTranslationAnnotation($translateAnnotations, true) : null;
         }
 
         return $translationAnnotation;
