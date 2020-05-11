@@ -49,6 +49,24 @@ class NormalizerTest extends TestCase
     }
 
     /**
+     * @testdox Normalize an integer, but only objects or an array of objects are allowed.
+     */
+    public function testNormalizeInvalidDataType()
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Can only normalize an object or an array of objects. Input contains: integer');
+
+        $this->normalizer->normalize([
+            [
+                'value' => 123,
+            ],
+            [
+                'foo' => 'bar',
+            ],
+        ]);
+    }
+
+    /**
      * @testdox Normalize array of objects, full happy path no type property, still callback
      */
     public function testNormalizeArraySuccess(): void
