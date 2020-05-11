@@ -40,6 +40,9 @@ class Normalize extends AbstractAnnotation
     /** @var int */
     private $maxDepth;
 
+    /** @var string */
+    protected $type;
+
     public function __construct(array $properties)
     {
         foreach ($this->supportedProperties as $supportedPropertyKey => $supportedPropertyOptions) {
@@ -86,5 +89,10 @@ class Normalize extends AbstractAnnotation
     public function getMaxDepth(): ?int
     {
         return $this->maxDepth;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

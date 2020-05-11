@@ -11,6 +11,7 @@ use BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer;
 use BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use Doctrine\Common\Annotations\AnnotationReader;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait NormalizerTestTrait
 {
@@ -29,14 +30,28 @@ trait NormalizerTestTrait
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
     protected $methodExtractor;
 
+    /** @var \Symfony\Contracts\Translation\TranslatorInterface|\PHPUnit\Framework\MockObject\Stub\Stub */
+    protected $translator;
+
     public function getNormalizer(): Normalizer
     {
         $propertyExtractor = $this->propertyExtractor ?? new PropertyExtractor(new AnnotationReader());
         $methodExtractor = $this->methodExtractor ?? new MethodExtractor(new AnnotationReader());
         $classExtractor = $this->classExtractor ?? new ClassExtractor(new AnnotationReader());
 
-        $propertyNormalizer = $this->propertyNormalizer ?? new PropertyNormalizer($classExtractor, $propertyExtractor);
-        $methodNormalizer = $this->methodNormalizer ?? new MethodNormalizer($classExtractor, $methodExtractor);
+        /** @var \PHPUnit\Framework\MockObject\MockBuilder $translationMockBuilder */
+        $translationMockBuilder = $this->getMockBuilder(TranslatorInterface::class);
+        $translationMockBuilder->disableOriginalConstructor();
+
+        $this->translator = $translationMockBuilder
+            ->onlyMethods(['trans'])
+            ->getMock();
+        $this->translator
+            ->method('trans')
+            ->willReturn('translatedValue');
+
+        $propertyNormalizer = $this->propertyNormalizer ?? new PropertyNormalizer($classExtractor, $this->translator, $propertyExtractor);
+        $methodNormalizer = $this->methodNormalizer ?? new MethodNormalizer($classExtractor, $this->translator, $methodExtractor);
 
         return new Normalizer($classExtractor, $propertyNormalizer, $methodNormalizer);
     }

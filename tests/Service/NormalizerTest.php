@@ -472,6 +472,20 @@ class NormalizerTest extends TestCase
         );
     }
 
+    public function testNormalizeWithTranslation(): void
+    {
+        $person = $this->getDummyDataSet();
+        $person->setGender('male');
+
+        $result = $this->normalizer->normalize($person, 'translation');
+
+        $this->assertSame([
+            'id' => 123,
+            'gender' => 'translatedValue',
+            'translateMeThis' => 'translatedValue',
+        ], $result);
+    }
+
     private function getDummyDataSet(): Person
     {
         $groupCollection = new ArrayCollection();
