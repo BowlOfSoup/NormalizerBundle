@@ -22,6 +22,9 @@ Bowl Of Soup Normalizer
 - Annotation caching, this means speed!
     - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow (per normalize command)
     - In Symfony prod mode, annotations are cached completely (after first run)
+- Symfony translations
+    - Indicate domain (translation filename) and locale in annotations
+    - Does not support formatting with ICU MessageFormat (yet), so no parameters
 
 The main features are described in the corresponding annotations.
 
