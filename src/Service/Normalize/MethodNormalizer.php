@@ -40,6 +40,8 @@ class MethodNormalizer extends AbstractNormalizer
         $this->sharedNormalizer = $sharedNormalizer;
         $this->group = $group;
 
+        $this->processedDepthObjects[$objectName] = $this->processedDepth;
+
         $classMethods = $this->methodExtractor->getMethods($object);
         $normalizedMethods = [];
         foreach ($classMethods as $classMethod) {
@@ -212,6 +214,8 @@ class MethodNormalizer extends AbstractNormalizer
         }
 
         if (empty($methodValue)) {
+            --$this->processedDepth;
+
             return null;
         }
 

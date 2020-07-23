@@ -102,7 +102,7 @@ class Person
     private $telephoneNumbers;
 
     /**
-     * @var Hobbies
+     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
      *
      * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="collection")
      */
@@ -383,15 +383,15 @@ class Person
     }
 
     /**
-     * @return Hobbies
+     * @return \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
      */
-    public function getHobbies()
+    public function getHobbies(): array
     {
         return $this->hobbies;
     }
 
     /**
-     * @param Hobbies $hobbies
+     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[] $hobbies
      *
      * @return $this
      */

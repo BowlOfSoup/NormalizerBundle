@@ -7,18 +7,25 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class Group
 {
     /**
-     * @Bos\Normalize(group={"maxDepthTestDepth1"})
+     * @Bos\Normalize(group={"maxDepthTestDepth1", "default"})
      *
      * @var int
      */
     private $id;
 
     /**
-     * @Bos\Normalize(group={"maxDepthTestDepth1"})
+     * @Bos\Normalize(group={"maxDepthTestDepth1", "default"})
      *
      * @var string
      */
     private $name;
+
+    /**
+     * @Bos\Normalize(group={"default"})
+     *
+     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     */
+    private $persons;
 
     /**
      * @return int
@@ -56,6 +63,26 @@ class Group
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     */
+    public function getPersons(): array
+    {
+        return $this->persons;
+    }
+
+    /**
+     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     *
+     * @return $this
+     */
+    public function setPersons(array $persons): self
+    {
+        $this->persons = $persons;
 
         return $this;
     }

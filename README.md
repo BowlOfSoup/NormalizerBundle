@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-blue.svg?no-cache=1)](https://php.net/)
-[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%203.4-green.svg)](https://symfony.com/)
+[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%204.4-green.svg)](https://symfony.com/)
 
 Installation
 ------------
@@ -211,3 +211,42 @@ Calling the normalizer with a group is optional, but certainly recommended. The 
 
     $result = $this->normalizer->normalize($someEntity, 'somegroup');
     $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');
+
+Using translations
+------------------
+### Use statement and alias
+    BowlOfSoup\NormalizerBundle\Annotation as Bos;
+
+### Add the annotation to your property/method
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"})
+     */
+    private $propertyToBeNormalized
+
+This will try to translate the value in `$propertyToBeNormalized`.
+By default, the translation must be in a `Resources/translations/messages.en.xliff`.
+
+### Specify your domain (the .xliff file)
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"}, domain="some_domain")
+     */
+    private $propertyToBeNormalized
+
+This tries to find the translation in `Resources/translations/some_domain.en.xliff`.
+
+### Specify your locale (language)
+
+You can specify your locale, if you did not set that globally in Symfony.
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"}, domain="some_domain", locale="nl")
+     */
+    private $propertyToBeNormalized
+
+This tries to find the translation in `Resources/translations/some_domain.nl.xliff`.
+Notice the `nl` in the file name (Dutch language).

@@ -7,6 +7,13 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class Hobbies
 {
     /**
+     * @var int
+     *
+     * @Bos\Normalize(group={"default", "duplicateObjectId"})
+     */
+    private $id;
+
+    /**
      * @var string
      *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
@@ -19,6 +26,21 @@ class Hobbies
      * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="object")"}, type="object")
      */
     private $hobbyType;
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+
+        return $this;
+    }
 
     /**
      * @return string
