@@ -221,10 +221,14 @@ class PropertyNormalizer extends AbstractNormalizer
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback) && is_callable([$propertyValue, $annotationCallback])) {
+            --$this->processedDepth;
+
             return $this->handleCallbackResult($propertyValue->$annotationCallback(), $propertyAnnotation);
         }
 
         if (empty($propertyValue)) {
+            --$this->processedDepth;
+
             return null;
         }
 

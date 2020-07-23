@@ -435,6 +435,7 @@ class NormalizerTest extends TestCase
         $this->assertSame([
             'hobbies' => [
                 [
+                    'id' => 1,
                     'description' => 'Fixing washing machines',
                     'hobbyType' => [
                         'id' => 1,
@@ -442,6 +443,7 @@ class NormalizerTest extends TestCase
                     ],
                 ],
                 [
+                    'id' => 2,
                     'description' => 'Volleyball',
                     'hobbyType' => [
                         'id' => 2,
@@ -449,6 +451,7 @@ class NormalizerTest extends TestCase
                     ],
                 ],
                 [
+                    'id' => 3,
                     'description' => 'Fixing Computers',
                     'hobbyType' => [
                         'id' => 1,
@@ -548,16 +551,19 @@ class NormalizerTest extends TestCase
         $hobbyType2->setName('Technical');
 
         $hobbies1 = new Hobbies();
+        $hobbies1->setId(1);
         $hobbies1->setDescription('Playing Guitar');
         $hobbies1->setHobbyType($hobbyType1);
         $hobbyCollection->add($hobbies1);
 
         $hobbies2 = new Hobbies();
+        $hobbies2->setId(2);
         $hobbies2->setDescription('Fixing Computers');
         $hobbies2->setHobbyType($hobbyType2);
         $hobbyCollection->add($hobbies2);
 
         $hobbies3 = new Hobbies();
+        $hobbies3->setId(3);
         $hobbies3->setDescription('Playing Piano');
         $hobbies3->setHobbyType($hobbyType1);
         $hobbyCollection->add($hobbies3);
@@ -590,16 +596,19 @@ class NormalizerTest extends TestCase
         $hobbyType2->setName('Sport');
 
         $hobbies1 = new Hobbies();
+        $hobbies1->setId(1);
         $hobbies1->setDescription('Fixing washing machines');
         $hobbies1->setHobbyType($hobbyType);
         $hobbyCollection->add($hobbies1);
 
         $hobbies2 = new Hobbies();
+        $hobbies2->setId(2);
         $hobbies2->setDescription('Volleyball');
         $hobbies2->setHobbyType($hobbyType2);
         $hobbyCollection->add($hobbies2);
 
         $hobbies3 = new Hobbies();
+        $hobbies3->setId(3);
         $hobbies3->setDescription('Fixing Computers');
         $hobbies3->setHobbyType($hobbyType);
         $hobbyCollection->add($hobbies3);
@@ -649,6 +658,7 @@ class NormalizerTest extends TestCase
             ],
             'hobbies' => [
                 [
+                    'id' => 1,
                     'description' => 'Playing Guitar',
                     'hobbyType' => [
                         'id' => 1,
@@ -656,6 +666,7 @@ class NormalizerTest extends TestCase
                     ],
                 ],
                 [
+                    'id' => 2,
                     'description' => 'Fixing Computers',
                     'hobbyType' => [
                         'id' => 2,
@@ -663,6 +674,7 @@ class NormalizerTest extends TestCase
                     ],
                 ],
                 [
+                    'id' => 3,
                     'description' => 'Playing Piano',
                     'hobbyType' => [
                         'id' => 1,

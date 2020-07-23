@@ -211,3 +211,42 @@ Calling the normalizer with a group is optional, but certainly recommended. The 
 
     $result = $this->normalizer->normalize($someEntity, 'somegroup');
     $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');
+
+Using translations
+------------------
+### Use statement and alias
+    BowlOfSoup\NormalizerBundle\Annotation as Bos;
+
+### Add the annotation to your property/method
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"})
+     */
+    private $propertyToBeNormalized
+
+This will try to translate the value in `$propertyToBeNormalized`.
+By default, the translation must be in a `Resources/translations/messages.en.xliff`.
+
+### Specify your domain (the .xliff file)
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"}, domain="some_domain")
+     */
+    private $propertyToBeNormalized
+
+This tries to find the translation in `Resources/translations/some_domain.en.xliff`.
+
+### Specify your locale (language)
+
+You can specify your locale, if you did not set that globally in Symfony.
+
+    /**
+     * @Bos\Normalize(group={"somegroup"}, name="automobile")
+     * @Bos\Translate(group={"translation"}, domain="some_domain", locale="nl")
+     */
+    private $propertyToBeNormalized
+
+This tries to find the translation in `Resources/translations/some_domain.nl.xliff`.
+Notice the `nl` in the file name (Dutch language).
