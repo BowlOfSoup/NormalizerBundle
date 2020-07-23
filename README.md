@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-blue.svg?no-cache=1)](https://php.net/)
-[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%203.4-green.svg)](https://symfony.com/)
+[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%204.4-green.svg)](https://symfony.com/)
 
 Installation
 ------------
