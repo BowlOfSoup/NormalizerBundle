@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
+use Doctrine\Persistence\Proxy;
+
 class MethodExtractor extends AbstractExtractor
 {
     /** @var string */
@@ -13,21 +15,18 @@ class MethodExtractor extends AbstractExtractor
      * Extract all annotations for a (reflected) class method.
      *
      * @param string|object $annotation
+     *
+     * @throws \ReflectionException
      */
     public function extractMethodAnnotations(\ReflectionMethod $objectMethod, $annotation): array
     {
         $annotations = [];
 
-        $docComment = $objectMethod->getDocComment();
-        if ($docComment
-            && false !== strpos(strtolower($docComment), '@inheritdoc')
+        if ($objectMethod->getDeclaringClass()->implementsInterface(Proxy::class)
             && empty($this->annotationReader->getMethodAnnotations($objectMethod))
+            && $objectMethod->getDeclaringClass()->getParentClass()->hasMethod($objectMethod->getName())
         ) {
-            try {
-                $objectMethod = $objectMethod->getDeclaringClass()->getParentClass()->getMethod($objectMethod->getName());
-            } catch (\ReflectionException $e) {
-                // No parent class, or method does not exist in parent. This can happen when normalizing a proxy class.
-            }
+            $objectMethod = $objectMethod->getDeclaringClass()->getParentClass()->getMethod($objectMethod->getName());
         }
 
         $methodAnnotations = $this->annotationReader->getMethodAnnotations($objectMethod);
