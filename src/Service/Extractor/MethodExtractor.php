@@ -18,6 +18,18 @@ class MethodExtractor extends AbstractExtractor
     {
         $annotations = [];
 
+        $docComment = $objectMethod->getDocComment();
+        if ($docComment
+            && false !== strpos(strtolower($docComment), '@inheritdoc')
+            && empty($this->annotationReader->getMethodAnnotations($objectMethod))
+        ) {
+            try {
+                $objectMethod = $objectMethod->getDeclaringClass()->getParentClass()->getMethod($objectMethod->getName());
+            } catch (\ReflectionException $e) {
+                // No parent class, or method does not exist in parent. This can happen when normalizing a proxy class.
+            }
+        }
+
         $methodAnnotations = $this->annotationReader->getMethodAnnotations($objectMethod);
         foreach ($methodAnnotations as $methodAnnotation) {
             if ($methodAnnotation instanceof $annotation) {

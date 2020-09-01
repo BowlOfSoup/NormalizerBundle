@@ -11,6 +11,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies;
 use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxySocial;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
@@ -487,6 +488,16 @@ class NormalizerTest extends TestCase
             'gender' => 'translatedValue',
             'translateMeThis' => 'translatedValue',
         ], $result);
+    }
+
+    public function testNormalizeProxyWithMethods(): void
+    {
+        $socialProxy = new ProxySocial();
+        $socialProxy->setFacebook('foo');
+
+        $this->assertSame([
+            'facebook' => 'foo'
+        ], $this->normalizer->normalize($socialProxy, 'proxy-method'));
     }
 
     private function getDummyDataSet(): Person
