@@ -1,21 +1,24 @@
+Bowl Of Soup Normalizer
+=====
+
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
 [![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-blue.svg?no-cache=1)](https://php.net/)
 [![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%204.4-green.svg)](https://symfony.com/)
 
 Installation
-------------
+-----
     composer require bowlofsoup/normalizer-bundle
 
 Add the bundle to your `config/bundles.php` file
 
     BowlOfSoup\NormalizerBundle\BowlOfSoupNormalizerBundle::class => ['all' => true],
 
-Bowl Of Soup Normalizer
-=======================
-
-- Normalizes properties and methods (public, protected, private)
-- Serialized normalized content
+Quick feature overview
+-----
+- It's a Symfony bundle!
+- Normalizes class properties and methods (public, protected, private)
+- Can Serialize normalized content
 - Works with Symfony and Doctrine as its ORM. Can handle Doctrine proxies
 - Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method
 - Object caching: If a getId() method is implemented for an object it will cache the normalized object per normalize command
@@ -28,8 +31,16 @@ Bowl Of Soup Normalizer
 
 The main features are described in the corresponding annotations.
 
+Why use this normalizer and not ...
+-----
+- The Bowl Of Soup Normalizer uses an opt-in mechanism by default. You have to indicate which properties must be normalized
+- You can indicate a context group, how is the value to be normalized, in which context?
+- It's designed with speed in mind. Not packed with features for which you don't use half of it
+- It has proven itself in a complex application with 18.000+ daily end users
+
+
 What is serialization/normalization?
-------------------------------------
+-----
 
 ![visual serialization/normalization](https://symfony.com/doc/current/_images/components/serializer/serializer_workflow.svg)
 (Source: [Symfony Serializer](https://symfony.com/doc/current/components/serializer.html))
@@ -42,7 +53,7 @@ You can call each step separately (normalize, encode) or directly serialize an o
 # Serializer
 
 Annotations in your model
--------------------------
+-----
 As we see in the visual the first step in serialization is normalizing. To indicate the way object properties and methods
 need to be normalized the "Normalizer" annotations have to be used. See paragraph "Normalizer" for annotation usage.
 
@@ -79,7 +90,7 @@ The result will be a string of data.
 # Normalizer
 
 Annotations in your model
--------------------------
+-----
 The normalizer uses annotations to indicate how the data should be represented. You can use the following annotations properties:
 
 These properties can be used on class/object *properties* and *methods*.
@@ -213,7 +224,7 @@ Calling the normalizer with a group is optional, but certainly recommended. The 
     $result = $this->normalizer->normalize(array($someEntity, $anotherEntity), 'somegroup');
 
 Using translations
-------------------
+-----
 ### Use statement and alias
     BowlOfSoup\NormalizerBundle\Annotation as Bos;
 
