@@ -36,7 +36,7 @@ Why use this normalizer and not ...
 - The Bowl Of Soup Normalizer uses an opt-in mechanism by default. You have to indicate which properties must be normalized
 - You can indicate a context group, how is the value to be normalized, in which context?
 - It's designed with speed in mind. Not packed with features for which you don't use half of it
-- It has proven itself in a complex application with 18.000+ daily end users
+- It has proven itself in a complex application with 15.000+ daily end users
 
 
 What is serialization/normalization?
