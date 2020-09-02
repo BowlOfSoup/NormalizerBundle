@@ -29,7 +29,7 @@ Quick feature overview
     - Indicate domain (translation filename) and locale in annotations
     - Does not support formatting with ICU MessageFormat (yet), so no parameters
 
-The main features are described in the corresponding annotations.
+The main features are described in the corresponding annotations below.
 
 Why use this normalizer and not ...
 -----
