@@ -23,6 +23,7 @@ class MethodExtractor extends AbstractExtractor
         $annotations = [];
 
         if ($objectMethod->getDeclaringClass()->implementsInterface(Proxy::class)
+            && false !== $objectMethod->getDeclaringClass()->getParentClass()
             && empty($this->annotationReader->getMethodAnnotations($objectMethod))
             && $objectMethod->getDeclaringClass()->getParentClass()->hasMethod($objectMethod->getName())
         ) {
