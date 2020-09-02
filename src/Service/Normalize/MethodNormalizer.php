@@ -63,6 +63,9 @@ class MethodNormalizer extends AbstractNormalizer
         return $normalizedMethods;
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     private function getMethodAnnotations(string $objectName, \ReflectionMethod $classMethod, string $annotationClass): array
     {
         $methodName = $classMethod->getName();

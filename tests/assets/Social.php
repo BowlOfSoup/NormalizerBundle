@@ -71,6 +71,8 @@ class Social
 
     /**
      * @return string
+     *
+     * @Bos\Normalize(name="facebook", group={"proxy-method"})
      */
     public function getFacebook()
     {
