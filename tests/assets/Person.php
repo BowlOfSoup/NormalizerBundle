@@ -14,7 +14,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0OnMethodWithObject"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1OnMethod"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
- * @Bos\Serialize(wrapElement="wrapperElement", group={"default"})
+ * @Bos\Serialize(wrapElement="wrapperElement", group={"default"}, sortProperties=true)
  */
 class Person
 {

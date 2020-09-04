@@ -41,8 +41,10 @@ class PropertyNormalizer extends AbstractNormalizer
 
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
-        $classProperties = $this->propertyExtractor->getProperties($object);
         $normalizedProperties = [];
+        $classAnnotation = $this->getClassAnnotation($objectName, $object);
+
+        $classProperties = $this->propertyExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
             $propertyAnnotations = $this->getPropertyAnnotations($objectName, $classProperty, Normalize::class);
             if (empty($propertyAnnotations)) {
@@ -55,7 +57,7 @@ class PropertyNormalizer extends AbstractNormalizer
                 $object,
                 $classProperty,
                 $propertyAnnotations,
-                $this->getClassAnnotation($objectName, $object)
+                $classAnnotation
             );
         }
 
