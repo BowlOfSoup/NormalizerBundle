@@ -187,15 +187,10 @@ class PropertyNormalizer extends AbstractNormalizer
                 $propertyAnnotation
             );
         } else {
-            // Always try to use get method for DateTime properties, get method can contain default settings.
-            $propertyValue = $this->propertyExtractor->getPropertyValue(
-                $object,
-                $property,
-                PropertyExtractor::FORCE_PROPERTY_GET_METHOD
-            );
+            $propertyValue = $property->getValue($object);
         }
 
-        if ($propertyValue instanceof \DateTime) {
+        if ($propertyValue instanceof \DateTimeInterface) {
             return $propertyValue->format($propertyAnnotation->getFormat());
         }
 

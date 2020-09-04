@@ -12,9 +12,6 @@ class PropertyExtractor extends AbstractExtractor
     /** @var string */
     public const TYPE = 'property';
 
-    /** @var bool */
-    public const FORCE_PROPERTY_GET_METHOD = true;
-
     /**
      * Get all properties for a given class.
      *
@@ -84,13 +81,12 @@ class PropertyExtractor extends AbstractExtractor
      *
      * @return mixed|null
      */
-    public function getPropertyValue(
-        object $object,
-        \ReflectionProperty $property,
-        bool $forceGetMethod = false
-    ) {
+    public function getPropertyValue(object $object, \ReflectionProperty $property)
+    {
         $propertyName = $property->getName();
         $propertyValue = null;
+        $forceGetMethod = false;
+
         try {
             $propertyValue = $property->getValue($object);
         } catch (\ReflectionException $e) {
@@ -108,15 +104,9 @@ class PropertyExtractor extends AbstractExtractor
                 return $object->$getMethodName();
             }
 
-            if (null !== $propertyValue) {
-                return $propertyValue;
-            }
-
             if ($object instanceof Proxy) {
                 throw new BosNormalizerException('Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName);
             }
-
-            throw new BosNormalizerException('Unable to get property value. No get() method found for property ' . $propertyName);
         }
 
         return $propertyValue;
