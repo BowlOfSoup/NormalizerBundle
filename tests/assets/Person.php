@@ -65,8 +65,6 @@ class Person
 
     /**
      * @var DateTime
-     *
-     * @Bos\Normalize(group={"default"}, type="DateTime", format="M. Y")
      */
     private $dateOfRegistration;
 
@@ -274,6 +272,8 @@ class Person
 
     /**
      * @return DateTime
+     *
+     * @Bos\Normalize(group={"default"}, name="dateOfRegistration", type="DateTime", format="M. Y")
      */
     public function getDateOfRegistration()
     {

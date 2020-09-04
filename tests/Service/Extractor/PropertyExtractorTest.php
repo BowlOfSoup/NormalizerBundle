@@ -128,67 +128,6 @@ class PropertyExtractorTest extends TestCase
     }
 
     /**
-     * @testdox Get a value for a property, force get method
-     */
-    public function testGetPropertyValueForceGetMethod(): void
-    {
-        $someClass = new SomeClass();
-        $properties = $this->propertyExtractor->getProperties($someClass);
-        foreach ($properties as $property) {
-            if ('property32' === $property->getName()) {
-                $result = $this->propertyExtractor->getPropertyValue(
-                    $someClass,
-                    $property,
-                    PropertyExtractor::FORCE_PROPERTY_GET_METHOD
-                );
-
-                $this->assertSame(123, $result);
-            }
-        }
-    }
-
-    /**
-     * @testdox Get a value for a property, force get method, no method available, force get from public/protected.
-     */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailable(): void
-    {
-        $someClass = new SomeClass();
-        $properties = $this->propertyExtractor->getProperties($someClass);
-        foreach ($properties as $property) {
-            if ('property53' === $property->getName()) {
-                $result = $this->propertyExtractor->getPropertyValue(
-                    $someClass,
-                    $property,
-                    PropertyExtractor::FORCE_PROPERTY_GET_METHOD
-                );
-
-                $this->assertSame('string', $result);
-            }
-        }
-    }
-
-    /**
-     * @testdox Get a value for a property, force get method, no method available, force get, but not public/protected.
-     */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailableNoAccess(): void
-    {
-        $this->expectException(BosNormalizerException::class);
-        $this->expectExceptionMessage('Unable to get property value. No get() method found for property property76');
-
-        $someClass = new SomeClass();
-        $properties = $this->propertyExtractor->getProperties($someClass);
-        foreach ($properties as $property) {
-            if ('property76' === $property->getName()) {
-                $this->propertyExtractor->getPropertyValue(
-                    $someClass,
-                    $property,
-                    PropertyExtractor::FORCE_PROPERTY_GET_METHOD
-                );
-            }
-        }
-    }
-
-    /**
      * @testdox Get a value for a property, force get method, no method available, force get, is Doctrine Proxy.
      */
     public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy(): void

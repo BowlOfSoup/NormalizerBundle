@@ -187,7 +187,7 @@ class MethodNormalizer extends AbstractNormalizer
             $methodValue = $method->invoke($object);
         }
 
-        if ($methodValue instanceof \DateTime) {
+        if ($methodValue instanceof \DateTimeInterface) {
             return $methodValue->format($methodAnnotation->getFormat());
         }
 
