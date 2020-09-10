@@ -7,8 +7,11 @@ namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use Doctrine\Persistence\Proxy;
 
-class PropertyExtractor extends AbstractExtractor
+class PropertyExtractor
 {
+    /** @var bool */
+    public const GET_ONLY_PRIVATES = true;
+
     /** @var string */
     public const TYPE = 'property';
 
@@ -53,25 +56,6 @@ class PropertyExtractor extends AbstractExtractor
             \ReflectionProperty::IS_PROTECTED |
             \ReflectionProperty::IS_PRIVATE
         );
-    }
-
-    /**
-     * Extract all annotations for a (reflected) class property.
-     *
-     * @param string|object $annotation
-     */
-    public function extractPropertyAnnotations(\ReflectionProperty $objectProperty, $annotation): array
-    {
-        $annotations = [];
-
-        $propertyAnnotations = $this->annotationReader->getPropertyAnnotations($objectProperty);
-        foreach ($propertyAnnotations as $propertyAnnotation) {
-            if ($propertyAnnotation instanceof $annotation) {
-                $annotations[] = $propertyAnnotation;
-            }
-        }
-
-        return $annotations;
     }
 
     /**

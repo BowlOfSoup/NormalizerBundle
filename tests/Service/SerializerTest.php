@@ -4,12 +4,11 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
-use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
-use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class SerializerTest extends TestCase
@@ -25,7 +24,7 @@ class SerializerTest extends TestCase
     protected function setUp(): void
     {
         $this->normalizer = $this->getNormalizer();
-        $this->serializer = new Serializer(new ClassExtractor(new AnnotationReader()), $this->normalizer);
+        $this->serializer = new Serializer(new AnnotationExtractor(), $this->normalizer);
     }
 
     /**

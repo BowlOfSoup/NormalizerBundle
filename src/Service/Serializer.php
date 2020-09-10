@@ -5,21 +5,21 @@ namespace BowlOfSoup\NormalizerBundle\Service;
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface;
-use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 
 class Serializer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
-    private $classExtractor;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
+    private $annotationExtractor;
 
     /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
     private $normalizer;
 
     public function __construct(
-        ClassExtractor $classExtractor,
+        AnnotationExtractor $annotationExtractor,
         Normalizer $normalizer
     ) {
-        $this->classExtractor = $classExtractor;
+        $this->annotationExtractor = $annotationExtractor;
         $this->normalizer = $normalizer;
     }
 
@@ -60,7 +60,7 @@ class Serializer
      */
     private function getClassAnnotation(object $object, ?string $group): ?Serialize
     {
-        $classAnnotations = $this->classExtractor->extractClassAnnotations($object, new Serialize([]));
+        $classAnnotations = $this->annotationExtractor->getAnnotationsForClass(Serialize::class, $object);
         if (empty($classAnnotations)) {
             return null;
         }

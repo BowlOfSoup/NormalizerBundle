@@ -8,6 +8,7 @@ use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -26,6 +27,9 @@ abstract class AbstractNormalizer
     /** @var \Symfony\Contracts\Translation\TranslatorInterface */
     protected $translator;
 
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
+    protected $annotationExtractor;
+
     /** @var string */
     protected $group;
 
@@ -40,15 +44,16 @@ abstract class AbstractNormalizer
 
     public function __construct(
         ClassExtractor $classExtractor,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
+        AnnotationExtractor $annotationExtractor
     ) {
         $this->classExtractor = $classExtractor;
         $this->translator = $translator;
+        $this->annotationExtractor = $annotationExtractor;
     }
 
     public function cleanUp(): void
     {
-        $this->annotationCache = [];
         $this->maxDepth = null;
     }
 
@@ -81,17 +86,12 @@ abstract class AbstractNormalizer
      */
     protected function getClassAnnotation(string $objectName, object $object): ?Normalize
     {
-        if (isset($this->annotationCache[ClassExtractor::TYPE][$objectName])) {
-            $classAnnotations = $this->annotationCache[ClassExtractor::TYPE][$objectName];
-        } else {
-            $classAnnotations = $this->classExtractor->extractClassAnnotations($object, Normalize::class);
-            $this->annotationCache[ClassExtractor::TYPE][$objectName] = $classAnnotations;
-        }
+        $classAnnotations = $this->annotationExtractor->getAnnotationsForClass(Normalize::class, $object);
         if (empty($classAnnotations)) {
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\AbstractAnnotation $classAnnotation */
+        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForConstruct($this->group)) {
                 $this->maxDepth = $classAnnotation->getMaxDepth();

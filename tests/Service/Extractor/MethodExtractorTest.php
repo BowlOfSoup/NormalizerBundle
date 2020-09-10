@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
-use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
-use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class MethodExtractorTest extends TestCase
@@ -88,50 +85,5 @@ class MethodExtractorTest extends TestCase
         $this->assertInstanceOf(\ReflectionMethod::class, $method);
         $method->setAccessible(true);
         $this->assertIsObject($method->invoke($someClass));
-    }
-
-    /**
-     * @testdox Extracting method annotations.
-     */
-    public function testExtractPropertyAnnotations(): void
-    {
-        $annotation = new Normalize([]);
-        $someClass = new SomeClass();
-        $methods = $this->methodExtractor->getMethods($someClass);
-
-        $annotationResult = [$annotation];
-
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
-        $mockAnnotationReader = $this
-            ->getMockBuilder(AnnotationReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getMethodAnnotations'])
-            ->getMock();
-        $mockAnnotationReader
-            ->expects($this->once())
-            ->method('getMethodAnnotations')
-            ->with($this->equalTo($methods[0]))
-            ->willReturn($annotationResult);
-
-        $methodExtractor = new MethodExtractor($mockAnnotationReader);
-        $result = $methodExtractor->extractMethodAnnotations($methods[0], get_class($annotation));
-
-        ArraySubset::assert([$annotation], $result);
-    }
-
-    /**
-     * @testdox Get a value for a property.
-     */
-    public function testGetPropertyValue(): void
-    {
-        $someClass = new SomeClass();
-        $methods = $this->methodExtractor->getMethods($someClass);
-        foreach ($methods as $method) {
-            if ('getProperty32' === $method->getName()) {
-                $result = $this->methodExtractor->getValueByMethod($someClass, $method->getName());
-
-                $this->assertSame(123, $result);
-            }
-        }
     }
 }
