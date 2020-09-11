@@ -241,5 +241,21 @@ return Config::create()
             'align_equals' => false
         ],
         'no_unused_imports' => true,
+        'declare_strict_types' => true,
+        'final_internal_class' => false,
+        'general_phpdoc_annotation_remove' => ['author', 'copyright', 'category', 'version'],
+        'global_namespace_import' => ['import_classes' => null],
+        'list_syntax' => ['syntax' => 'short'],
+        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'], // according to the documentation this is the default, but it ain't
+        'no_php4_constructor' => true,
+        'no_superfluous_elseif' => false,
+        'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
+        'php_unit_internal_class' => false,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
+        'php_unit_test_class_requires_covers' => false,
+        'phpdoc_no_empty_return' => false,
+        'phpdoc_types_order' => ['null_adjustment' => 'always_last', 'sort_algorithm' => 'none'],
+        'ordered_class_elements' => ['order' => ['use_trait', 'constant', 'property', 'construct', 'destruct', 'phpunit', 'method']],
+        'ternary_to_null_coalescing' => true,
     ])
     ->setFinder(CustomFinder::create());

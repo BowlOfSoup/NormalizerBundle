@@ -126,9 +126,7 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with the annotation property 'type'.
-     *
-     * @param mixed $propertyValue
+     * Returns values for methods with the annotation property 'type'.
      *
      * @throws \ReflectionException
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
@@ -157,7 +155,7 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with annotation type 'datetime'.
+     * Returns values for methods with annotation type 'datetime'.
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
@@ -180,7 +178,7 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with annotation type 'object'.
+     * Returns values for methods with annotation type 'object'.
      *
      * @param mixed $methodValue
      *
