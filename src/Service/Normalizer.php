@@ -60,7 +60,7 @@ class Normalizer
     {
         $normalizedConstructs = [];
         $objectName = get_class($object);
-        $objectIdentifier = ObjectHelper::hashObject($object);
+        $objectIdentifier = ObjectHelper::getObjectIdentifier($object);
 
         ObjectCache::setObjectByName($objectName, $objectIdentifier);
 

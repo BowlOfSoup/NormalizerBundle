@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
+use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
+
 class ClassExtractor
 {
     /** @var string */
@@ -16,11 +18,6 @@ class ClassExtractor
      */
     public function getId(object $object)
     {
-        $method = 'getId';
-        if (is_callable([$object, 'getId'])) {
-            return $object->$method();
-        }
-
-        return null;
+        return ObjectHelper::getObjectId($object);
     }
 }

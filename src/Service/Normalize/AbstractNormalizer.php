@@ -16,9 +16,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
-    /** @var array */
-    protected $annotationCache = [];
-
     /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
     protected $sharedNormalizer;
 
@@ -279,7 +276,7 @@ abstract class AbstractNormalizer
 
     private function isCircularReference(object $object, string $objectName): bool
     {
-        $objectIdentifier = ObjectHelper::hashObject($object);
+        $objectIdentifier = ObjectHelper::getObjectIdentifier($object);
 
         if (isset($this->processedDepthObjects[$objectName]) && $this->processedDepth <= $this->processedDepthObjects[$objectName]) {
             return false;
