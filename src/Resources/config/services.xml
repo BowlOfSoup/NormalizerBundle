@@ -13,15 +13,11 @@
             <argument>%bowl_of_soup_normalizer.register_annotations%</argument>
         </service>
 
-        <service id="BowlOfSoup\NormalizerBundle\Service\Extractor\AbstractExtractor" abstract="true">
+        <service id="BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor">
             <argument>%kernel.cache_dir%</argument>
             <argument>%kernel.debug%</argument>
         </service>
 
-        <service id="BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor" autowire="false" autoconfigure="false" parent="BowlOfSoup\NormalizerBundle\Service\Extractor\AbstractExtractor"/>
-        <service id="BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor" autowire="false" autoconfigure="false" parent="BowlOfSoup\NormalizerBundle\Service\Extractor\AbstractExtractor"/>
-        <service id="BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor" autowire="false" autoconfigure="false" parent="BowlOfSoup\NormalizerBundle\Service\Extractor\AbstractExtractor"/>
-
-        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer" autowire="true"/>
+        <service class="BowlOfSoup\NormalizerBundle\Service\Normalizer" id="bos.normalizer" autowire="true" />
     </services>
 </container>
