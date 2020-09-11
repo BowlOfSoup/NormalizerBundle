@@ -57,7 +57,7 @@ class PropertyNormalizer extends AbstractNormalizer
                 $object,
                 $classProperty,
                 $propertyAnnotations,
-                $this->getClassAnnotation($objectName, $object)
+                $this->getClassAnnotation($object)
             );
         }
 

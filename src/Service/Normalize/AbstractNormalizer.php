@@ -10,6 +10,7 @@ use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -55,6 +56,10 @@ abstract class AbstractNormalizer
     public function cleanUp(): void
     {
         $this->maxDepth = null;
+    }
+
+    public function cleanUpSession(): void
+    {
         $this->annotationExtractor->cleanUp();
     }
 
@@ -85,7 +90,7 @@ abstract class AbstractNormalizer
      *
      * @throws \ReflectionException
      */
-    protected function getClassAnnotation(string $objectName, object $object): ?Normalize
+    protected function getClassAnnotation(object $object): ?Normalize
     {
         $classAnnotations = $this->annotationExtractor->getAnnotationsForClass(Normalize::class, $object);
         if (empty($classAnnotations)) {
@@ -274,7 +279,7 @@ abstract class AbstractNormalizer
 
     private function isCircularReference(object $object, string $objectName): bool
     {
-        $objectIdentifier = $this->classExtractor->getId($object);
+        $objectIdentifier = ObjectHelper::hashObject($object);
 
         if (isset($this->processedDepthObjects[$objectName]) && $this->processedDepth <= $this->processedDepthObjects[$objectName]) {
             return false;

@@ -58,7 +58,7 @@ class MethodNormalizer extends AbstractNormalizer
                 $object,
                 $classMethod,
                 $methodAnnotations,
-                $this->getClassAnnotation($objectName, $object)
+                $this->getClassAnnotation($object)
             );
         }
 

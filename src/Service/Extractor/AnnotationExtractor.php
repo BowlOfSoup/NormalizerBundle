@@ -30,6 +30,8 @@ class AnnotationExtractor
 
             if ($this->directoryExits($cacheDir)) {
                 $this->annotationReader = new CachedReader(new AnnotationReader(), new FilesystemCache($cacheDir), $debugMode);
+
+                return;
             }
         }
 

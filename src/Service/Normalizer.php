@@ -43,21 +43,8 @@ class Normalizer
             return [];
         }
 
-        $this->cleanUp();
-        $normalizedData = [];
-
-        if (is_iterable($data) || $data instanceof \Traversable) {
-            foreach ($data as $item) {
-                $normalizedData[] = $this->normalize($item, $group);
-            }
-        } else if (is_object($data)) {
-            $normalizedData = $this->normalizeObject($data, $group);
-        } else {
-            throw new BosNormalizerException('Can only normalize an object or an array of objects. Input contains: ' . gettype($data));
-        }
-        $this->cleanUp();
-
-        return $normalizedData;
+        $this->cleanUpSession();
+        return $this->normalizeData($data, $group);
     }
 
     /**
@@ -73,7 +60,7 @@ class Normalizer
     {
         $normalizedConstructs = [];
         $objectName = get_class($object);
-        $objectIdentifier = $this->classExtractor->getId($object);
+        $objectIdentifier = ObjectHelper::hashObject($object);
 
         ObjectCache::setObjectByName($objectName, $objectIdentifier);
 
@@ -99,11 +86,37 @@ class Normalizer
     }
 
     /**
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws \ReflectionException
+     */
+    private function normalizeData($data, ?string $group): array
+    {
+        if (empty($data)) {
+            return [];
+        }
+
+        $this->propertyNormalizer->cleanUp();
+        $normalizedData = [];
+
+        if (is_iterable($data) || $data instanceof \Traversable) {
+            foreach ($data as $item) {
+                $normalizedData[] = $this->normalizeData($item, $group);
+            }
+        } else if (is_object($data)) {
+            $normalizedData = $this->normalizeObject($data, $group);
+        } else {
+            throw new BosNormalizerException('Can only normalize an object or an array of objects. Input contains: ' . gettype($data));
+        }
+
+        return $normalizedData;
+    }
+
+    /**
      * Resets the caches.
      */
-    private function cleanUp(): void
+    private function cleanUpSession(): void
     {
         ObjectCache::clear();
-        $this->propertyNormalizer->cleanUp();
+        $this->propertyNormalizer->cleanUpSession();
     }
 }
