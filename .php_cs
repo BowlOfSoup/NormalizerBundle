@@ -12,9 +12,9 @@ use PhpCsFixer\Console\ConfigurationResolver;
 final class CustomFinder extends Finder
 {
     /** @var array */
-    private $excludes = array(
+    private $excludes = [
         'vendor',
-    );
+    ];
 
     /** @var \PhpCsFixer\Console\ConfigurationResolver|null */
     private $configurationResolver = null;
@@ -23,10 +23,10 @@ final class CustomFinder extends Finder
     private $input = '';
 
     /** @var array */
-    private $files = array();
+    private $files = [];
 
     /** @var array */
-    private $directories = array();
+    private $directories = [];
 
     /**
      * Constructor.
@@ -90,7 +90,7 @@ final class CustomFinder extends Finder
     private function initFilesFromStdin(): void
     {
         $this->input = 'STDIN';
-        $files = array();
+        $files = [];
         $paths = explode(PHP_EOL, trim(stream_get_contents(STDIN)));
         $paths = array_map(function ($path) {
             return $this->findFiles($path);
@@ -124,7 +124,7 @@ final class CustomFinder extends Finder
      */
     private function initDirectories(): void
     {
-        $directories = array();
+        $directories = [];
         foreach ($this->files as $file) {
             $directory = dirname($file);
             foreach ($this->excludes as $exclude) {
@@ -199,8 +199,10 @@ final class CustomFinder extends Finder
 
     /**
      * Execute an external program without broken pipes.
+     *
+     * @return string|mixed|null
      */
-    private function pipedExec(string $command, array &$output = null, int &$returnVar = null): string
+    private function pipedExec(string $command, array &$output = null, int &$returnVar = null)
     {
         $contents = '';
         $handle = popen($command . '; echo $?', 'r');
@@ -217,16 +219,16 @@ final class CustomFinder extends Finder
 }
 
 /* Based on dev-master|^2.0 of php-cs-fixer */
-return Config::create('bowlofsoup/normalizer-bundle', 'BowlOfSoup code style.')
+return Config::create()
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         // default
         '@PSR2' => true,
         '@Symfony' => true,
-        // additionally, @see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
-        'concat_space' => array('spacing' => 'one'),
-        'array_syntax' => array('syntax' => 'short'),
+        // see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
+        'concat_space' => ['spacing' => 'one'],
+        'array_syntax' => ['syntax' => 'short'],
         'blank_line_after_opening_tag' => true,
         'no_blank_lines_before_namespace' => false,
         'ordered_imports' => true,
@@ -234,10 +236,10 @@ return Config::create('bowlofsoup/normalizer-bundle', 'BowlOfSoup code style.')
         'phpdoc_inline_tag' => false,
         'phpdoc_order' => true,
         'simplified_null_return' => false,
-        'binary_operator_spaces' => array(
+        'binary_operator_spaces' => [
             'align_double_arrow' => false,
             'align_equals' => false
-        ),
+        ],
         'no_unused_imports' => true,
-    ))
+    ])
     ->setFinder(CustomFinder::create());

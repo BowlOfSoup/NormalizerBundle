@@ -493,7 +493,7 @@ class NormalizerTest extends TestCase
         $socialProxy->setFacebook('foo');
 
         $this->assertSame([
-            'facebook' => 'foo'
+            'facebook' => 'foo',
         ], $this->normalizer->normalize($socialProxy, 'proxy-method'));
     }
 

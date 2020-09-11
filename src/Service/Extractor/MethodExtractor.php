@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
-use Doctrine\Persistence\Proxy;
-
 class MethodExtractor
 {
     /** @var string */
