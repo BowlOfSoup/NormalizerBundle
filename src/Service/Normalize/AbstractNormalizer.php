@@ -55,6 +55,7 @@ abstract class AbstractNormalizer
     public function cleanUp(): void
     {
         $this->maxDepth = null;
+        $this->annotationExtractor->cleanUp();
     }
 
     protected function hasMaxDepth(): bool

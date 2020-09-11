@@ -41,6 +41,11 @@ class AnnotationExtractor
         $this->annotationReader = $annotationReader;
     }
 
+    public function cleanUp(): void
+    {
+        $this->annotationCache = [];
+    }
+
     public function getAnnotationsForProperty(string $annotationClass, \ReflectionProperty $property, string $objectName): array
     {
         $propertyName = $property->getName();
