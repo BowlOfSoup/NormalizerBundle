@@ -42,13 +42,23 @@ class ObjectHelper
             return null;
         }
 
+        $serializedObject = static::serializeObject($object);
+
+        return null !== $serializedObject ? hash($algorithm, $serializedObject) : null;
+    }
+
+    /**
+     * @param object $object
+     *
+     * @codeCoverageIgnore
+     */
+    private static function serializeObject(object $object)
+    {
         try {
-            $serializedObject = serialize($object);
+            return serialize($object);
         } catch (\Throwable $t) {
             // For some reason this object can's be serialized.
             return null;
         }
-
-        return hash($algorithm, $serializedObject);
     }
 }

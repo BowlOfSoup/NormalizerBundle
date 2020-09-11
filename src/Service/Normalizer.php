@@ -91,10 +91,6 @@ class Normalizer
      */
     private function normalizeData($data, ?string $group): array
     {
-        if (empty($data)) {
-            return [];
-        }
-
         $this->propertyNormalizer->cleanUp();
         $normalizedData = [];
 
