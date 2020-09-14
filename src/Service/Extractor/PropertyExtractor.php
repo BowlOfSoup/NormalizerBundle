@@ -4,16 +4,10 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
-use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
-use Doctrine\Persistence\Proxy;
-
 class PropertyExtractor extends AbstractExtractor
 {
     /** @var string */
     public const TYPE = 'property';
-
-    /** @var bool */
-    public const FORCE_PROPERTY_GET_METHOD = true;
 
     /**
      * Get all properties for a given class.
@@ -75,51 +69,6 @@ class PropertyExtractor extends AbstractExtractor
         }
 
         return $annotations;
-    }
-
-    /**
-     * Returns a value for a (reflected) property.
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return mixed|null
-     */
-    public function getPropertyValue(
-        object $object,
-        \ReflectionProperty $property,
-        bool $forceGetMethod = false
-    ) {
-        $propertyName = $property->getName();
-        $propertyValue = null;
-        try {
-            $propertyValue = $property->getValue($object);
-        } catch (\ReflectionException $e) {
-            $forceGetMethod = true;
-        }
-
-        if ($object instanceof Proxy) {
-            // Force initialization of Doctrine proxy.
-            $forceGetMethod = true;
-        }
-
-        if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
-            $getMethodName = 'get' . ucfirst($propertyName);
-            if (is_callable([$object, $getMethodName])) {
-                return $object->$getMethodName();
-            }
-
-            if (null !== $propertyValue) {
-                return $propertyValue;
-            }
-
-            if ($object instanceof Proxy) {
-                throw new BosNormalizerException('Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName);
-            }
-
-            throw new BosNormalizerException('Unable to get property value. No get() method found for property ' . $propertyName);
-        }
-
-        return $propertyValue;
     }
 
     /**
