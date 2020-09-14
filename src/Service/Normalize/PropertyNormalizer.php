@@ -10,6 +10,7 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use Doctrine\Persistence\Proxy;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PropertyNormalizer extends AbstractNormalizer
@@ -43,8 +44,10 @@ class PropertyNormalizer extends AbstractNormalizer
 
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
-        $classProperties = $this->propertyExtractor->getProperties($object);
         $normalizedProperties = [];
+        $classAnnotation = $this->getClassAnnotation($object);
+
+        $classProperties = $this->propertyExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
             $propertyAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Normalize::class, $classProperty, $objectName);
             if (empty($propertyAnnotations)) {
@@ -53,11 +56,15 @@ class PropertyNormalizer extends AbstractNormalizer
 
             $classProperty->setAccessible(true);
 
+            if ($object instanceof Proxy && !$object->__isInitialized()) {
+                $object->__load();
+            }
+
             $normalizedProperties[] = $this->normalizeProperty(
                 $object,
                 $classProperty,
                 $propertyAnnotations,
-                $this->getClassAnnotation($object)
+                $classAnnotation
             );
         }
 
@@ -88,7 +95,9 @@ class PropertyNormalizer extends AbstractNormalizer
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $propertyName = $property->getName();
-            $propertyValue = $this->propertyExtractor->getPropertyValue($object, $property);
+
+            // Will throw reflection exception when property is not accessible (because $property->setAccessible() was not used).
+            $propertyValue = $property->getValue($object);
 
             if ($this->skipEmptyValue($propertyValue, $propertyAnnotation, $classAnnotation)) {
                 continue;

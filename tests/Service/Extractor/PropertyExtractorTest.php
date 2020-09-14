@@ -7,6 +7,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
+use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use PHPUnit\Framework\TestCase;
 

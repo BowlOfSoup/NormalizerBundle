@@ -42,8 +42,12 @@ class Serializer
             $value = $this->normalizer->normalize($value, $group);
         }
 
+        if ($serializeAnnotation && $serializeAnnotation->mustSortProperties()) {
+            ArrayKeySorter::sortKeysAscRecursive($value);
+        }
+
         $encoder = $this->getEncoder($encoding);
-        if (null !== $serializeAnnotation) {
+        if ($serializeAnnotation) {
             $encoder->populateFromAnnotation($serializeAnnotation);
         }
 

@@ -15,13 +15,17 @@ class Serialize extends AbstractAnnotation
         'group' => ['type' => 'array'],
         'type' => ['type' => 'string', 'assert' => ['xml', 'json']],
         'wrapElement' => ['type' => 'string'],
+        'sortProperties' => ['type' => 'boolean']
     ];
+
+    /** @var string */
+    protected $type;
 
     /** @var string */
     private $wrapElement;
 
-    /** @var string */
-    protected $type;
+    /** @var bool */
+    private $sortProperties = false;
 
     public function __construct(array $properties)
     {
@@ -32,13 +36,18 @@ class Serialize extends AbstractAnnotation
         }
     }
 
-    public function getWrapElement(): string
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function getWrapElement(): ?string
     {
         return $this->wrapElement;
     }
 
-    public function getType(): string
+    public function mustSortProperties(): bool
     {
-        return $this->type;
+        return $this->sortProperties;
     }
 }

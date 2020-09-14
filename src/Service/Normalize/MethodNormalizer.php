@@ -44,8 +44,10 @@ class MethodNormalizer extends AbstractNormalizer
 
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
-        $classMethods = $this->methodExtractor->getMethods($object);
         $normalizedMethods = [];
+        $classAnnotation = $this->getClassAnnotation($object);
+
+        $classMethods = $this->methodExtractor->getMethods($object);
         foreach ($classMethods as $classMethod) {
             $methodAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Normalize::class, $classMethod, $objectName);
             if (empty($methodAnnotations)) {
@@ -58,7 +60,7 @@ class MethodNormalizer extends AbstractNormalizer
                 $object,
                 $classMethod,
                 $methodAnnotations,
-                $this->getClassAnnotation($object)
+                $classAnnotation
             );
         }
 
