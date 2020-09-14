@@ -9,6 +9,7 @@ use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use Doctrine\Persistence\Proxy;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PropertyNormalizer extends AbstractNormalizer
@@ -50,6 +51,10 @@ class PropertyNormalizer extends AbstractNormalizer
             }
 
             $classProperty->setAccessible(true);
+
+            if ($object instanceof Proxy && !$object->__isInitialized()) {
+                $object->__load();
+            }
 
             $normalizedProperties[] = $this->normalizeProperty(
                 $object,
@@ -100,7 +105,9 @@ class PropertyNormalizer extends AbstractNormalizer
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $propertyName = $property->getName();
-            $propertyValue = $this->propertyExtractor->getPropertyValue($object, $property);
+
+            // Will throw reflection exception when property is not accessible (because $property->setAccessible() was not used).
+            $propertyValue = $property->getValue($object);
 
             if ($this->skipEmptyValue($propertyValue, $propertyAnnotation, $classAnnotation)) {
                 continue;

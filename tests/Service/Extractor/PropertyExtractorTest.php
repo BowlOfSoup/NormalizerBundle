@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
-use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
-use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
@@ -109,63 +107,6 @@ class PropertyExtractorTest extends TestCase
         $result = $propertyExtractor->extractPropertyAnnotations($properties[0], get_class($annotation));
 
         ArraySubset::assert([$annotation], $result);
-    }
-
-    /**
-     * @testdox Get a value for a property.
-     */
-    public function testGetPropertyValue(): void
-    {
-        $someClass = new SomeClass();
-        $properties = $this->propertyExtractor->getProperties($someClass);
-        foreach ($properties as $property) {
-            if ('property53' === $property->getName()) {
-                $result = $this->propertyExtractor->getPropertyValue($someClass, $property);
-
-                $this->assertSame('string', $result);
-            }
-        }
-    }
-
-    /**
-     * @testdox Get a value for a property, force get method, no method available, force get, is Doctrine Proxy.
-     */
-    public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy(): void
-    {
-        $this->expectException(BosNormalizerException::class);
-        $this->expectExceptionMessage('Unable to initiate Doctrine proxy, not get() method found for property proxyProperty');
-
-        $proxyObject = new ProxyObject();
-        $properties = $this->propertyExtractor->getProperties($proxyObject);
-        foreach ($properties as $property) {
-            if ('proxyProperty' === $property->getName()) {
-                $this->propertyExtractor->getPropertyValue(
-                    $proxyObject,
-                    $property
-                );
-            }
-        }
-    }
-
-    /**
-     * @testdox Get a value for a property, Doctrine Proxy, force get method, assert ID = integer.
-     */
-    public function testGetPropertyDoctrineProxyForceGetMethodAssertIdInteger(): void
-    {
-        $result = null;
-
-        $proxyObject = new ProxyObject();
-        $properties = $this->propertyExtractor->getProperties($proxyObject);
-        foreach ($properties as $property) {
-            if ('id' === $property->getName()) {
-                $result = $this->propertyExtractor->getPropertyValue(
-                    $proxyObject,
-                    $property
-                );
-            }
-        }
-
-        $this->assertSame(123, $result);
     }
 
     /**
