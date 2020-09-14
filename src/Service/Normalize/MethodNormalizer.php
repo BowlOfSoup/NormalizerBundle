@@ -49,7 +49,7 @@ class MethodNormalizer extends AbstractNormalizer
 
         $classMethods = $this->methodExtractor->getMethods($object);
         foreach ($classMethods as $classMethod) {
-            $methodAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Normalize::class, $classMethod, $objectName);
+            $methodAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Normalize::class, $classMethod);
             if (empty($methodAnnotations)) {
                 continue;
             }
@@ -85,7 +85,7 @@ class MethodNormalizer extends AbstractNormalizer
                 continue;
             }
 
-            $translateAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Translate::class, $method, get_class($object));
+            $translateAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Translate::class, $method);
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $methodName = $method->getName();

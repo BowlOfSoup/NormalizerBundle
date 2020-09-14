@@ -48,9 +48,10 @@ class AnnotationExtractor
         $this->annotationCache = [];
     }
 
-    public function getAnnotationsForProperty(string $annotationClass, \ReflectionProperty $property, string $objectName): array
+    public function getAnnotationsForProperty(string $annotationClass, \ReflectionProperty $property): array
     {
         $propertyName = $property->getName();
+        $objectName = $property->getDeclaringClass()->getName();
 
         if (isset($this->annotationCache[$annotationClass][PropertyExtractor::TYPE][$objectName][$propertyName])) {
             $validPropertyAnnotations = $this->annotationCache[$annotationClass][PropertyExtractor::TYPE][$objectName][$propertyName];
@@ -75,9 +76,11 @@ class AnnotationExtractor
      *
      * @throws \ReflectionException
      */
-    public function getAnnotationsForMethod(string $annotationClass, \ReflectionMethod $objectMethod, string $objectName): array
+    public function getAnnotationsForMethod(string $annotationClass, \ReflectionMethod $objectMethod): array
     {
+        /** @var string $methodName */
         $methodName = $objectMethod->getName();
+        $objectName = $objectMethod->getDeclaringClass()->getName();
 
         if (isset($this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName])) {
             $validMethodAnnotations = $this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName];

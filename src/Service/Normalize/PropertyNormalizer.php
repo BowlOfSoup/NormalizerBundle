@@ -49,7 +49,7 @@ class PropertyNormalizer extends AbstractNormalizer
 
         $classProperties = $this->propertyExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
-            $propertyAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Normalize::class, $classProperty, $objectName);
+            $propertyAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Normalize::class, $classProperty);
             if (empty($propertyAnnotations)) {
                 continue;
             }
@@ -91,7 +91,7 @@ class PropertyNormalizer extends AbstractNormalizer
                 continue;
             }
 
-            $translateAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Translate::class, $property, get_class($object));
+            $translateAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Translate::class, $property);
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $propertyName = $property->getName();

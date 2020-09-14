@@ -96,7 +96,7 @@ class AnnotationExtractorTest extends TestCase
 
         $methodExtractor = new AnnotationExtractor();
         $methodExtractor->setAnnotationReader($mockAnnotationReader);
-        $result = $methodExtractor->getAnnotationsForMethod(get_class($annotation), $methods[0], get_class($someClass));
+        $result = $methodExtractor->getAnnotationsForMethod(get_class($annotation), $methods[0]);
 
         ArraySubset::assert([$annotation], $result);
     }
@@ -133,7 +133,7 @@ class AnnotationExtractorTest extends TestCase
 
         $propertyExtractor = new AnnotationExtractor();
         $propertyExtractor->setAnnotationReader($mockAnnotationReader);
-        $result = $propertyExtractor->getAnnotationsForProperty(get_class($annotation), $properties[0], get_class($someClass));
+        $result = $propertyExtractor->getAnnotationsForProperty(get_class($annotation), $properties[0]);
 
         ArraySubset::assert([$annotation], $result);
     }
