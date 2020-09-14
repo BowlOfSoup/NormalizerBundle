@@ -4,35 +4,20 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
-class ClassExtractor extends AbstractExtractor
+use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
+
+class ClassExtractor
 {
     /** @var string */
     public const TYPE = 'class';
 
     /**
-     * Extract annotations set on class level.
+     * Gets the id from an object if available through getter.
      *
-     * @param object|array $object
-     * @param object|string $annotation
-     *
-     * @throws \ReflectionException
+     * @return string|int|null
      */
-    public function extractClassAnnotations($object, $annotation): array
+    public function getId(object $object)
     {
-        if (!is_object($object)) {
-            return [];
-        }
-
-        $annotations = [];
-        $reflectedClass = new \ReflectionClass($object);
-
-        $classAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
-        foreach ($classAnnotations as $classAnnotation) {
-            if ($classAnnotation instanceof $annotation) {
-                $annotations[] = $classAnnotation;
-            }
-        }
-
-        return $annotations;
+        return ObjectHelper::getObjectId($object);
     }
 }

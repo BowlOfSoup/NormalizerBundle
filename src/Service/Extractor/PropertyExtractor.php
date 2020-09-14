@@ -4,8 +4,14 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
-class PropertyExtractor extends AbstractExtractor
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use Doctrine\Persistence\Proxy;
+
+class PropertyExtractor
 {
+    /** @var bool */
+    public const GET_ONLY_PRIVATES = true;
+
     /** @var string */
     public const TYPE = 'property';
 
@@ -53,22 +59,41 @@ class PropertyExtractor extends AbstractExtractor
     }
 
     /**
-     * Extract all annotations for a (reflected) class property.
+     * Returns a value for a (reflected) property.
      *
-     * @param string|object $annotation
+     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     *
+     * @return mixed|null
      */
-    public function extractPropertyAnnotations(\ReflectionProperty $objectProperty, $annotation): array
+    public function getPropertyValue(object $object, \ReflectionProperty $property)
     {
-        $annotations = [];
+        $propertyName = $property->getName();
+        $propertyValue = null;
+        $forceGetMethod = false;
 
-        $propertyAnnotations = $this->annotationReader->getPropertyAnnotations($objectProperty);
-        foreach ($propertyAnnotations as $propertyAnnotation) {
-            if ($propertyAnnotation instanceof $annotation) {
-                $annotations[] = $propertyAnnotation;
+        try {
+            $propertyValue = $property->getValue($object);
+        } catch (\ReflectionException $e) {
+            $forceGetMethod = true;
+        }
+
+        if ($object instanceof Proxy) {
+            // Force initialization of Doctrine proxy.
+            $forceGetMethod = true;
+        }
+
+        if (true === $forceGetMethod || !property_exists($object, $propertyName)) {
+            $getMethodName = 'get' . ucfirst($propertyName);
+            if (is_callable([$object, $getMethodName])) {
+                return $object->$getMethodName();
+            }
+
+            if ($object instanceof Proxy) {
+                throw new BosNormalizerException('Unable to initiate Doctrine proxy, not get() method found for property ' . $propertyName);
             }
         }
 
-        return $annotations;
+        return $propertyValue;
     }
 
     /**

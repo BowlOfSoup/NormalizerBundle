@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
@@ -20,9 +21,10 @@ class PropertyNormalizer extends AbstractNormalizer
     public function __construct(
         ClassExtractor $classExtractor,
         TranslatorInterface $translator,
+        AnnotationExtractor $annotationExtractor,
         PropertyExtractor $propertyExtractor
     ) {
-        parent::__construct($classExtractor, $translator);
+        parent::__construct($classExtractor, $translator, $annotationExtractor);
 
         $this->propertyExtractor = $propertyExtractor;
     }
@@ -43,11 +45,11 @@ class PropertyNormalizer extends AbstractNormalizer
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
         $normalizedProperties = [];
-        $classAnnotation = $this->getClassAnnotation($objectName, $object);
+        $classAnnotation = $this->getClassAnnotation($object);
 
         $classProperties = $this->propertyExtractor->getProperties($object);
         foreach ($classProperties as $classProperty) {
-            $propertyAnnotations = $this->getPropertyAnnotations($objectName, $classProperty, Normalize::class);
+            $propertyAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Normalize::class, $classProperty, $objectName);
             if (empty($propertyAnnotations)) {
                 continue;
             }
@@ -67,20 +69,6 @@ class PropertyNormalizer extends AbstractNormalizer
         }
 
         return $normalizedProperties;
-    }
-
-    private function getPropertyAnnotations(string $objectName, \ReflectionProperty $classProperty, string $annotationClass): array
-    {
-        $propertyName = $classProperty->getName();
-
-        if (isset($this->annotationCache[$annotationClass][PropertyExtractor::TYPE][$objectName][$propertyName])) {
-            $propertyAnnotations = $this->annotationCache[$annotationClass][PropertyExtractor::TYPE][$objectName][$propertyName];
-        } else {
-            $propertyAnnotations = $this->propertyExtractor->extractPropertyAnnotations($classProperty, $annotationClass);
-            $this->annotationCache[$annotationClass][PropertyExtractor::TYPE][$objectName][$propertyName] = $propertyAnnotations;
-        }
-
-        return $propertyAnnotations;
     }
 
     /**
@@ -103,7 +91,7 @@ class PropertyNormalizer extends AbstractNormalizer
                 continue;
             }
 
-            $translateAnnotations = $this->getPropertyAnnotations(get_class($object), $property, Translate::class);
+            $translateAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Translate::class, $property, get_class($object));
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
             $propertyName = $property->getName();
