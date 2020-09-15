@@ -88,6 +88,7 @@ class MethodNormalizer extends AbstractNormalizer
             $translateAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Translate::class, $method);
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
+            /** @var string $methodName */
             $methodName = $method->getName();
             $methodValue = $method->invoke($object);
 
@@ -130,6 +131,8 @@ class MethodNormalizer extends AbstractNormalizer
     /**
      * Returns values for methods with the annotation property 'type'.
      *
+     * @param mixed $methodValue
+     *
      * @throws \ReflectionException
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
@@ -163,11 +166,13 @@ class MethodNormalizer extends AbstractNormalizer
      */
     private function getValueForMethodWithDateTime(object $object, \ReflectionMethod $method, Normalize $methodAnnotation): ?string
     {
+        /** @var string $methodName */
+        $methodName = $method->getName();
         $methodValue = null;
 
         $annotationPropertyCallback = $methodAnnotation->getCallback();
         if (!empty($annotationPropertyCallback)) {
-            $this->callbackException($method->getName());
+            $this->callbackException($methodName);
         } else {
             $methodValue = $method->invoke($object);
         }
@@ -191,6 +196,9 @@ class MethodNormalizer extends AbstractNormalizer
      */
     private function getValueForMethodWithTypeObject(object $object, \ReflectionMethod $method, $methodValue, Normalize $propertyAnnotation)
     {
+        /** @var string $methodName */
+        $methodName = $method->getName();
+
         if ($this->hasMaxDepth()) {
             return $this->getValueForMaxDepth($methodValue);
         }
@@ -198,7 +206,7 @@ class MethodNormalizer extends AbstractNormalizer
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback)) {
-            $this->callbackException($method->getName());
+            $this->callbackException($methodName);
         }
 
         if (empty($methodValue)) {
