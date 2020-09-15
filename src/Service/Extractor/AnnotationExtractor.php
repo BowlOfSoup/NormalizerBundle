@@ -58,7 +58,11 @@ class AnnotationExtractor
         } else {
             $validPropertyAnnotations = [];
 
-            $allPropertyAnnotations = $this->annotationReader->getPropertyAnnotations($property);
+            try {
+                $allPropertyAnnotations = $this->annotationReader->getPropertyAnnotations($property);
+            } catch (\InvalidArgumentException $e) {
+                throw new \InvalidArgumentException(sprintf('%s (%s): %s', $objectName, $propertyName, $e->getMessage()), 0, $e);
+            }
             foreach ($allPropertyAnnotations as $propertyAnnotation) {
                 if ($propertyAnnotation instanceof $annotationClass) {
                     $validPropertyAnnotations[] = $propertyAnnotation;
@@ -95,7 +99,11 @@ class AnnotationExtractor
                 $objectMethod = $objectMethod->getDeclaringClass()->getParentClass()->getMethod($objectMethod->getName());
             }
 
-            $allMethodAnnotations = $this->annotationReader->getMethodAnnotations($objectMethod);
+            try {
+                $allMethodAnnotations = $this->annotationReader->getMethodAnnotations($objectMethod);
+            } catch (\InvalidArgumentException $e) {
+                throw new \InvalidArgumentException(sprintf('%s (%s): %s', $objectName, $methodName, $e->getMessage()), 0, $e);
+            }
             foreach ($allMethodAnnotations as $methodAnnotation) {
                 if ($methodAnnotation instanceof $annotationClass) {
                     $validMethodAnnotations[] = $methodAnnotation;
@@ -127,7 +135,13 @@ class AnnotationExtractor
             $validClassAnnotations = $this->annotationCache[ClassExtractor::TYPE][$className];
         } else {
             $validClassAnnotations = [];
-            $allClassAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
+
+            try {
+                $allClassAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
+            } catch (\InvalidArgumentException $e) {
+                throw new \InvalidArgumentException(sprintf('%s: %s', $className, $e->getMessage()), 0, $e);
+            }
+
             foreach ($allClassAnnotations as $classAnnotation) {
                 if ($classAnnotation instanceof $annotation) {
                     $validClassAnnotations[] = $classAnnotation;
