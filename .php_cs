@@ -12,9 +12,9 @@ use PhpCsFixer\Console\ConfigurationResolver;
 final class CustomFinder extends Finder
 {
     /** @var array */
-    private $excludes = array(
+    private $excludes = [
         'vendor',
-    );
+    ];
 
     /** @var \PhpCsFixer\Console\ConfigurationResolver|null */
     private $configurationResolver = null;
@@ -23,10 +23,10 @@ final class CustomFinder extends Finder
     private $input = '';
 
     /** @var array */
-    private $files = array();
+    private $files = [];
 
     /** @var array */
-    private $directories = array();
+    private $directories = [];
 
     /**
      * Constructor.
@@ -90,7 +90,7 @@ final class CustomFinder extends Finder
     private function initFilesFromStdin(): void
     {
         $this->input = 'STDIN';
-        $files = array();
+        $files = [];
         $paths = explode(PHP_EOL, trim(stream_get_contents(STDIN)));
         $paths = array_map(function ($path) {
             return $this->findFiles($path);
@@ -124,7 +124,7 @@ final class CustomFinder extends Finder
      */
     private function initDirectories(): void
     {
-        $directories = array();
+        $directories = [];
         foreach ($this->files as $file) {
             $directory = dirname($file);
             foreach ($this->excludes as $exclude) {
@@ -199,8 +199,10 @@ final class CustomFinder extends Finder
 
     /**
      * Execute an external program without broken pipes.
+     *
+     * @return string|mixed|null
      */
-    private function pipedExec(string $command, array &$output = null, int &$returnVar = null): string
+    private function pipedExec(string $command, array &$output = null, int &$returnVar = null)
     {
         $contents = '';
         $handle = popen($command . '; echo $?', 'r');
@@ -217,16 +219,16 @@ final class CustomFinder extends Finder
 }
 
 /* Based on dev-master|^2.0 of php-cs-fixer */
-return Config::create('bowlofsoup/normalizer-bundle', 'BowlOfSoup code style.')
+return Config::create()
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
-    ->setRules(array(
+    ->setRules([
         // default
         '@PSR2' => true,
         '@Symfony' => true,
-        // additionally, @see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
-        'concat_space' => array('spacing' => 'one'),
-        'array_syntax' => array('syntax' => 'short'),
+        // see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
+        'concat_space' => ['spacing' => 'one'],
+        'array_syntax' => ['syntax' => 'short'],
         'blank_line_after_opening_tag' => true,
         'no_blank_lines_before_namespace' => false,
         'ordered_imports' => true,
@@ -234,10 +236,26 @@ return Config::create('bowlofsoup/normalizer-bundle', 'BowlOfSoup code style.')
         'phpdoc_inline_tag' => false,
         'phpdoc_order' => true,
         'simplified_null_return' => false,
-        'binary_operator_spaces' => array(
+        'binary_operator_spaces' => [
             'align_double_arrow' => false,
             'align_equals' => false
-        ),
+        ],
         'no_unused_imports' => true,
-    ))
+        'declare_strict_types' => true,
+        'final_internal_class' => false,
+        'general_phpdoc_annotation_remove' => ['author', 'copyright', 'category', 'version'],
+        'global_namespace_import' => ['import_classes' => null],
+        'list_syntax' => ['syntax' => 'short'],
+        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'], // according to the documentation this is the default, but it ain't
+        'no_php4_constructor' => true,
+        'no_superfluous_elseif' => false,
+        'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
+        'php_unit_internal_class' => false,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'this'],
+        'php_unit_test_class_requires_covers' => false,
+        'phpdoc_no_empty_return' => false,
+        'phpdoc_types_order' => ['null_adjustment' => 'always_last', 'sort_algorithm' => 'none'],
+        'ordered_class_elements' => ['order' => ['use_trait', 'constant', 'property', 'construct', 'destruct', 'phpunit', 'method']],
+        'ternary_to_null_coalescing' => true,
+    ])
     ->setFinder(CustomFinder::create());

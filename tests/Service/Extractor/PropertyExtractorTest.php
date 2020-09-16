@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
-use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
+use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use Doctrine\Common\Annotations\AnnotationReader;
 use PHPUnit\Framework\TestCase;
 
 class PropertyExtractorTest extends TestCase
@@ -81,32 +82,60 @@ class PropertyExtractorTest extends TestCase
     }
 
     /**
-     * @testdox Extracting property annotations.
+     * @testdox Get a value for a property.
      */
-    public function testExtractPropertyAnnotations(): void
+    public function testGetPropertyValue(): void
     {
-        $annotation = new Normalize([]);
         $someClass = new SomeClass();
         $properties = $this->propertyExtractor->getProperties($someClass);
+        foreach ($properties as $property) {
+            if ('property53' === $property->getName()) {
+                $result = $this->propertyExtractor->getPropertyValue($someClass, $property);
 
-        $annotationResult = [$annotation];
+                $this->assertSame('string', $result);
+            }
+        }
+    }
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
-        $mockAnnotationReader = $this
-            ->getMockBuilder(AnnotationReader::class)
-            ->disableOriginalConstructor()
-            ->setMethods(['getPropertyAnnotations'])
-            ->getMock();
-        $mockAnnotationReader
-            ->expects($this->once())
-            ->method('getPropertyAnnotations')
-            ->with($this->equalTo($properties[0]))
-            ->willReturn($annotationResult);
+    /**
+     * @testdox Get a value for a property, force get method, no method available, force get, is Doctrine Proxy.
+     */
+    public function testGetPropertyValueForceGetMethodNoMethodAvailableDoctrineProxy(): void
+    {
+        $this->expectException(BosNormalizerException::class);
+        $this->expectExceptionMessage('Unable to initiate Doctrine proxy, not get() method found for property proxyProperty');
 
-        $propertyExtractor = new PropertyExtractor($mockAnnotationReader);
-        $result = $propertyExtractor->extractPropertyAnnotations($properties[0], get_class($annotation));
+        $proxyObject = new ProxyObject();
+        $properties = $this->propertyExtractor->getProperties($proxyObject);
+        foreach ($properties as $property) {
+            if ('proxyProperty' === $property->getName()) {
+                $this->propertyExtractor->getPropertyValue(
+                    $proxyObject,
+                    $property
+                );
+            }
+        }
+    }
 
-        ArraySubset::assert([$annotation], $result);
+    /**
+     * @testdox Get a value for a property, Doctrine Proxy, force get method, assert ID = integer.
+     */
+    public function testGetPropertyDoctrineProxyForceGetMethodAssertIdInteger(): void
+    {
+        $result = null;
+
+        $proxyObject = new ProxyObject();
+        $properties = $this->propertyExtractor->getProperties($proxyObject);
+        foreach ($properties as $property) {
+            if ('id' === $property->getName()) {
+                $result = $this->propertyExtractor->getPropertyValue(
+                    $proxyObject,
+                    $property
+                );
+            }
+        }
+
+        $this->assertSame(123, $result);
     }
 
     /**
@@ -129,16 +158,5 @@ class PropertyExtractorTest extends TestCase
         $result = $this->propertyExtractor->getPropertyValueByMethod($someClass, 'getProperty53');
 
         $this->assertNull($result);
-    }
-
-    /**
-     * @testdox Get a value for a property by specifying method, no method available.
-     */
-    public function testGetId(): void
-    {
-        $someClass = new SomeClass();
-        $result = $this->propertyExtractor->getId($someClass);
-
-        $this->assertSame(777, $result);
     }
 }

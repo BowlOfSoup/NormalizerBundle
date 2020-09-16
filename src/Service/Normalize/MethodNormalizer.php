@@ -7,6 +7,7 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
@@ -20,9 +21,10 @@ class MethodNormalizer extends AbstractNormalizer
     public function __construct(
         ClassExtractor $classExtractor,
         TranslatorInterface $translator,
+        AnnotationExtractor $annotationExtractor,
         MethodExtractor $methodExtractor
     ) {
-        parent::__construct($classExtractor, $translator);
+        parent::__construct($classExtractor, $translator, $annotationExtractor);
 
         $this->methodExtractor = $methodExtractor;
     }
@@ -42,10 +44,12 @@ class MethodNormalizer extends AbstractNormalizer
 
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
-        $classMethods = $this->methodExtractor->getMethods($object);
         $normalizedMethods = [];
+        $classAnnotation = $this->getClassAnnotation($object);
+
+        $classMethods = $this->methodExtractor->getMethods($object);
         foreach ($classMethods as $classMethod) {
-            $methodAnnotations = $this->getMethodAnnotations($objectName, $classMethod, Normalize::class);
+            $methodAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Normalize::class, $classMethod);
             if (empty($methodAnnotations)) {
                 continue;
             }
@@ -56,28 +60,11 @@ class MethodNormalizer extends AbstractNormalizer
                 $object,
                 $classMethod,
                 $methodAnnotations,
-                $this->getClassAnnotation($objectName, $object)
+                $classAnnotation
             );
         }
 
         return $normalizedMethods;
-    }
-
-    /**
-     * @throws \ReflectionException
-     */
-    private function getMethodAnnotations(string $objectName, \ReflectionMethod $classMethod, string $annotationClass): array
-    {
-        $methodName = $classMethod->getName();
-
-        if (isset($this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName])) {
-            $methodAnnotations = $this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName];
-        } else {
-            $methodAnnotations = $this->methodExtractor->extractMethodAnnotations($classMethod, $annotationClass);
-            $this->annotationCache[$annotationClass][MethodExtractor::TYPE][$objectName][$methodName] = $methodAnnotations;
-        }
-
-        return $methodAnnotations;
     }
 
     /**
@@ -98,9 +85,10 @@ class MethodNormalizer extends AbstractNormalizer
                 continue;
             }
 
-            $translateAnnotations = $this->getMethodAnnotations(get_class($object), $method, Translate::class);
+            $translateAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Translate::class, $method);
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
+            /** @var string $methodName */
             $methodName = $method->getName();
             $methodValue = $method->invoke($object);
 
@@ -141,9 +129,9 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with the annotation property 'type'.
+     * Returns values for methods with the annotation property 'type'.
      *
-     * @param mixed $propertyValue
+     * @param mixed $methodValue
      *
      * @throws \ReflectionException
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
@@ -172,17 +160,19 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with annotation type 'datetime'.
+     * Returns values for methods with annotation type 'datetime'.
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
     private function getValueForMethodWithDateTime(object $object, \ReflectionMethod $method, Normalize $methodAnnotation): ?string
     {
+        /** @var string $methodName */
+        $methodName = $method->getName();
         $methodValue = null;
 
         $annotationPropertyCallback = $methodAnnotation->getCallback();
         if (!empty($annotationPropertyCallback)) {
-            $this->callbackException($method->getName());
+            $this->callbackException($methodName);
         } else {
             $methodValue = $method->invoke($object);
         }
@@ -195,7 +185,7 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * Returns values for properties with annotation type 'object'.
+     * Returns values for methods with annotation type 'object'.
      *
      * @param mixed $methodValue
      *
@@ -206,6 +196,9 @@ class MethodNormalizer extends AbstractNormalizer
      */
     private function getValueForMethodWithTypeObject(object $object, \ReflectionMethod $method, $methodValue, Normalize $propertyAnnotation)
     {
+        /** @var string $methodName */
+        $methodName = $method->getName();
+
         if ($this->hasMaxDepth()) {
             return $this->getValueForMaxDepth($methodValue);
         }
@@ -213,7 +206,7 @@ class MethodNormalizer extends AbstractNormalizer
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback)) {
-            $this->callbackException($method->getName());
+            $this->callbackException($methodName);
         }
 
         if (empty($methodValue)) {

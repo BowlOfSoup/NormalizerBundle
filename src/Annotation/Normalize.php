@@ -45,9 +45,13 @@ class Normalize extends AbstractAnnotation
 
     public function __construct(array $properties)
     {
-        foreach ($this->supportedProperties as $supportedPropertyKey => $supportedPropertyOptions) {
-            if ($this->validateProperties($properties, $supportedPropertyKey, $supportedPropertyOptions, __CLASS__)) {
-                $this->$supportedPropertyKey = $properties[$supportedPropertyKey];
+        foreach ($properties as $propertyName => $propertyValue) {
+            if (!array_key_exists($propertyName, $this->supportedProperties)) {
+                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, __CLASS__));
+            }
+
+            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], __CLASS__)) {
+                $this->$propertyName = $propertyValue;
             }
         }
     }

@@ -13,32 +13,36 @@ class Serialize extends AbstractAnnotation
     /** @var array */
     private $supportedProperties = [
         'group' => ['type' => 'array'],
-        'type' => ['type' => 'string', 'assert' => ['xml', 'json']],
         'wrapElement' => ['type' => 'string'],
+        'sortProperties' => ['type' => 'boolean']
     ];
 
     /** @var string */
     private $wrapElement;
 
-    /** @var string */
-    protected $type;
+    /** @var bool */
+    private $sortProperties = false;
 
     public function __construct(array $properties)
     {
-        foreach ($this->supportedProperties as $supportedPropertyKey => $supportedPropertyOptions) {
-            if ($this->validateProperties($properties, $supportedPropertyKey, $supportedPropertyOptions, __CLASS__)) {
-                $this->$supportedPropertyKey = $properties[$supportedPropertyKey];
+        foreach ($properties as $propertyName => $propertyValue) {
+            if (!array_key_exists($propertyName, $this->supportedProperties)) {
+                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, __CLASS__));
+            }
+
+            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], __CLASS__)) {
+                $this->$propertyName = $propertyValue;
             }
         }
     }
 
-    public function getWrapElement(): string
+    public function getWrapElement(): ?string
     {
         return $this->wrapElement;
     }
 
-    public function getType(): string
+    public function mustSortProperties(): bool
     {
-        return $this->type;
+        return $this->sortProperties;
     }
 }

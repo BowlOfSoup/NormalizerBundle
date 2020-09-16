@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
@@ -16,7 +18,6 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
 use BowlOfSoup\NormalizerBundle\Tests\NormalizerTestTrait;
-use Doctrine\Common\Annotations\AnnotationReader;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 
@@ -175,7 +176,6 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setConstructorArgs([new AnnotationReader()])
             ->setMethods(['getId'])
             ->getMock();
         $this->classExtractor
@@ -200,7 +200,6 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setConstructorArgs([new AnnotationReader()])
             ->setMethods(['getId'])
             ->getMock();
         $this->classExtractor
@@ -496,7 +495,7 @@ class NormalizerTest extends TestCase
         $socialProxy->setFacebook('foo');
 
         $this->assertSame([
-            'facebook' => 'foo'
+            'facebook' => 'foo',
         ], $this->normalizer->normalize($socialProxy, 'proxy-method'));
     }
 
