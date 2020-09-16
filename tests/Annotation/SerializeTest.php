@@ -16,21 +16,7 @@ class SerializeTest extends TestCase
         $serialize = new Serialize($properties);
 
         $this->assertSame($properties['group'], $serialize->getGroup());
-        $this->assertSame($properties['type'], $serialize->getType());
         $this->assertSame($properties['wrapElement'], $serialize->getWrapElement());
-    }
-
-    /**
-     * @testdox Test annotation, validation on type property.
-     */
-    public function testSerializeValidationType(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Type "dummy" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is not supported.');
-
-        $properties = $this->getValidSetOfProperties();
-        $properties['type'] = 'dummy';
-        new Serialize($properties);
     }
 
     /**
@@ -51,7 +37,6 @@ class SerializeTest extends TestCase
         return [
             'wrapElement' => 'data',
             'group' => ['group1', 'group2'],
-            'type' => 'xml',
         ];
     }
 }

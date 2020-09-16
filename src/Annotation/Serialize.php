@@ -13,13 +13,9 @@ class Serialize extends AbstractAnnotation
     /** @var array */
     private $supportedProperties = [
         'group' => ['type' => 'array'],
-        'type' => ['type' => 'string', 'assert' => ['xml', 'json']],
         'wrapElement' => ['type' => 'string'],
         'sortProperties' => ['type' => 'boolean']
     ];
-
-    /** @var string */
-    protected $type;
 
     /** @var string */
     private $wrapElement;
@@ -38,11 +34,6 @@ class Serialize extends AbstractAnnotation
                 $this->$propertyName = $propertyValue;
             }
         }
-    }
-
-    public function getType(): string
-    {
-        return $this->type;
     }
 
     public function getWrapElement(): ?string
