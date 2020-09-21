@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
  * @Bos\Serialize(wrapElement="wrapperElement", group={"default"}, sortProperties=true)
  */
-class Person
+class Person extends AbstractPerson
 {
     /**
      * @var int
@@ -30,6 +30,7 @@ class Person
      * @var string
      *
      * @Bos\Normalize(group={"default"}, name="name_value")
+     * @Bos\Normalize(group={"parent_test"})
      */
     private $name;
 
@@ -254,6 +255,7 @@ class Person
      * @return string
      *
      * @Bos\Normalize(type="DateTime", name="dateOfBirth")
+     * @Bos\Normalize(type="DateTime", group={"parent_test"})
      */
     public function getDateOfBirth()
     {

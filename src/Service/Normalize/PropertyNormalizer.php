@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
+use BowlOfSoup\NormalizerBundle\Model\Store;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
@@ -41,16 +42,23 @@ class PropertyNormalizer extends AbstractNormalizer
     ): array {
         $this->sharedNormalizer = $sharedNormalizer;
         $this->group = $group;
-
-        $this->processedDepthObjects[$objectName] = $this->processedDepth;
+        $this->nameAndClassStore[$objectName] = new Store();
 
         $normalizedProperties = [];
+
+        $this->processedDepthObjects[$objectName] = $this->processedDepth;
         $classAnnotation = $this->getClassAnnotation($object);
 
         $classProperties = $this->propertyExtractor->getProperties($object);
+        /** @var \ReflectionProperty $classProperty */
         foreach ($classProperties as $classProperty) {
             $propertyAnnotations = $this->annotationExtractor->getAnnotationsForProperty(Normalize::class, $classProperty);
             if (empty($propertyAnnotations)) {
+                continue;
+            }
+
+            if ($this->isAlreadyNormalizedForObject($classProperty->getName(), $objectName, $classProperty->getDeclaringClass()->getName())) {
+                // Current $classProperty contains a value that has already been normalized in a child class.
                 continue;
             }
 
@@ -60,13 +68,21 @@ class PropertyNormalizer extends AbstractNormalizer
                 $object->__load();
             }
 
-            $normalizedProperties[] = $this->normalizeProperty(
+            $normalizedProperty = $this->normalizeProperty(
                 $object,
                 $classProperty,
                 $propertyAnnotations,
                 $classAnnotation
             );
+            if (empty($normalizedProperty)) {
+                continue;
+            }
+
+            $normalizedProperties[] = $normalizedProperty;
+            $this->storeNormalizedConstructForObject($classProperty->getName(), $objectName, $object);
         }
+
+        $this->cleanUpObject($objectName);
 
         return $normalizedProperties;
     }

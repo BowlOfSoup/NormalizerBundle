@@ -423,6 +423,18 @@ class NormalizerTest extends TestCase
         );
     }
 
+    public function testDontOverwriteChildConstructWithParent(): void
+    {
+        $person = (new Person())
+            ->setName('child-foo')
+            ->setDateOfBirth(new \DateTime('1987-11-17'));
+
+        $this->assertSame([
+            'name' => 'child-foo',
+            'getDateOfBirth' => '1987-11-17',
+        ], $this->normalizer->normalize($person, 'parent_test'));
+    }
+
     /**
      * @testdox Test an object being cached.
      */
