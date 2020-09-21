@@ -56,12 +56,17 @@ class MethodNormalizer extends AbstractNormalizer
 
             $classMethod->setAccessible(true);
 
-            $normalizedMethods[] = $this->normalizeMethod(
+            $normalizedMethod = $this->normalizeMethod(
                 $object,
                 $classMethod,
                 $methodAnnotations,
                 $classAnnotation
             );
+            if (empty($normalizedMethod)) {
+                continue;
+            }
+
+            $normalizedMethods[] = $normalizedMethod;
         }
 
         return $normalizedMethods;

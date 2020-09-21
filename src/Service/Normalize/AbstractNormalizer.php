@@ -34,11 +34,14 @@ abstract class AbstractNormalizer
     /** @var int */
     protected $maxDepth;
 
+    /** @var array */
+    protected $processedDepthObjects = [];
+
     /** @var int */
     protected $processedDepth = 0;
 
-    /** @var array */
-    public $processedDepthObjects = [];
+    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[] */
+    protected $nameAndClassStore;
 
     public function __construct(
         ClassExtractor $classExtractor,
@@ -53,6 +56,12 @@ abstract class AbstractNormalizer
     public function cleanUp(): void
     {
         $this->maxDepth = null;
+    }
+
+    public function cleanUpObject(string $name): void
+    {
+        // Reset name and class store for given object.
+        $this->nameAndClassStore[$name] = null;
     }
 
     public function cleanUpSession(): void
@@ -272,6 +281,26 @@ abstract class AbstractNormalizer
         }
 
         return $this->translator->trans($value, [], $translationAnnotation->getDomain(), $translationAnnotation->getLocale());
+    }
+
+    /**
+     * Checks a construct (property/method) against an existing entry in the store.
+     * If found, the construct has already been normalized.
+     */
+    protected function isAlreadyNormalizedForObject(string $constructName, string $baseObjectName, string $actualObjectName): bool
+    {
+        if (array_key_exists($baseObjectName, $this->nameAndClassStore) && $this->nameAndClassStore[$baseObjectName]->has($constructName)) {
+            $object = $this->nameAndClassStore[$baseObjectName]->get($constructName);
+
+            return is_subclass_of($object, $actualObjectName);
+        }
+
+        return false;
+    }
+
+    protected function storeNormalizedConstructForObject(string $constructName, string $baseObjectName, object $object): void
+    {
+        $this->nameAndClassStore[$baseObjectName]->set($constructName, $object);
     }
 
     private function isCircularReference(object $object, string $objectName): bool
