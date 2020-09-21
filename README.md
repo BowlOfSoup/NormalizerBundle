@@ -29,7 +29,7 @@ Quick feature overview
     - Indicate domain (translation filename) and locale in annotations
     - Does not support formatting with ICU MessageFormat (yet), so no parameters
 
-The main features are described in the corresponding annotations below.
+The main features are described in the [documentation](https://github.com/BowlOfSoup/NormalizerBundle/wiki).
 
 Documentation
 -----
