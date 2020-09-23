@@ -7,6 +7,7 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\ObjectBag;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
@@ -35,10 +36,12 @@ class MethodNormalizer extends AbstractNormalizer
      */
     public function normalize(
         Normalizer $sharedNormalizer,
-        string $objectName,
-        object $object,
+        ObjectBag $objectBag,
         ?string $group
     ): array {
+        $object = $objectBag->getObject();
+        $objectName = $objectBag->getObjectName();
+
         $this->sharedNormalizer = $sharedNormalizer;
         $this->group = $group;
 

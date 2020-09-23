@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\ObjectBag;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer;
@@ -50,9 +51,6 @@ class Normalizer
     /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
-     * In this method, 'new Normalize(array())' is used for PHP < 5.5 support.
-     * Normally we should use 'Normalize::class'
-     *
      * @throws \ReflectionException
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
@@ -70,10 +68,12 @@ class Normalizer
         }
         ObjectCache::resetObjectByNameAndIdentifier($objectName, $objectIdentifier);
 
-        $normalizedClassProperties = $this->propertyNormalizer->normalize($this, $objectName, $object, $group);
+        $objectBag = new ObjectBag($object, $objectIdentifier, $objectName);
+
+        $normalizedClassProperties = $this->propertyNormalizer->normalize($this, $objectBag, $group);
         $normalizedConstructs = array_merge($normalizedConstructs, ...$normalizedClassProperties);
 
-        $normalizedClassMethods = $this->methodNormalizer->normalize($this, $objectName, $object, $group);
+        $normalizedClassMethods = $this->methodNormalizer->normalize($this, $objectBag, $group);
         $normalizedConstructs = array_merge($normalizedConstructs, ...$normalizedClassMethods);
 
         if (null !== $objectIdentifier) {
