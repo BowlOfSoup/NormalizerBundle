@@ -3,3 +3,4 @@
 /tests/coverage/
 /build/
 *.cache
+/.idea

@@ -10,6 +10,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeProperty;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertySerialize;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyTranslate;
 use BowlOfSoup\NormalizerBundle\Tests\SerializerTestTrait;
+use Doctrine\Common\Annotations\AnnotationException;
 use PHPUnit\Framework\TestCase;
 
 class UnknownPropertyTest extends TestCase
@@ -33,8 +34,8 @@ class UnknownPropertyTest extends TestCase
         $unknownPropertyObject = new UnknownPropertyNormalizeProperty();
         $unknownPropertyObject->setName('foo');
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeProperty (name): Property "asdsad" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is unknown.');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Creation Error] An error occurred while instantiating the annotation @Bos\Normalize declared on property BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeProperty::$name: "Property "asdsad" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is unknown.');
 
         $this->normalizer->normalize($unknownPropertyObject, 'default');
     }
@@ -44,8 +45,8 @@ class UnknownPropertyTest extends TestCase
         $unknownPropertyObject = new UnknownPropertyNormalizeMethod();
         $unknownPropertyObject->setName('foo');
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeMethod (getName): Property "asdsad" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is unknown.');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Creation Error] An error occurred while instantiating the annotation @Bos\Normalize declared on method BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeMethod::getName(): "Property "asdsad" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is unknown.');
 
         $this->normalizer->normalize($unknownPropertyObject, 'default');
     }
@@ -55,8 +56,8 @@ class UnknownPropertyTest extends TestCase
         $unknownPropertyObject = new UnknownPropertySerialize();
         $unknownPropertyObject->setName('foo');
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertySerialize: Property "wrappElement" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is unknown.');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Creation Error] An error occurred while instantiating the annotation @Bos\Serialize declared on class BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertySerialize: "Property "wrappElement" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Serialize" is unknown.');
 
         $this->serializer->serialize($unknownPropertyObject, EncoderFactory::TYPE_XML, 'default');
     }
@@ -65,8 +66,8 @@ class UnknownPropertyTest extends TestCase
     {
         $unknownPropertyObject = new UnknownPropertyTranslate();
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyTranslate (name): Property "groupp" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Translate" is unknown.');
+        $this->expectException(AnnotationException::class);
+        $this->expectExceptionMessage('[Creation Error] An error occurred while instantiating the annotation @Bos\Translate declared on property BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyTranslate::$name: "Property "groupp" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Translate" is unknown.');
 
         $this->normalizer->normalize($unknownPropertyObject, 'default');
     }
