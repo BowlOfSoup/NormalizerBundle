@@ -11,9 +11,11 @@ jobs:
           env: SYMFONY_VERSION=4.4.*
         - php: 7.4
           env: SYMFONY_VERSION=5.0.*
-        - php: 8.2
+        - dist: "jammy"
+          php: 8.2
           env: SYMFONY_VERSION=5.0.*
-        - php: 8.2
+        - dist: "jammy"
+          php: 8.2
           env: SYMFONY_VERSION=6.0.*
     fast_finish: true
 
