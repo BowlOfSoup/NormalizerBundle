@@ -31,6 +31,7 @@ install:
   - mkdir -p tests/coverage
 
 script:
+  - vendor/bin/rector process --dry-run --no-progress-bar --ansi
   - php vendor/bin/phpunit
 
 after_script:
