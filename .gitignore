@@ -7,3 +7,4 @@
 /var/**
 !/var/**/
 !/var/**/.gitkeep
+/phpstan.neon
