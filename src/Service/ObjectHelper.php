@@ -15,7 +15,7 @@ class ObjectHelper
     {
         $objectId = self::getObjectId($object);
 
-        return null === $objectId ? static::hashObject($object) : $objectId;
+        return $objectId ?? static::hashObject($object);
     }
 
     /**

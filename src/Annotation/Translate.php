@@ -27,10 +27,10 @@ class Translate extends AbstractAnnotation
     {
         foreach ($properties as $propertyName => $propertyValue) {
             if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, __CLASS__));
+                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
             }
 
-            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], __CLASS__)) {
+            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
                 $this->$propertyName = $propertyValue;
             }
         }
