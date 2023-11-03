@@ -8,15 +8,15 @@ cache:
 jobs:
     include:
         - php: 7.4
-          env: SYMFONY_VERSION=4.4.*
+          env: SYMFONY_VERSION=^4.4
         - php: 7.4
-          env: SYMFONY_VERSION=5.0.*
+          env: SYMFONY_VERSION=^5.0
         - dist: "jammy"
           php: 8.2
-          env: SYMFONY_VERSION=5.0.*
+          env: SYMFONY_VERSION=^5.0
         - dist: "jammy"
           php: 8.2
-          env: SYMFONY_VERSION=6.0.*
+          env: SYMFONY_VERSION=^6.0
     fast_finish: true
 
 before_install:
@@ -26,7 +26,6 @@ before_install:
   - sudo mv composer.phar /usr/local/bin/composer
 
 install:
-  - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
   - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install
   - mkdir -p tests/coverage
 
