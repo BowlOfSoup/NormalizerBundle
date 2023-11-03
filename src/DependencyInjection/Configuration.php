@@ -14,20 +14,10 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('bowl_of_soup_normalizer');
 
-        if (is_callable([$treeBuilder, 'getRootNode'])) {
-            $treeBuilder
-                ->getRootNode()
-                ->children()
+        $treeBuilder->getRootNode()
+            ->children()
                 ->booleanNode('register_annotations')->defaultValue(false)->end()
-                ->end();
-        }
-        if (is_callable([$treeBuilder, 'root'])) {
-            $treeBuilder
-                ->root('bowl_of_soup_normalizer')
-                ->children()
-                ->booleanNode('register_annotations')->defaultValue(false)->end()
-                ->end();
-        }
+            ->end();
 
         return $treeBuilder;
     }

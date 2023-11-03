@@ -25,7 +25,8 @@ class MethodExtractor
         return $reflectedClass->getMethods(
             \ReflectionMethod::IS_PUBLIC |
             \ReflectionMethod::IS_PROTECTED |
-            \ReflectionMethod::IS_PRIVATE
+            \ReflectionMethod::IS_PRIVATE |
+            \ReflectionMethod::IS_STATIC
         );
     }
 }
