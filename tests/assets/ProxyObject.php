@@ -32,6 +32,7 @@ class ProxyObject implements Proxy
      */
     public function __isInitialized()
     {
+        return true;
     }
 
     /**
