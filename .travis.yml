@@ -13,13 +13,7 @@ jobs:
       env: SYMFONY_VERSION=~5.0
     - dist: "jammy"
       php: 8.2
-      env: SYMFONY_VERSION=~5.0
-    - dist: "jammy"
-      php: 8.2
-      env: SYMFONY_VERSION=~5.4
-    - dist: "jammy"
-      php: 8.2
-      env: SYMFONY_VERSION=~6.0
+      env: SYMFONY_VERSION=~5.1
   fast_finish: true
 
 before_install:
