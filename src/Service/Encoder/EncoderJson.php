@@ -30,8 +30,6 @@ class EncoderJson extends AbstractEncoder
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      */
     public function encode($value): string

@@ -11,9 +11,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class BowlOfSoupNormalizerExtension extends Extension
 {
-    /**
-     * @inheritdoc
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();

@@ -20,8 +20,6 @@ class EncoderXml extends AbstractEncoder
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      * @throws \Exception
      */
@@ -36,7 +34,7 @@ class EncoderXml extends AbstractEncoder
         }
 
         $xmlData = new \SimpleXMLElement(
-            '<?xml version="1.0"?>' . '<' . $this->wrapElement . '></' . $this->wrapElement . '>'
+            '<?xml version="1.0"?><' . $this->wrapElement . '></' . $this->wrapElement . '>'
         );
 
         try {

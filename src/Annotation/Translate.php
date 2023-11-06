@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
  * @Annotation
+ *
  * @Target({"PROPERTY","METHOD"})
  */
 class Translate extends AbstractAnnotation

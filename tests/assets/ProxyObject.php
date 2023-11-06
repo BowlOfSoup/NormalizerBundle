@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -16,16 +18,10 @@ class ProxyObject implements Proxy
 
     private string $proxyProperty = 'string';
 
-    /**
-     * {@inheritdoc}
-     */
     public function __load()
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __isInitialized()
     {
         return true;

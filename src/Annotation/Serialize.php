@@ -8,6 +8,7 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  * Register serialization, encoding properties.
  *
  * @Annotation
+ *
  * @Target({"CLASS"})
  */
 class Serialize extends AbstractAnnotation
@@ -15,7 +16,7 @@ class Serialize extends AbstractAnnotation
     private array $supportedProperties = [
         'group' => ['type' => 'array'],
         'wrapElement' => ['type' => 'string'],
-        'sortProperties' => ['type' => 'boolean']
+        'sortProperties' => ['type' => 'boolean'],
     ];
 
     private ?string $wrapElement = null;

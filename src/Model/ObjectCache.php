@@ -15,8 +15,8 @@ final class ObjectCache
     public static function hasObjectByNameAndIdentifier(string $objectName, $objectIdentifier): bool
     {
         return
-            array_key_exists($objectName, static::$processedObjectCache) &&
-            array_key_exists($objectIdentifier, static::$processedObjectCache[$objectName]);
+            array_key_exists($objectName, static::$processedObjectCache)
+            && array_key_exists($objectIdentifier, static::$processedObjectCache[$objectName]);
     }
 
     /**

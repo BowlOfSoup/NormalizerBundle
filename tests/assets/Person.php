@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -14,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0OnMethodWithObject"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1OnMethod"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
+ *
  * @Bos\Serialize(wrapElement="wrapperElement", group={"default"}, sortProperties=true)
  */
 class Person extends AbstractPerson
@@ -22,6 +25,7 @@ class Person extends AbstractPerson
      * @var int
      *
      * @Bos\Normalize(group={"default", "translation"})
+     *
      * @Bos\Translate(group={"translation"})
      */
     private $id;
@@ -53,6 +57,7 @@ class Person extends AbstractPerson
      *
      * @Bos\Normalize()
      * @Bos\Normalize(group={"translation"})
+     *
      * @Bos\Translate(group={"translation"})
      */
     private $gender;
@@ -287,7 +292,7 @@ class Person extends AbstractPerson
      * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y")
      * @Bos\Normalize(group={"methodWithCallback"}, type="DateTime", format="M. Y", callback="getAddresses")
      */
-    public function calculateDeceasedDate(): \DateTime
+    public function calculateDeceasedDate(): DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -295,7 +300,7 @@ class Person extends AbstractPerson
     /**
      * @Bos\Normalize(group={"methodWithCallbackAndNoType"}, callback="getAddresses")
      */
-    public function calculateDeceasedDate2(): \DateTime
+    public function calculateDeceasedDate2(): DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -482,6 +487,7 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"translation"})
+     *
      * @Bos\Translate()
      */
     protected function translateMeThis(): string

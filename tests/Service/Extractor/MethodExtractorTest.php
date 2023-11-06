@@ -11,7 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 class MethodExtractorTest extends TestCase
 {
-    /** @var \PHPUnit\Framework\MockObject\MockObject */
     private MockObject $methodExtractor;
 
     protected function setUp(): void

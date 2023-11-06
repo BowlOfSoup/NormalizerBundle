@@ -24,7 +24,7 @@ class AnnotationExtractor
     public function __construct(string $cacheDir = null, bool $debugMode = false)
     {
         if (null !== $cacheDir) {
-            $cacheDir = $cacheDir . '/annotations';
+            $cacheDir .= '/annotations';
             $this->createDirectory($cacheDir);
 
             if ($this->directoryExits($cacheDir)) {

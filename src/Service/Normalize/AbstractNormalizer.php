@@ -70,7 +70,7 @@ abstract class AbstractNormalizer
     {
         $value = $this->classExtractor->getId($object);
         if (null === $value) {
-            throw new BosNormalizerException('Maximal depth reached, but no identifier found. ' . 'Prevent this by adding a getId() method to ' . get_class($object));
+            throw new BosNormalizerException('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to ' . get_class($object));
         }
 
         return $value;

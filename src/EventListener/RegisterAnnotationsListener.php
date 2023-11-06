@@ -12,17 +12,11 @@ class RegisterAnnotationsListener implements EventSubscriberInterface
 {
     private ?bool $parameterRegisterAnnotations = null;
 
-    /**
-     * @param bool $parameterRegisterAnnotations
-     */
-    public function __construct(?bool $parameterRegisterAnnotations = null)
+    public function __construct(bool $parameterRegisterAnnotations = null)
     {
         $this->parameterRegisterAnnotations = $parameterRegisterAnnotations;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getSubscribedEvents(): array
     {
         return [

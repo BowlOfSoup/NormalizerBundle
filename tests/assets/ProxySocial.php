@@ -8,24 +8,15 @@ use Doctrine\Persistence\Proxy;
 
 class ProxySocial extends Social implements Proxy
 {
-    /**
-     * {@inheritdoc}
-     */
     public function __load()
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __isInitialized()
     {
         return true;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getFacebook()
     {
         return parent::getFacebook();
