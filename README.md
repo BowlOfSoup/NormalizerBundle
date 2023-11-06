@@ -52,3 +52,35 @@ Why use this normalizer and not ...
 - It's designed with speed in mind. Not packed with features for which you don't use half of it
 - It has proven itself in a complex application with 15.000+ daily end users
 
+Development
+-----
+The following CI tools can be used to check for code quality before pushing code:
+
+### Rector
+Rector can be used to automated code upgrades and refactoring. Try a dry-run first!
+```bash
+vendor/bin/rector process --dry-run --no-progress-bar --ansi
+```
+
+### PHPStan
+PHPStan is a static code analysis tool that focuses on finding errors in the code.
+Fixing the outcome of PHPStan prevents possible bugs and errors.
+```bash
+vendor/bin/phpstan
+```
+
+### PHPUnit
+Speaks for itself, code should be tested. Run with coverage (output = tests/coverage):
+```bash
+XDEBUG_MODE=coverage php -dzend_extension=xdebug.so vendor/bin/phpunit 
+```
+Or without coverage:
+```bash
+vendor/bin/phpunit
+```
+
+### Code style fixer
+Have php-cs-fixer automatically fix styling.
+```bash
+vendor/bin/php-cs-fixer fix
+```

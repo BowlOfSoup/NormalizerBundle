@@ -29,6 +29,3 @@ script:
   - vendor/bin/rector process --dry-run --no-progress-bar --ansi
   - vendor/bin/phpstan analyze --no-progress --ansi
   - XDEBUG_MODE=coverage php vendor/bin/phpunit
-
-after_script:
-  - php vendor/bin/php-coveralls -v

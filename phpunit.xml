@@ -5,7 +5,7 @@
       <directory suffix=".php">src</directory>
     </include>
     <exclude>
-      <file>BowlOfSoupNormalizerBundle.php</file>
+      <file>src/BowlOfSoupNormalizerBundle.php</file>
       <directory>src/DependencyInjection</directory>
       <directory>src/EventListener</directory>
       <directory>src/Exception</directory>
