@@ -20,6 +20,7 @@ class ProxySocial extends Social implements Proxy
      */
     public function __isInitialized()
     {
+        return true;
     }
 
     /**

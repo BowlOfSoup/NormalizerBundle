@@ -4,3 +4,7 @@
 /build/
 *.cache
 /.idea
+/var/**
+!/var/**/
+!/var/**/.gitkeep
+/phpstan.neon

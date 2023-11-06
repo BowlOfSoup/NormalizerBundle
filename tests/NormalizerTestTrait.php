@@ -45,15 +45,26 @@ trait NormalizerTestTrait
         $annotationExtractor = $this->annotationExtractor ?? new AnnotationExtractor();
 
         /** @var \PHPUnit\Framework\MockObject\MockBuilder $translationMockBuilder */
-        $translationMockBuilder = $this->getMockBuilder(TranslatorInterface::class);
-        $translationMockBuilder->disableOriginalConstructor();
+        $translationMockBuilder = $this->getMockBuilder(TranslatorInterface::class)
+            ->disableOriginalConstructor();
+
+        $mockMethodsTranslator = ['trans'];
+        if (method_exists(TranslatorInterface::class, 'getLocale')) { // Support for Symfony < 6
+            $mockMethodsTranslator[] = 'getLocale';
+        }
 
         $this->translator = $translationMockBuilder
-            ->onlyMethods(['trans'])
+            ->onlyMethods($mockMethodsTranslator)
             ->getMock();
         $this->translator
             ->method('trans')
             ->willReturn('translatedValue');
+
+        if (method_exists(TranslatorInterface::class, 'getLocale')) { // Support for Symfony < 6
+            $this->translator
+                ->method('getLocale')
+                ->willReturn('en');
+        }
 
         $propertyNormalizer = $this->propertyNormalizer ?? new PropertyNormalizer($classExtractor, $this->translator, $annotationExtractor, $propertyExtractor);
         $methodNormalizer = $this->methodNormalizer ?? new MethodNormalizer($classExtractor, $this->translator, $annotationExtractor, $methodExtractor);

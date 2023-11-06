@@ -11,8 +11,6 @@ class MethodExtractor
 
     /**
      * @param object|string $object
-     *
-     * @throws \ReflectionException
      */
     public function getMethods($object): array
     {
@@ -22,10 +20,30 @@ class MethodExtractor
 
         $reflectedClass = new \ReflectionClass($object);
 
-        return $reflectedClass->getMethods(
+        $methods = $reflectedClass->getMethods(
             \ReflectionMethod::IS_PUBLIC |
             \ReflectionMethod::IS_PROTECTED |
-            \ReflectionMethod::IS_PRIVATE
+            \ReflectionMethod::IS_PRIVATE |
+            \ReflectionMethod::IS_STATIC
         );
+
+        $parentClass = $reflectedClass->getParentClass();
+        if ($parentClass) {
+            // Since PHP >= 8 it will not get the private methods of an abstract, get it explicitly.
+            $parentPrivateMethods = $parentClass->getMethods(\ReflectionMethod::IS_PRIVATE);
+            $methods = array_merge($methods, $parentPrivateMethods);
+
+            // Make sure methods are unique (will happen if PHP < 8)
+            $uniqueMethods = [];
+            foreach ($methods as $key => $method) {
+                $id = $method->class . ':' . $method->name;
+                if (isset($uniqueMethods[$id])) {
+                    unset($methods[$key]);
+                }
+                $uniqueMethods[$id] = true;
+            }
+        }
+
+        return $methods;
     }
 }
