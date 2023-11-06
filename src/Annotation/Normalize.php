@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
@@ -10,8 +12,7 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  */
 class Normalize extends AbstractAnnotation
 {
-    /** @var array */
-    private $supportedProperties = [
+    private array $supportedProperties = [
         'name' => ['type' => 'string'],
         'group' => ['type' => 'array'],
         'type' => ['type' => 'string', 'assert' => ['collection', 'datetime', 'object']],
@@ -22,26 +23,13 @@ class Normalize extends AbstractAnnotation
         'maxDepth' => ['type' => 'integer'],
     ];
 
-    /** @var string */
-    private $name;
-
-    /** @var string */
-    private $format;
-
-    /** @var string */
-    private $callback;
-
-    /** @var bool */
-    private $normalizeCallbackResult = false;
-
-    /** @var bool */
-    private $skipEmpty = false;
-
-    /** @var int */
-    private $maxDepth;
-
-    /** @var string */
-    protected $type;
+    private ?string $name = null;
+    private ?string $format = null;
+    private ?string $callback = null;
+    private bool $normalizeCallbackResult = false;
+    private bool $skipEmpty = false;
+    private ?int $maxDepth = null;
+    protected ?string $type = null;
 
     public function __construct(array $properties)
     {
@@ -95,7 +83,7 @@ class Normalize extends AbstractAnnotation
         return $this->maxDepth;
     }
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }

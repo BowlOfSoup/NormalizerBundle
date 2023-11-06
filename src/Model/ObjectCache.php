@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Model;
 
-class ObjectCache
+final class ObjectCache
 {
-    /** @var array */
-    private static $processedObjects = [];
-
-    /** @var array */
-    private static $processedObjectCache = [];
+    private static array $processedObjects = [];
+    private static array $processedObjectCache = [];
 
     /**
      * @param mixed $objectIdentifier
-     *
-     * @return mixed
      */
-    public static function hasObjectByNameAndIdentifier(string $objectName, $objectIdentifier)
+    public static function hasObjectByNameAndIdentifier(string $objectName, $objectIdentifier): bool
     {
         return
             array_key_exists($objectName, static::$processedObjectCache) &&

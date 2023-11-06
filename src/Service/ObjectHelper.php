@@ -7,7 +7,7 @@ namespace BowlOfSoup\NormalizerBundle\Service;
 class ObjectHelper
 {
     /**
-     * @param object $object
+     * @param mixed $object
      *
      * @return int|string
      */
@@ -15,7 +15,7 @@ class ObjectHelper
     {
         $objectId = self::getObjectId($object);
 
-        return $objectId ?? static::hashObject($object);
+        return $objectId ?? self::hashObject($object);
     }
 
     /**
@@ -42,17 +42,15 @@ class ObjectHelper
             return null;
         }
 
-        $serializedObject = static::serializeObject($object);
+        $serializedObject = self::serializeObject($object);
 
         return null !== $serializedObject ? hash($algorithm, $serializedObject) : null;
     }
 
     /**
-     * @param object $object
-     *
      * @codeCoverageIgnore
      */
-    private static function serializeObject(object $object)
+    private static function serializeObject(object $object): ?string
     {
         try {
             return serialize($object);

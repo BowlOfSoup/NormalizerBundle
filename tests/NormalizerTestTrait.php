@@ -33,7 +33,7 @@ trait NormalizerTestTrait
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
     protected $annotationExtractor;
 
-    /** @var \Symfony\Contracts\Translation\TranslatorInterface|\PHPUnit\Framework\MockObject\Stub\Stub */
+    /** @var \Symfony\Contracts\Translation\TranslatorInterface|\PHPUnit\Framework\MockObject\Stub\Stub|\PHPUnit\Framework\MockObject\MockObject */
     protected $translator;
 
     public function getNormalizer(): Normalizer
@@ -44,7 +44,7 @@ trait NormalizerTestTrait
 
         $annotationExtractor = $this->annotationExtractor ?? new AnnotationExtractor();
 
-        /** @var \PHPUnit\Framework\MockObject\MockBuilder $translationMockBuilder */
+        /** @var \PHPUnit\Framework\MockObject\MockBuilder|\PHPUnit\Framework\MockObject\MockObject $translationMockBuilder */
         $translationMockBuilder = $this->getMockBuilder(TranslatorInterface::class)
             ->disableOriginalConstructor();
 

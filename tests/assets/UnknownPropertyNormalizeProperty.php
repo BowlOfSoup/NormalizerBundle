@@ -9,11 +9,9 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class UnknownPropertyNormalizeProperty
 {
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"}, asdsad="asdsad")
      */
-    private $name;
+    private ?string $name = null;
 
     /**
      * @return $this

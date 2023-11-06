@@ -17,8 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PropertyNormalizer extends AbstractNormalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor */
-    private $propertyExtractor;
+    private PropertyExtractor $propertyExtractor;
 
     public function __construct(
         ClassExtractor $classExtractor,

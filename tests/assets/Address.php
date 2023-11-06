@@ -36,11 +36,9 @@ class Address
     private $city;
 
     /**
-     * @var Collection
-     *
      * @Bos\Normalize(group={"maxDepthTestDepth1"}, type="collection")
      */
-    private $group;
+    private ?Collection $group = null;
 
     /**
      * @return string

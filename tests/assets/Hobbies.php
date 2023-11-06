@@ -7,11 +7,9 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class Hobbies
 {
     /**
-     * @var int
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @var string

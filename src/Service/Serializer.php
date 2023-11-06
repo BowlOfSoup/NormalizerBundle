@@ -11,11 +11,8 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 
 class Serializer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
-    private $annotationExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    private $normalizer;
+    private AnnotationExtractor $annotationExtractor;
+    private Normalizer $normalizer;
 
     public function __construct(
         AnnotationExtractor $annotationExtractor,

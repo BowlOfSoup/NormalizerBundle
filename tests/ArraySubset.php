@@ -19,17 +19,10 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  *
  * @codeCoverageIgnore
  */
-final class ArraySubset extends Constraint
+class ArraySubset extends Constraint
 {
-    /**
-     * @var iterable
-     */
-    private $subset;
-
-    /**
-     * @var bool
-     */
-    private $strict;
+    private iterable $subset;
+    private bool $strict;
 
     public function __construct(iterable $subset, bool $strict = false)
     {
@@ -59,7 +52,7 @@ final class ArraySubset extends Constraint
             throw InvalidArgumentException::create(2, 'array or ArrayAccess');
         }
 
-        $constraint = new static($subset, $checkForObjectIdentity);
+        $constraint = new self($subset, $checkForObjectIdentity);
 
         Assert::assertThat($array, $constraint, $message);
     }
@@ -77,7 +70,7 @@ final class ArraySubset extends Constraint
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
      */
-    public function evaluate($other, string $description = '', bool $returnResult = false)
+    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
     {
         //type cast $other & $this->subset as an array to allow
         //support in standard array functions.
@@ -106,6 +99,8 @@ final class ArraySubset extends Constraint
 
             $this->fail($other, $description, $f);
         }
+
+        return null;
     }
 
     /**

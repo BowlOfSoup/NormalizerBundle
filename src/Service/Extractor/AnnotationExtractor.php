@@ -16,8 +16,7 @@ class AnnotationExtractor
     /** @var \Doctrine\Common\Annotations\Reader */
     protected $annotationReader;
 
-    /** @var array */
-    private $annotationCache = [];
+    private array $annotationCache = [];
 
     /**
      * @codeCoverageIgnore

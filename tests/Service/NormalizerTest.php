@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
@@ -25,8 +26,7 @@ class NormalizerTest extends TestCase
 {
     use NormalizerTestTrait;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    private $normalizer;
+    private Normalizer $normalizer;
 
     protected function setUp(): void
     {

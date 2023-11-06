@@ -3,22 +3,18 @@
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Persistence\Proxy;
 
 class ProxyObject implements Proxy
 {
-    /** @var string */
-    private $id = '123';
+    private string $id = '123';
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $value = 'Hello';
+    private string $value = 'Hello';
 
-    /** @var string */
-    private $proxyProperty = 'string';
+    private string $proxyProperty = 'string';
 
     /**
      * {@inheritdoc}

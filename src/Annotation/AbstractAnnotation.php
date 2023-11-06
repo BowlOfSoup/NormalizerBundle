@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 abstract class AbstractAnnotation
@@ -9,8 +11,7 @@ abstract class AbstractAnnotation
     protected const EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
     protected const EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
 
-    /** @var array */
-    protected $group = [];
+    protected array $group = [];
 
     public function getGroup(): array
     {

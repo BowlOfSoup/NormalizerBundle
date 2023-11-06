@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Persistence\Proxy;
 
 class ProxySocial extends Social implements Proxy
 {

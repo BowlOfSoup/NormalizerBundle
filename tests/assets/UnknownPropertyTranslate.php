@@ -9,10 +9,8 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class UnknownPropertyTranslate
 {
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      * @Bos\Translate(groupp={"default"})
      */
-    private $name = 'foo';
+    private string $name = 'foo';
 }

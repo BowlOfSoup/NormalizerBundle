@@ -11,14 +11,9 @@ use BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer;
 
 class Normalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
-    protected $classExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer */
-    private $propertyNormalizer;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer */
-    private $methodNormalizer;
+    protected ClassExtractor $classExtractor;
+    private PropertyNormalizer $propertyNormalizer;
+    private MethodNormalizer $methodNormalizer;
 
     public function __construct(
         ClassExtractor $classExtractor,

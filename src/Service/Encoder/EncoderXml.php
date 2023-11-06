@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
@@ -12,9 +14,6 @@ class EncoderXml extends AbstractEncoder
     /** @var string */
     protected const EXCEPTION_PREFIX = 'Error when encoding XML: ';
 
-    /**
-     * @inheritdoc
-     */
     public function getType(): string
     {
         return EncoderFactory::TYPE_XML;
@@ -24,6 +23,7 @@ class EncoderXml extends AbstractEncoder
      * @inheritdoc
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws \Exception
      */
     public function encode($value): ?string
     {

@@ -93,7 +93,7 @@ class EncoderJsonTest extends TestCase
             ->disableOriginalConstructor()
             ->setMethods(['jsonLastErrorMsgExists']);
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson $encoderJson */
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson|\PHPUnit\Framework\MockObject\MockObject $encoderJson */
         $encoderJson = $mockBuilder->getMock();
         $encoderJson
             ->expects($this->any())

@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class AnnotationExtractorTest extends TestCase
 {
     /** @var string */
-    private const ANNOTATION_NORMALIZE = Normalize::class;
+    protected const ANNOTATION_NORMALIZE = Normalize::class;
 
     /**
      * @testdox Extracting class annotations.
@@ -31,7 +31,7 @@ class AnnotationExtractorTest extends TestCase
         $someClass = new SomeClass();
         $reflectedClass = new \ReflectionClass($someClass);
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
+        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -82,7 +82,7 @@ class AnnotationExtractorTest extends TestCase
 
         $annotationResult = [$annotation];
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
+        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -119,7 +119,7 @@ class AnnotationExtractorTest extends TestCase
 
         $annotationResult = [$annotation];
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
+        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()

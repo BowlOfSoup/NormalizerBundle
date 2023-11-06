@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
+use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeMethod;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeProperty;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertySerialize;
@@ -17,11 +19,8 @@ class UnknownPropertyTest extends TestCase
 {
     use SerializerTestTrait;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    private $normalizer;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Serializer */
-    private $serializer;
+    private Normalizer $normalizer;
+    private Serializer $serializer;
 
     public function setUp(): void
     {

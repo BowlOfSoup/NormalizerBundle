@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
@@ -10,18 +12,14 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  */
 class Serialize extends AbstractAnnotation
 {
-    /** @var array */
-    private $supportedProperties = [
+    private array $supportedProperties = [
         'group' => ['type' => 'array'],
         'wrapElement' => ['type' => 'string'],
         'sortProperties' => ['type' => 'boolean']
     ];
 
-    /** @var string */
-    private $wrapElement;
-
-    /** @var bool */
-    private $sortProperties = false;
+    private ?string $wrapElement = null;
+    private bool $sortProperties = false;
 
     public function __construct(array $properties)
     {

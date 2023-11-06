@@ -58,16 +58,11 @@ class Person extends AbstractPerson
     private $gender;
 
     /**
-     * @var DateTime
-     *
      * @Bos\Normalize(group={"default"}, type="DateTime", format="Y-m-d")
      */
-    private $dateOfBirth;
+    private ?\DateTime $dateOfBirth = null;
 
-    /**
-     * @var DateTime
-     */
-    private $dateOfRegistration;
+    private ?\DateTime $dateOfRegistration = null;
 
     /**
      * @var DateTime
@@ -77,28 +72,22 @@ class Person extends AbstractPerson
     private $deceasedDate;
 
     /**
-     * @var Collection
-     *
      * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
      * @Bos\Normalize(group={"anotherGroup"}, type="collection")
      */
-    private $addresses;
+    private ?Collection $addresses = null;
 
     /**
-     * @var Social
-     *
      * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
      */
-    private $social;
+    private ?Social $social = null;
 
     /**
-     * @var TelephoneNumbers
-     *
      * @Bos\Normalize(group={"default"}, type="object", callback="toArray")
      */
-    private $telephoneNumbers;
+    private ?TelephoneNumbers $telephoneNumbers = null;
 
     /**
      * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
@@ -122,7 +111,7 @@ class Person extends AbstractPerson
     /**
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
      */
-    private $validCollectionPropertyWithCallback;
+    private ?array $validCollectionPropertyWithCallback = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallback", normalizeCallbackResult=true)
@@ -145,11 +134,9 @@ class Person extends AbstractPerson
     private $testForNormalizingCallbackArray;
 
     /**
-     * @var ProxyObject
-     *
      * @Bos\Normalize(group={"default"}, type="object")
      */
-    private $testForProxy;
+    private ?ProxyObject $testForProxy = null;
 
     /**
      * @return int
@@ -252,7 +239,7 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return string
+     * @return \DateTime
      *
      * @Bos\Normalize(type="DateTime", name="dateOfBirth")
      * @Bos\Normalize(type="DateTime", group={"parent_test"})

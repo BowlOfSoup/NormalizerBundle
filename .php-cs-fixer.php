@@ -218,8 +218,7 @@ final class CustomFinder extends Finder
     }
 }
 
-/* Based on dev-master|^2.0 of php-cs-fixer */
-return Config::create()
+return (new Config())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
@@ -233,17 +232,21 @@ return Config::create()
         'no_blank_lines_before_namespace' => false,
         'ordered_imports' => true,
         'phpdoc_align' => false,
-        'phpdoc_inline_tag' => false,
+        'general_phpdoc_tag_rename' => false,
         'phpdoc_order' => true,
         'simplified_null_return' => false,
-        'binary_operator_spaces' => [
-            'align_double_arrow' => false,
-            'align_equals' => false
-        ],
         'no_unused_imports' => true,
         'declare_strict_types' => true,
         'final_internal_class' => false,
-        'general_phpdoc_annotation_remove' => ['author', 'copyright', 'category', 'version'],
+        'general_phpdoc_annotation_remove' => [
+            'annotations' => [
+                'author',
+                'copyright',
+                'category',
+                'version',
+            ],
+            'case_sensitive' => false,
+        ],
         'global_namespace_import' => ['import_classes' => null],
         'list_syntax' => ['syntax' => 'short'],
         'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'], // according to the documentation this is the default, but it ain't

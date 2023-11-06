@@ -9,11 +9,9 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 abstract class AbstractPerson
 {
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"parent_test"})
      */
-    private $name = 'parent-foo';
+    private string $name = 'parent-foo';
 
     /**
      * @Bos\Normalize(type="DateTime", group={"parent_test"})

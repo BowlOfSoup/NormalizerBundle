@@ -25,7 +25,7 @@ class Group
      *
      * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
      */
-    private $persons;
+    private ?array $persons = null;
 
     /**
      * @return int
@@ -76,7 +76,7 @@ class Group
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[] $persons
      *
      * @return $this
      */

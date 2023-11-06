@@ -4,11 +4,9 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 class SomeClass extends AbstractClass
 {
-    private $property32 = 123;
-
-    public $property53 = 'string';
-
-    private $property76 = 'another value';
+    private int $property32 = 123;
+    public string $property53 = 'string';
+    private string $property76 = 'another value';
 
     public function getProperty32()
     {
