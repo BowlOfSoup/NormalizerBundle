@@ -28,7 +28,7 @@ install:
 script:
   - vendor/bin/rector process --dry-run --no-progress-bar --ansi
   - vendor/bin/phpstan analyze --no-progress --ansi
-  - php vendor/bin/phpunit
+  - php XDEBUG_MODE=coverage vendor/bin/phpunit
 
 after_script:
   - php vendor/bin/php-coveralls -v
