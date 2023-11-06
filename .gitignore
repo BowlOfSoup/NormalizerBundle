@@ -3,3 +3,5 @@
 /tests/coverage/
 /build/
 *.cache
+var/
+.idea/

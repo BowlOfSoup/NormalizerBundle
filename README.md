@@ -3,8 +3,9 @@ Bowl Of Soup Normalizer
 
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
 [![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
-[![Minimum PHP Version](https://img.shields.io/badge/php-%3E%3D%207.2-blue.svg?no-cache=1)](https://php.net/)
-[![Minimum Symfony Version](https://img.shields.io/badge/symfony-%3E%3D%204.4-green.svg)](https://symfony.com/)
+[![PHP Version](https://img.shields.io/badge/php-7.2.x%20--%208.2.x-blue.svg)](https://www.php.net/)
+[![Symfony Version](https://img.shields.io/badge/symfony-4.4.x%20--%205.1.x-blue.svg)](https://symfony.com/)
+
 
 Installation
 -----
