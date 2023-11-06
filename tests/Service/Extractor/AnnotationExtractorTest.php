@@ -33,7 +33,7 @@ class AnnotationExtractorTest extends TestCase
 
         /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
         $mockAnnotationReader = $this
-            ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')
+            ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
             ->setMethods(['getClassAnnotations'])
             ->getMock();
@@ -55,7 +55,7 @@ class AnnotationExtractorTest extends TestCase
     {
         /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
         $mockAnnotationReader = $this
-            ->getMockBuilder('Doctrine\Common\Annotations\AnnotationReader')
+            ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
             ->getMock();
 

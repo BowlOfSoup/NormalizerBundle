@@ -19,7 +19,7 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  *
  * @codeCoverageIgnore
  */
-class ArraySubset extends Constraint
+final class ArraySubset extends Constraint
 {
     /**
      * @var iterable

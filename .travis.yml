@@ -1,36 +1,36 @@
 language: php
-sudo: true
+os: linux
 
 cache:
   directories:
     - $HOME/.composer/cache
 
-matrix:
-    include:
-        - php: 7.2
-          env: SYMFONY_VERSION=4.4.*
-        - php: 7.3
-          env: SYMFONY_VERSION=4.4.*
-        - php: 7.4
-          env: SYMFONY_VERSION=4.4.*
-        - php: 7.2
-          env: SYMFONY_VERSION=5.0.*
-        - php: 7.3
-          env: SYMFONY_VERSION=5.0.*
-        - php: 7.4
-          env: SYMFONY_VERSION=5.0.*
-    fast_finish: true
+jobs:
+  include:
+    - php: 7.4
+      env: SYMFONY_VERSION=~4.4
+    - php: 7.4
+      env: SYMFONY_VERSION=~5.1
+    - dist: "jammy"
+      php: 8.2
+      env: SYMFONY_VERSION=~5.1
+  fast_finish: true
 
-before_script:
-    - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
-    - composer install
+before_install:
+  - php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+  - php composer-setup.php --version=1.10.22
+  - php -r "unlink('composer-setup.php');"
+  - sudo mv composer.phar /usr/local/bin/composer
+
+install:
+  - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
+  - COMPOSER_MEMORY_LIMIT=-1 travis_retry composer install
+  - mkdir -p tests/coverage
 
 script:
-    - mkdir -p tests/coverage
-    - php vendor/bin/phpunit
+  - vendor/bin/rector process --dry-run --no-progress-bar --ansi
+  - vendor/bin/phpstan analyze --no-progress --ansi
+  - php vendor/bin/phpunit
 
 after_script:
-    - php vendor/bin/coveralls -v
-
-before_install: 
-    - echo "memory_limit=2048M" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - php vendor/bin/coveralls -v
