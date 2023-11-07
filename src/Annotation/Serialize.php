@@ -1,24 +1,27 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
  * Register serialization, encoding properties.
  *
  * @Annotation
+ *
  * @Target({"CLASS"})
  */
 class Serialize extends AbstractAnnotation
 {
-    /** @var array */
+    /** @var array|array[] */
     private $supportedProperties = [
         'group' => ['type' => 'array'],
         'wrapElement' => ['type' => 'string'],
-        'sortProperties' => ['type' => 'boolean']
+        'sortProperties' => ['type' => 'boolean'],
     ];
 
-    /** @var string */
-    private $wrapElement;
+    /** @var string|null */
+    private $wrapElement = null;
 
     /** @var bool */
     private $sortProperties = false;

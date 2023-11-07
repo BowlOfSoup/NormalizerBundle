@@ -12,9 +12,9 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class UnknownPropertySerialize
 {
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"}, asdsad="asdsad")
+     *
+     * @var string
      */
     private $name;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
@@ -12,18 +14,14 @@ class EncoderXml extends AbstractEncoder
     /** @var string */
     protected const EXCEPTION_PREFIX = 'Error when encoding XML: ';
 
-    /**
-     * @inheritdoc
-     */
     public function getType(): string
     {
         return EncoderFactory::TYPE_XML;
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws \Exception
      */
     public function encode($value): ?string
     {
@@ -36,7 +34,7 @@ class EncoderXml extends AbstractEncoder
         }
 
         $xmlData = new \SimpleXMLElement(
-            '<?xml version="1.0"?>' . '<' . $this->wrapElement . '></' . $this->wrapElement . '>'
+            '<?xml version="1.0"?><' . $this->wrapElement . '></' . $this->wrapElement . '>'
         );
 
         try {

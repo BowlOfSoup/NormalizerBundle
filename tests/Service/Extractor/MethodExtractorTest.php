@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class MethodExtractorTest extends TestCase
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor|\PHPUnit\Framework\MockObject\MockObject */
+    /** @var \PHPUnit\Framework\MockObject\MockObject|(\BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor&\PHPUnit\Framework\MockObject\MockObject) */
     private $methodExtractor;
 
     protected function setUp(): void
@@ -18,7 +18,7 @@ class MethodExtractorTest extends TestCase
         $this->methodExtractor = $this
             ->getMockBuilder(MethodExtractor::class)
             ->disableOriginalConstructor()
-            ->setMethods(null)
+            ->addMethods([])
             ->getMock();
     }
 
@@ -27,7 +27,9 @@ class MethodExtractorTest extends TestCase
      */
     public function testGetMethodsForNothing(): void
     {
-        $result = $this->methodExtractor->getMethods('foo');
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor $methodExtractor */
+        $methodExtractor = $this->methodExtractor;
+        $result = $methodExtractor->getMethods('foo');
 
         $this->assertEmpty($result);
         $this->assertIsArray($result);
@@ -39,7 +41,10 @@ class MethodExtractorTest extends TestCase
     public function testGetMethods()
     {
         $someClass = new SomeClass();
-        $methods = $this->methodExtractor->getMethods($someClass);
+
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor $methodExtractor */
+        $methodExtractor = $this->methodExtractor;
+        $methods = $methodExtractor->getMethods($someClass);
         $this->assertCount(8, $methods);
 
         $method = $methods[0];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\EventListener;
 
 use Doctrine\Common\Annotations\AnnotationRegistry;
@@ -8,20 +10,14 @@ use Symfony\Component\HttpKernel\Event\KernelEvent;
 
 class RegisterAnnotationsListener implements EventSubscriberInterface
 {
-    /** @var bool */
-    private $parameterRegisterAnnotations;
+    /** @var bool|null */
+    private $parameterRegisterAnnotations = null;
 
-    /**
-     * @param bool $parameterRegisterAnnotations
-     */
-    public function __construct($parameterRegisterAnnotations)
+    public function __construct(bool $parameterRegisterAnnotations = null)
     {
         $this->parameterRegisterAnnotations = $parameterRegisterAnnotations;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getSubscribedEvents(): array
     {
         return [

@@ -16,7 +16,7 @@ class ObjectBag
     private $objectName;
 
     /**
-     * @param string|int $objectId
+     * @param mixed $objectIdentifier
      */
     public function __construct(
         object $object,

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
+use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeMethod;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertyNormalizeProperty;
 use BowlOfSoup\NormalizerBundle\Tests\assets\UnknownPropertySerialize;

@@ -83,7 +83,7 @@ class EncoderXmlTest extends TestCase
         $mockBuilder = $this
             ->getMockBuilder(EncoderXml::class)
             ->disableOriginalConstructor()
-            ->setMethods(['arrayToXml']);
+            ->onlyMethods(['arrayToXml']);
         $encoderXml = $mockBuilder->getMock();
         $encoderXml
             ->expects($this->any())

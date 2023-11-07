@@ -10,14 +10,15 @@ use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
+use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    protected $sharedNormalizer;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer|null */
+    protected $sharedNormalizer = null;
 
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
     protected $classExtractor;
@@ -28,11 +29,11 @@ abstract class AbstractNormalizer
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
     protected $annotationExtractor;
 
-    /** @var string */
-    protected $group;
+    /** @var string|null */
+    protected $group = null;
 
-    /** @var int */
-    protected $maxDepth;
+    /** @var int|null */
+    protected $maxDepth = null;
 
     /** @var array */
     protected $processedDepthObjects = [];
@@ -40,8 +41,8 @@ abstract class AbstractNormalizer
     /** @var int */
     protected $processedDepth = 0;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[] */
-    protected $nameAndClassStore;
+    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[]|array|null */
+    protected $nameAndClassStore = null;
 
     public function __construct(
         ClassExtractor $classExtractor,
@@ -83,7 +84,7 @@ abstract class AbstractNormalizer
     {
         $value = $this->classExtractor->getId($object);
         if (null === $value) {
-            throw new BosNormalizerException('Maximal depth reached, but no identifier found. ' . 'Prevent this by adding a getId() method to ' . get_class($object));
+            throw new BosNormalizerException('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to ' . get_class($object));
         }
 
         return $value;
@@ -240,9 +241,9 @@ abstract class AbstractNormalizer
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Annotation\Translate[]|array
+     * @param \BowlOfSoup\NormalizerBundle\Annotation\Translate[] $translateAnnotations
      */
-    protected function getTranslationAnnotation(array $translateAnnotations, $emptyGroup = false): ?Translate
+    protected function getTranslationAnnotation(array $translateAnnotations, bool $emptyGroup = false): ?Translate
     {
         if (empty($translateAnnotations)) {
             return null;
@@ -251,7 +252,6 @@ abstract class AbstractNormalizer
         $group = ($emptyGroup) ? null : $this->group;
 
         $translationAnnotation = null;
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Translate $translateAnnotation */
         foreach ($translateAnnotations as $translateAnnotation) {
             if (!$translateAnnotation->isGroupValidForConstruct($group)) {
                 continue;

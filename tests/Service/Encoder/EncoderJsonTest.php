@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
@@ -91,9 +93,9 @@ class EncoderJsonTest extends TestCase
         $mockBuilder = $this
             ->getMockBuilder(EncoderJson::class)
             ->disableOriginalConstructor()
-            ->setMethods(['jsonLastErrorMsgExists']);
+            ->onlyMethods(['jsonLastErrorMsgExists']);
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson $encoderJson */
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson|\PHPUnit\Framework\MockObject\MockObject $encoderJson */
         $encoderJson = $mockBuilder->getMock();
         $encoderJson
             ->expects($this->any())
