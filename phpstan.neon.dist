@@ -7,5 +7,4 @@ parameters:
     tmpDir: var/cache/phpstan
 
 includes:
-    - vendor/phpstan/phpstan-mockery/extension.neon
     - vendor/phpstan/phpstan-symfony/extension.neon
