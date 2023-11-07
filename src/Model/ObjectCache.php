@@ -6,8 +6,11 @@ namespace BowlOfSoup\NormalizerBundle\Model;
 
 final class ObjectCache
 {
-    private static array $processedObjects = [];
-    private static array $processedObjectCache = [];
+    /** @var array */
+    private static $processedObjects = [];
+
+    /** @var array */
+    private static $processedObjectCache = [];
 
     /**
      * @param mixed $objectIdentifier

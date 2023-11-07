@@ -21,8 +21,11 @@ use SebastianBergmann\Comparator\ComparisonFailure;
  */
 class ArraySubset extends Constraint
 {
-    private iterable $subset;
-    private bool $strict;
+    /** @var iterable */
+    private $subset;
+
+    /** @var bool */
+    private $strict;
 
     public function __construct(iterable $subset, bool $strict = false)
     {

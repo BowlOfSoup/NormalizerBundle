@@ -11,14 +11,18 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  */
 class Translate extends AbstractAnnotation
 {
-    private array $supportedProperties = [
+    /** @var array|array[] */
+    private $supportedProperties = [
         'group' => ['type' => 'array'],
         'domain' => ['type' => 'string'],
         'locale' => ['type' => 'string'],
     ];
 
-    private ?string $domain = null;
-    private ?string $locale = null;
+    /** @var string|null */
+    private $domain = null;
+
+    /** @var null */
+    private $locale = null;
 
     public function __construct(array $properties)
     {

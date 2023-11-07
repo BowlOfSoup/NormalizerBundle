@@ -6,7 +6,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 abstract class AbstractClass
 {
-    private string $property1 = 'string';
+    /** @var string */
+    private $property1 = 'string';
 
     protected $property2 = [];
 

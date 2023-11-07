@@ -64,10 +64,13 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"default"}, type="DateTime", format="Y-m-d")
+     *
+     * @var \DateTime|null
      */
-    private ?\DateTime $dateOfBirth = null;
+    private $dateOfBirth = null;
 
-    private ?\DateTime $dateOfRegistration = null;
+    /** @var \DateTime|null */
+    private $dateOfRegistration = null;
 
     /**
      * @var DateTime
@@ -80,19 +83,25 @@ class Person extends AbstractPerson
      * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
      * @Bos\Normalize(group={"anotherGroup"}, type="collection")
+     *
+     * @var Collection|null
      */
-    private ?Collection $addresses = null;
+    private $addresses = null;
 
     /**
      * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
+     *
+     * @var Social|null
      */
-    private ?Social $social = null;
+    private $social = null;
 
     /**
      * @Bos\Normalize(group={"default"}, type="object", callback="toArray")
+     *
+     * @var TelephoneNumbers|null
      */
-    private ?TelephoneNumbers $telephoneNumbers = null;
+    private $telephoneNumbers = null;
 
     /**
      * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
@@ -115,8 +124,10 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
+     *
+     * @var array|null
      */
-    private ?array $validCollectionPropertyWithCallback = null;
+    private $validCollectionPropertyWithCallback = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallback", normalizeCallbackResult=true)
@@ -140,8 +151,10 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"default"}, type="object")
+     *
+     * @var ProxyObject|null
      */
-    private ?ProxyObject $testForProxy = null;
+    private $testForProxy = null;
 
     /**
      * @return int

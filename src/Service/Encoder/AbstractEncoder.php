@@ -8,7 +8,8 @@ use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 
 abstract class AbstractEncoder implements EncoderInterface
 {
-    protected ?string $wrapElement = null;
+    /** @var string|null */
+    protected $wrapElement = null;
 
     public function setWrapElement(string $wrapElement): void
     {

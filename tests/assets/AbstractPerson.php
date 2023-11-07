@@ -10,8 +10,10 @@ abstract class AbstractPerson
 {
     /**
      * @Bos\Normalize(group={"parent_test"})
+     *
+     * @var string
      */
-    private string $name = 'parent-foo';
+    private $name = 'parent-foo';
 
     /**
      * @Bos\Normalize(type="DateTime", group={"parent_test"})

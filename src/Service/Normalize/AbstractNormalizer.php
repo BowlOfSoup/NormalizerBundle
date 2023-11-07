@@ -17,18 +17,32 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
-    protected ?Normalizer $sharedNormalizer = null;
-    protected ClassExtractor $classExtractor;
-    protected TranslatorInterface $translator;
-    protected AnnotationExtractor $annotationExtractor;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer|null */
+    protected $sharedNormalizer = null;
 
-    protected ?string $group = null;
-    protected ?int $maxDepth = null;
-    protected array $processedDepthObjects = [];
-    protected int $processedDepth = 0;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
+    protected $classExtractor;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[]|array */
-    protected ?array $nameAndClassStore = null;
+    /** @var \Symfony\Contracts\Translation\TranslatorInterface */
+    protected $translator;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
+    protected $annotationExtractor;
+
+    /** @var string|null */
+    protected $group = null;
+
+    /** @var int|null */
+    protected $maxDepth = null;
+
+    /** @var array */
+    protected $processedDepthObjects = [];
+
+    /** @var int */
+    protected $processedDepth = 0;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[]|array|null */
+    protected $nameAndClassStore = null;
 
     public function __construct(
         ClassExtractor $classExtractor,

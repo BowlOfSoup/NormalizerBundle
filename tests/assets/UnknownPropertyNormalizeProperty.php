@@ -10,8 +10,10 @@ class UnknownPropertyNormalizeProperty
 {
     /**
      * @Bos\Normalize(group={"default"}, asdsad="asdsad")
+     *
+     * @var string|null
      */
-    private ?string $name = null;
+    private $name = null;
 
     /**
      * @return $this

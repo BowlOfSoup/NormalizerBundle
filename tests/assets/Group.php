@@ -25,9 +25,9 @@ class Group
     /**
      * @Bos\Normalize(group={"default"})
      *
-     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]|array|null
      */
-    private ?array $persons = null;
+    private $persons = null;
 
     /**
      * @return int

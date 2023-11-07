@@ -13,7 +13,8 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  */
 class Normalize extends AbstractAnnotation
 {
-    private array $supportedProperties = [
+    /** @var array */
+    private $supportedProperties = [
         'name' => ['type' => 'string'],
         'group' => ['type' => 'array'],
         'type' => ['type' => 'string', 'assert' => ['collection', 'datetime', 'object']],
@@ -24,13 +25,26 @@ class Normalize extends AbstractAnnotation
         'maxDepth' => ['type' => 'integer'],
     ];
 
-    private ?string $name = null;
-    private ?string $format = null;
-    private ?string $callback = null;
-    private bool $normalizeCallbackResult = false;
-    private bool $skipEmpty = false;
-    private ?int $maxDepth = null;
-    protected ?string $type = null;
+    /** @var string|null */
+    private $name = null;
+
+    /** @var string|null */
+    private $format = null;
+
+    /** @var string|null */
+    private $callback = null;
+
+    /** @var bool */
+    private $normalizeCallbackResult = false;
+
+    /** @var bool */
+    private $skipEmpty = false;
+
+    /** @var int|null */
+    private $maxDepth = null;
+
+    /** @var string|null */
+    protected $type = null;
 
     public function __construct(array $properties)
     {

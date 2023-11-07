@@ -39,8 +39,10 @@ class Address
 
     /**
      * @Bos\Normalize(group={"maxDepthTestDepth1"}, type="collection")
+     *
+     * @var Collection|null
      */
-    private ?Collection $group = null;
+    private $group = null;
 
     /**
      * @return string

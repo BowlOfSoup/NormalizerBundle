@@ -10,8 +10,10 @@ class Hobbies
 {
     /**
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
+     *
+     * @var int|null
      */
-    private ?int $id = null;
+    private $id = null;
 
     /**
      * @var string

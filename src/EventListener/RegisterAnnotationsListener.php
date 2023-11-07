@@ -10,7 +10,8 @@ use Symfony\Component\HttpKernel\Event\KernelEvent;
 
 class RegisterAnnotationsListener implements EventSubscriberInterface
 {
-    private ?bool $parameterRegisterAnnotations = null;
+    /** @var bool|null */
+    private $parameterRegisterAnnotations = null;
 
     public function __construct(bool $parameterRegisterAnnotations = null)
     {

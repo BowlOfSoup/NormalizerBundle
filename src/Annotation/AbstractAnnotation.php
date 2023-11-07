@@ -11,7 +11,8 @@ abstract class AbstractAnnotation
     protected const EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
     protected const EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
 
-    protected array $group = [];
+    /** @var array */
+    protected $group = [];
 
     public function getGroup(): array
     {

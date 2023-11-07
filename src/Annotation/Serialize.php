@@ -13,14 +13,18 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
  */
 class Serialize extends AbstractAnnotation
 {
-    private array $supportedProperties = [
+    /** @var array|array[] */
+    private $supportedProperties = [
         'group' => ['type' => 'array'],
         'wrapElement' => ['type' => 'string'],
         'sortProperties' => ['type' => 'boolean'],
     ];
 
-    private ?string $wrapElement = null;
-    private bool $sortProperties = false;
+    /** @var string|null */
+    private $wrapElement = null;
+
+    /** @var bool */
+    private $sortProperties = false;
 
     public function __construct(array $properties)
     {

@@ -8,7 +8,8 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 
 class UnknownPropertyNormalizeMethod
 {
-    private ?string $name = null;
+    /** @var string|null */
+    private $name = null;
 
     /**
      * @Bos\Normalize(group={"default"}, asdsad="asdsad")

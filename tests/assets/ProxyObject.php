@@ -9,14 +9,18 @@ use Doctrine\Persistence\Proxy;
 
 class ProxyObject implements Proxy
 {
-    private string $id = '123';
+    /** @var string */
+    private $id = '123';
 
     /**
      * @Bos\Normalize(group={"default"})
+     *
+     * @var string
      */
-    private string $value = 'Hello';
+    private $value = 'Hello';
 
-    private string $proxyProperty = 'string';
+    /** @var string */
+    private $proxyProperty = 'string';
 
     public function __load()
     {

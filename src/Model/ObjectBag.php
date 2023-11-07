@@ -6,9 +6,14 @@ namespace BowlOfSoup\NormalizerBundle\Model;
 
 class ObjectBag
 {
-    private object $object;
-    private string $objectIdentifier;
-    private string $objectName;
+    /** @var object */
+    private $object;
+
+    /** @var string */
+    private $objectIdentifier;
+
+    /** @var string */
+    private $objectName;
 
     /**
      * @param mixed $objectIdentifier

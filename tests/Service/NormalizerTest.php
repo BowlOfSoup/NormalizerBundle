@@ -27,7 +27,8 @@ class NormalizerTest extends TestCase
 {
     use NormalizerTestTrait;
 
-    private Normalizer $normalizer;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
+    private $normalizer;
 
     protected function setUp(): void
     {

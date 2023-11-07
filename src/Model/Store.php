@@ -6,7 +6,8 @@ namespace BowlOfSoup\NormalizerBundle\Model;
 
 class Store
 {
-    private array $values = [];
+    /** @var array */
+    private $values = [];
 
     /**
      * @param mixed $value

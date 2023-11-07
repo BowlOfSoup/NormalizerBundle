@@ -13,8 +13,10 @@ class UnknownPropertySerialize
 {
     /**
      * @Bos\Normalize(group={"default"}, asdsad="asdsad")
+     *
+     * @var string
      */
-    private string $name;
+    private $name;
 
     /**
      * @return $this

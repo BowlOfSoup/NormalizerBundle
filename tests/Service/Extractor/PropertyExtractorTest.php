@@ -9,12 +9,12 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PropertyExtractorTest extends TestCase
 {
-    private MockObject $propertyExtractor;
+    /** @var (\BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject */
+    private $propertyExtractor;
 
     protected function setUp(): void
     {

@@ -16,7 +16,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MethodNormalizer extends AbstractNormalizer
 {
-    private MethodExtractor $methodExtractor;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor */
+    private $methodExtractor;
 
     public function __construct(
         ClassExtractor $classExtractor,

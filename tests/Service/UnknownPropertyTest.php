@@ -19,8 +19,11 @@ class UnknownPropertyTest extends TestCase
 {
     use SerializerTestTrait;
 
-    private Normalizer $normalizer;
-    private Serializer $serializer;
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
+    private $normalizer;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Service\Serializer */
+    private $serializer;
 
     public function setUp(): void
     {

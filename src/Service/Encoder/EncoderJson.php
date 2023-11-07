@@ -14,7 +14,8 @@ class EncoderJson extends AbstractEncoder
     /** @var string */
     protected const ERROR_NO_ERROR = 'No error';
 
-    private ?int $options = null;
+    /** @var int|null */
+    private $options = null;
 
     public function getType(): string
     {

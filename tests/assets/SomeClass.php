@@ -6,9 +6,14 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 class SomeClass extends AbstractClass
 {
-    private int $property32 = 123;
-    public string $property53 = 'string';
-    private string $property76 = 'another value';
+    /** @var int */
+    private $property32 = 123;
+
+    /** @var string */
+    public $property53 = 'string';
+
+    /** @var string */
+    private $property76 = 'another value';
 
     public function getProperty32()
     {

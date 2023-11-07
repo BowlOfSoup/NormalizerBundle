@@ -6,12 +6,12 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class MethodExtractorTest extends TestCase
 {
-    private MockObject $methodExtractor;
+    /** @var \PHPUnit\Framework\MockObject\MockObject|(\BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor&\PHPUnit\Framework\MockObject\MockObject) */
+    private $methodExtractor;
 
     protected function setUp(): void
     {
