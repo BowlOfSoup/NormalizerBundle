@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
@@ -45,6 +47,7 @@ class Normalizer
         }
 
         $this->cleanUpSession();
+
         return $this->normalizeData($data, $group);
     }
 
@@ -98,7 +101,7 @@ class Normalizer
             foreach ($data as $item) {
                 $normalizedData[] = $this->normalizeData($item, $group);
             }
-        } else if (is_object($data)) {
+        } elseif (is_object($data)) {
             $normalizedData = $this->normalizeObject($data, $group);
         } else {
             throw new BosNormalizerException('Can only normalize an object or an array of objects. Input contains: ' . gettype($data));

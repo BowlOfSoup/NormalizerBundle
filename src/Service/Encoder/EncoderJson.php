@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
@@ -10,14 +12,11 @@ class EncoderJson extends AbstractEncoder
     protected const EXCEPTION_PREFIX = 'Error when encoding JSON: ';
 
     /** @var string */
-    private const ERROR_NO_ERROR = 'No error';
+    protected const ERROR_NO_ERROR = 'No error';
 
-    /** @var int */
-    private $options;
+    /** @var int|null */
+    private $options = null;
 
-    /**
-     * @inheritdoc
-     */
     public function getType(): string
     {
         return EncoderFactory::TYPE_JSON;
@@ -32,8 +31,6 @@ class EncoderJson extends AbstractEncoder
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
      */
     public function encode($value): string

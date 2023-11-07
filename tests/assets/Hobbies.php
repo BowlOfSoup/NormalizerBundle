@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -7,11 +9,11 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class Hobbies
 {
     /**
-     * @var int
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
+     *
+     * @var int|null
      */
-    private $id;
+    private $id = null;
 
     /**
      * @var string

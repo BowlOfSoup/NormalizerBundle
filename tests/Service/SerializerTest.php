@@ -6,6 +6,8 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
+use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use BowlOfSoup\NormalizerBundle\Service\Serializer;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\SerializerTestTrait;

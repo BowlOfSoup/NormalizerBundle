@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
@@ -24,7 +26,6 @@ class EncoderFactory
                 return new EncoderXml();
             default:
                 throw new BosSerializerException('Unknown encoder type.');
-                break;
         }
     }
 }

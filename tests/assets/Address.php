@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -36,11 +38,11 @@ class Address
     private $city;
 
     /**
-     * @var Collection
-     *
      * @Bos\Normalize(group={"maxDepthTestDepth1"}, type="collection")
+     *
+     * @var Collection|null
      */
-    private $group;
+    private $group = null;
 
     /**
      * @return string

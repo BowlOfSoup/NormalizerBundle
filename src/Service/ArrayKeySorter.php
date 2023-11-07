@@ -6,7 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Service;
 
 class ArrayKeySorter
 {
-    public static function sortKeysAscRecursive(array &$data)
+    public static function sortKeysAscRecursive(array &$data): void
     {
         if (array_keys($data) !== range(0, count($data) - 1)) {
             ksort($data);

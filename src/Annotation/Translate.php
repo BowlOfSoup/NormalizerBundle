@@ -6,11 +6,12 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 /**
  * @Annotation
+ *
  * @Target({"PROPERTY","METHOD"})
  */
 class Translate extends AbstractAnnotation
 {
-    /** @var array */
+    /** @var array|array[] */
     private $supportedProperties = [
         'group' => ['type' => 'array'],
         'domain' => ['type' => 'string'],
@@ -18,10 +19,10 @@ class Translate extends AbstractAnnotation
     ];
 
     /** @var string|null */
-    private $domain;
+    private $domain = null;
 
-    /** @var string|null */
-    private $locale;
+    /** @var null */
+    private $locale = null;
 
     public function __construct(array $properties)
     {

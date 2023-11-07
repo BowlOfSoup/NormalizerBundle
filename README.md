@@ -1,11 +1,10 @@
 Bowl Of Soup Normalizer
 =====
 
-[![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=4.4)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
-[![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=4.4)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=4.4)
+[![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
+[![codecov](https://codecov.io/gh/BowlOfSoup/NormalizerBundle/branch/master/graph/badge.svg?token=2OW4EWvMUD)](https://codecov.io/gh/BowlOfSoup/NormalizerBundle)
 [![PHP Version](https://img.shields.io/badge/php-7.2.x%20--%208.2.x-blue.svg)](https://www.php.net/)
-[![Symfony Version](https://img.shields.io/badge/symfony-4.4.x%20--%205.1.x-blue.svg)](https://symfony.com/)
-
+[![Symfony Version](https://img.shields.io/badge/symfony-5.4.x-blue.svg)](https://symfony.com/)
 
 Installation
 -----
@@ -52,3 +51,39 @@ Why use this normalizer and not ...
 - It's designed with speed in mind. Not packed with features for which you don't use half of it
 - It has proven itself in a complex application with 15.000+ daily end users
 
+Development
+-----
+The following CI tools can be used to check for code quality before pushing code:
+
+### Rector
+Rector can be used to automated code upgrades and refactoring. Try a dry-run first!
+```bash
+vendor/bin/rector process --dry-run --no-progress-bar --ansi
+```
+
+### PHPStan
+PHPStan is a static code analysis tool that focuses on finding errors in the code.
+Fixing the outcome of PHPStan prevents possible bugs and errors.
+```bash
+vendor/bin/phpstan
+```
+
+### PHPUnit
+Speaks for itself, code should be tested. Run with coverage (output = tests/coverage):
+```bash
+XDEBUG_MODE=coverage php -dzend_extension=xdebug.so vendor/bin/phpunit 
+```
+Or without coverage:
+```bash
+vendor/bin/phpunit
+```
+
+**Code coverage** `master`:
+
+<img src="https://codecov.io/gh/BowlOfSoup/NormalizerBundle/branch/master/graphs/sunburst.svg?token=2OW4EWvMUD" width="200">
+
+### Code style fixer
+Have php-cs-fixer automatically fix styling.
+```bash
+vendor/bin/php-cs-fixer fix
+```

@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
-use Doctrine\Common\Persistence\Proxy;
+use Doctrine\Persistence\Proxy;
 
 class ProxyObject implements Proxy
 {
@@ -11,25 +13,19 @@ class ProxyObject implements Proxy
     private $id = '123';
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
+     *
+     * @var string
      */
     private $value = 'Hello';
 
     /** @var string */
     private $proxyProperty = 'string';
 
-    /**
-     * {@inheritdoc}
-     */
     public function __load()
     {
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __isInitialized()
     {
         return true;

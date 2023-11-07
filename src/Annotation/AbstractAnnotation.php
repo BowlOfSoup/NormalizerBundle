@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 abstract class AbstractAnnotation
@@ -36,14 +38,14 @@ abstract class AbstractAnnotation
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
         }
 
-        if (isset($propertyOptions['type']) &&
-            !$this->hasCorrectType($propertyOptions['type'], $property)
+        if (isset($propertyOptions['type'])
+            && !$this->hasCorrectType($propertyOptions['type'], $property)
         ) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
         }
 
-        if (isset($propertyOptions['assert']) &&
-            !$this->hasValidAssertion($propertyOptions['assert'], $property)
+        if (isset($propertyOptions['assert'])
+            && !$this->hasValidAssertion($propertyOptions['assert'], $property)
         ) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE_SUPPORTED, $property, $annotation));
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -23,9 +25,9 @@ class Group
     /**
      * @Bos\Normalize(group={"default"})
      *
-     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]|array|null
      */
-    private $persons;
+    private $persons = null;
 
     /**
      * @return int
@@ -76,7 +78,7 @@ class Group
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[] $persons
      *
      * @return $this
      */

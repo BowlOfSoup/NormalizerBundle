@@ -19,8 +19,6 @@ class PropertyExtractor
      * Get all properties for a given class.
      *
      * @param object|string $object
-     *
-     * @throws \ReflectionException
      */
     public function getProperties($object): array
     {

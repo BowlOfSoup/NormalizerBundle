@@ -19,7 +19,7 @@ return static function (RectorConfig $rectorConfig): void
 
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_72,
-        SymfonyLevelSetList::UP_TO_SYMFONY_51,
+        SymfonyLevelSetList::UP_TO_SYMFONY_54,
     ]);
 
     $rectorConfig->importNames(true, false);

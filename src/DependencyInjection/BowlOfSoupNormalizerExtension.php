@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -9,9 +11,6 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 class BowlOfSoupNormalizerExtension extends Extension
 {
-    /**
-     * @inheritdoc
-     */
     public function load(array $configs, ContainerBuilder $container)
     {
         $configuration = new Configuration();

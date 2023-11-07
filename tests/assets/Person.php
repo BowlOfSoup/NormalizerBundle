@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -14,6 +16,7 @@ use Doctrine\Common\Collections\Collection;
  * @Bos\Normalize(group={"maxDepthTestDepth0OnMethodWithObject"}, maxDepth=0)
  * @Bos\Normalize(group={"maxDepthTestDepth1OnMethod"}, maxDepth=1)
  * @Bos\Normalize(group={"maxDepthTestDepthNoIdentifier"}, maxDepth=0)
+ *
  * @Bos\Serialize(wrapElement="wrapperElement", group={"default"}, sortProperties=true)
  */
 class Person extends AbstractPerson
@@ -22,6 +25,7 @@ class Person extends AbstractPerson
      * @var int
      *
      * @Bos\Normalize(group={"default", "translation"})
+     *
      * @Bos\Translate(group={"translation"})
      */
     private $id;
@@ -53,21 +57,20 @@ class Person extends AbstractPerson
      *
      * @Bos\Normalize()
      * @Bos\Normalize(group={"translation"})
+     *
      * @Bos\Translate(group={"translation"})
      */
     private $gender;
 
     /**
-     * @var DateTime
-     *
      * @Bos\Normalize(group={"default"}, type="DateTime", format="Y-m-d")
+     *
+     * @var \DateTime|null
      */
-    private $dateOfBirth;
+    private $dateOfBirth = null;
 
-    /**
-     * @var DateTime
-     */
-    private $dateOfRegistration;
+    /** @var \DateTime|null */
+    private $dateOfRegistration = null;
 
     /**
      * @var DateTime
@@ -77,28 +80,28 @@ class Person extends AbstractPerson
     private $deceasedDate;
 
     /**
-     * @var Collection
-     *
      * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
      * @Bos\Normalize(group={"anotherGroup"}, type="collection")
+     *
+     * @var Collection|null
      */
-    private $addresses;
+    private $addresses = null;
 
     /**
-     * @var Social
-     *
      * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
+     *
+     * @var Social|null
      */
-    private $social;
+    private $social = null;
 
     /**
-     * @var TelephoneNumbers
-     *
      * @Bos\Normalize(group={"default"}, type="object", callback="toArray")
+     *
+     * @var TelephoneNumbers|null
      */
-    private $telephoneNumbers;
+    private $telephoneNumbers = null;
 
     /**
      * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
@@ -121,8 +124,10 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
+     *
+     * @var array|null
      */
-    private $validCollectionPropertyWithCallback;
+    private $validCollectionPropertyWithCallback = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallback", normalizeCallbackResult=true)
@@ -145,11 +150,11 @@ class Person extends AbstractPerson
     private $testForNormalizingCallbackArray;
 
     /**
-     * @var ProxyObject
-     *
      * @Bos\Normalize(group={"default"}, type="object")
+     *
+     * @var ProxyObject|null
      */
-    private $testForProxy;
+    private $testForProxy = null;
 
     /**
      * @return int
@@ -252,7 +257,7 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return string
+     * @return \DateTime
      *
      * @Bos\Normalize(type="DateTime", name="dateOfBirth")
      * @Bos\Normalize(type="DateTime", group={"parent_test"})
@@ -300,7 +305,7 @@ class Person extends AbstractPerson
      * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y")
      * @Bos\Normalize(group={"methodWithCallback"}, type="DateTime", format="M. Y", callback="getAddresses")
      */
-    public function calculateDeceasedDate(): \DateTime
+    public function calculateDeceasedDate(): DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -308,7 +313,7 @@ class Person extends AbstractPerson
     /**
      * @Bos\Normalize(group={"methodWithCallbackAndNoType"}, callback="getAddresses")
      */
-    public function calculateDeceasedDate2(): \DateTime
+    public function calculateDeceasedDate2(): DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -495,6 +500,7 @@ class Person extends AbstractPerson
 
     /**
      * @Bos\Normalize(group={"translation"})
+     *
      * @Bos\Translate()
      */
     protected function translateMeThis(): string
