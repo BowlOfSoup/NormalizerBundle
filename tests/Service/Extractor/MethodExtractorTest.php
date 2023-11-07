@@ -18,7 +18,7 @@ class MethodExtractorTest extends TestCase
         $this->methodExtractor = $this
             ->getMockBuilder(MethodExtractor::class)
             ->disableOriginalConstructor()
-            ->setMethods(null)
+            ->addMethods([])
             ->getMock();
     }
 

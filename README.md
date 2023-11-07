@@ -2,10 +2,9 @@ Bowl Of Soup Normalizer
 =====
 
 [![Build Status](https://travis-ci.org/BowlOfSoup/NormalizerBundle.svg?branch=master)](https://travis-ci.org/BowlOfSoup/NormalizerBundle)
-[![Coverage Status](https://coveralls.io/repos/github/BowlOfSoup/NormalizerBundle/badge.svg?branch=master)](https://coveralls.io/github/BowlOfSoup/NormalizerBundle?branch=master)
+[![codecov](https://codecov.io/gh/BowlOfSoup/NormalizerBundle/branch/master/graph/badge.svg?token=2OW4EWvMUD)](https://codecov.io/gh/BowlOfSoup/NormalizerBundle)
 [![PHP Version](https://img.shields.io/badge/php-7.2.x%20--%208.2.x-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/symfony-4.4.x%20--%205.1.x-blue.svg)](https://symfony.com/)
-
 
 Installation
 -----
@@ -78,6 +77,10 @@ Or without coverage:
 ```bash
 vendor/bin/phpunit
 ```
+
+**Code coverage** `master`:
+
+<img src="https://codecov.io/gh/BowlOfSoup/NormalizerBundle/branch/master/graphs/sunburst.svg?token=2OW4EWvMUD" width="200">
 
 ### Code style fixer
 Have php-cs-fixer automatically fix styling.

@@ -38,7 +38,9 @@ class MethodExtractor
             foreach ($methods as $key => $method) {
                 $id = $method->class . ':' . $method->name;
                 if (isset($uniqueMethods[$id])) {
+                    // @codeCoverageIgnoreStart
                     unset($methods[$key]);
+                    // @codeCoverageIgnoreEnd
                 }
                 $uniqueMethods[$id] = true;
             }

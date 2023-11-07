@@ -15,6 +15,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxySocial;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxySocialNotInitialized;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
@@ -176,7 +177,7 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setMethods(['getId'])
+            ->onlyMethods(['getId'])
             ->getMock();
         $this->classExtractor
             ->expects($this->any())
@@ -200,7 +201,7 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setMethods(['getId'])
+            ->onlyMethods(['getId'])
             ->getMock();
         $this->classExtractor
             ->expects($this->any())
@@ -504,6 +505,16 @@ class NormalizerTest extends TestCase
     public function testNormalizeProxyWithMethods(): void
     {
         $socialProxy = new ProxySocial();
+        $socialProxy->setFacebook('foo');
+
+        $this->assertSame([
+            'facebook' => 'foo',
+        ], $this->normalizer->normalize($socialProxy, 'proxy-method'));
+    }
+
+    public function testNormalizeNotInitializedProxyWithMethods(): void
+    {
+        $socialProxy = new ProxySocialNotInitialized();
         $socialProxy->setFacebook('foo');
 
         $this->assertSame([

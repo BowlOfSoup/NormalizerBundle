@@ -19,6 +19,8 @@ before_install:
   - php composer-setup.php --version=1.10.22
   - php -r "unlink('composer-setup.php');"
   - sudo mv composer.phar /usr/local/bin/composer
+  - curl -Os https://uploader.codecov.io/latest/linux/codecov
+  - chmod +x codecov
 
 install:
   - if [ "$SYMFONY_VERSION" != "" ]; then composer require "symfony/symfony:${SYMFONY_VERSION}" --no-update; fi;
@@ -29,3 +31,4 @@ script:
   - vendor/bin/rector process --dry-run --no-progress-bar --ansi
   - vendor/bin/phpstan analyze --no-progress --ansi
   - XDEBUG_MODE=coverage php vendor/bin/phpunit
+  - ./codecov

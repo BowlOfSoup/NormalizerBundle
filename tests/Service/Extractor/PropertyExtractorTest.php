@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
+use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,7 +21,7 @@ class PropertyExtractorTest extends TestCase
         $this->propertyExtractor = $this
             ->getMockBuilder(PropertyExtractor::class)
             ->disableOriginalConstructor()
-            ->setMethods(null)
+            ->addMethods([])
             ->getMock();
     }
 
@@ -46,7 +47,7 @@ class PropertyExtractorTest extends TestCase
         $stubPropertyExtractor = $this
             ->getMockBuilder(PropertyExtractor::class)
             ->disableOriginalConstructor()
-            ->setMethods(null)
+            ->addMethods([])
             ->getMock();
 
         $someClass = new SomeClass();
@@ -146,6 +147,38 @@ class PropertyExtractorTest extends TestCase
         }
 
         $this->assertSame(123, $result);
+    }
+
+    public function testGetPropertyForceGetMethodBecauseOfException(): void
+    {
+        $person = new Person();
+        $person->setSurName('BowlOfSoup');
+
+        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
+        $propertyExtractor = $this->propertyExtractor;
+
+        $reflectionPropertyMock = $this
+            ->getMockBuilder(\ReflectionProperty::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getValue', 'getName'])
+            ->getMock();
+        $reflectionPropertyMock
+            ->expects($this->once())
+            ->method('getName')
+            ->withAnyParameters()
+            ->willReturn('SurName');
+        $reflectionPropertyMock
+            ->expects($this->once())
+            ->method('getValue')
+            ->withAnyParameters()
+            ->willThrowException(new \ReflectionException('foo'));
+
+        $result = $propertyExtractor->getPropertyValue(
+            $person,
+            $reflectionPropertyMock
+        );
+
+        $this->assertSame('BowlOfSoup', $result);
     }
 
     /**
