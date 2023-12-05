@@ -23,6 +23,7 @@ class Normalize extends AbstractAnnotation
         'normalizeCallbackResult' => ['type' => 'boolean'],
         'skipEmpty' => ['type' => 'boolean'],
         'maxDepth' => ['type' => 'integer'],
+        'allowEmptyArray' => ['type' => 'boolean'],
     ];
 
     /** @var string|null */
@@ -45,6 +46,9 @@ class Normalize extends AbstractAnnotation
 
     /** @var string|null */
     protected $type = null;
+
+    /** @var bool */
+    private $allowEmptyArray = false;
 
     public function __construct(array $properties)
     {
@@ -101,5 +105,10 @@ class Normalize extends AbstractAnnotation
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    public function getAllowEmptyArray(): bool
+    {
+        return $this->allowEmptyArray;
     }
 }

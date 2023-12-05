@@ -147,7 +147,10 @@ class PropertyNormalizer extends AbstractNormalizer
                 $propertyName = $propertyAnnotation->getName();
             }
 
-            $propertyValue = (is_array($propertyValue) && empty($propertyValue) ? null : $propertyValue);
+            if(is_array($propertyValue) && empty($propertyValue) && !$propertyAnnotation->getAllowEmptyArray()) {
+                $propertyValue = null;
+            }
+
             if (null !== $translationAnnotation) {
                 $propertyValue = $this->translateValue($propertyValue, $translationAnnotation);
             }

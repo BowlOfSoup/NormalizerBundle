@@ -22,6 +22,7 @@ class NormalizeTest extends TestCase
         $this->assertSame($properties['callback'], $normalize->getCallback());
         $this->assertSame($properties['skipEmpty'], $normalize->getSkipEmpty());
         $this->assertSame($properties['maxDepth'], $normalize->getMaxDepth());
+        $this->assertSame($properties['allowEmptyArray'], $normalize->getAllowEmptyArray());
     }
 
     /**
@@ -85,6 +86,7 @@ class NormalizeTest extends TestCase
             'callback' => 'toArray',
             'skipEmpty' => true,
             'maxDepth' => 2,
+            'allowEmptyArray' => false,
         ];
     }
 }
