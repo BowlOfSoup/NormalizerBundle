@@ -24,7 +24,7 @@ class Person extends AbstractPerson
     /**
      * @var int
      *
-     * @Bos\Normalize(group={"default", "translation"})
+     * @Bos\Normalize(group={"default", "translation", "passdown"})
      *
      * @Bos\Translate(group={"translation"})
      */
@@ -34,7 +34,7 @@ class Person extends AbstractPerson
      * @var string
      *
      * @Bos\Normalize(group={"default"}, name="name_value")
-     * @Bos\Normalize(group={"parent_test"})
+     * @Bos\Normalize(group={"parent_test", "passdown"})
      */
     private $name;
 
@@ -91,6 +91,7 @@ class Person extends AbstractPerson
     /**
      * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
+     * @Bos\Normalize(group={"passdown"}, type="object", passdownGroup="passdownId")
      *
      * @var Social|null
      */

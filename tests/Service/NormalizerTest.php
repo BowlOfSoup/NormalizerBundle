@@ -489,6 +489,31 @@ class NormalizerTest extends TestCase
         );
     }
 
+    /**
+     * @testdox Normalize object, normalize with no group specified.
+     */
+    public function testNormalizeSuccessPassdownGroup(): void
+    {
+        $person = $this->getDummyDataSet();
+        $person->setGender('male');
+
+        $result = $this->normalizer->normalize($person, 'passdown');
+
+        $expectedResult = [
+            'id' => 123,
+            'name' => 'Bowl',
+            'social' => [
+                'id' => 546,
+            ]
+        ];
+
+        $this->assertNotEmpty($result);
+
+        // Using assertEquals instead of ArraySubset:assert
+        // because we want to make sure only the social id is normalized.
+        $this->assertEquals($expectedResult, $result);
+    }
+
     public function testNormalizeWithTranslation(): void
     {
         $person = $this->getDummyDataSet();

@@ -9,13 +9,17 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
  */
 class Social
 {
-    /** @var int */
+    /**
+     * @var int
+     * 
+     * @Bos\Normalize(group={"passdown", "passdownId"})
+     */
     private $id;
 
     /**
      * @var string
      *
-     * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"default", "passdown"})
      */
     private $facebook;
 

@@ -45,7 +45,7 @@ class PropertyNormalizer extends AbstractNormalizer
         $objectIdentifier = $objectBag->getObjectIdentifier();
 
         $this->sharedNormalizer = $sharedNormalizer;
-        $this->group = $group;
+        $this->group[$this->processedDepth] = $group;
         $this->nameAndClassStore[$objectIdentifier] = new Store();
 
         $normalizedProperties = [];
@@ -107,7 +107,7 @@ class PropertyNormalizer extends AbstractNormalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
-            if (!$propertyAnnotation->isGroupValidForConstruct($this->group)) {
+            if (!$propertyAnnotation->isGroupValidForConstruct($this->group[$this->processedDepth])) {
                 continue;
             }
 
@@ -230,6 +230,11 @@ class PropertyNormalizer extends AbstractNormalizer
             return $this->getValueForMaxDepth($propertyValue);
         }
         ++$this->processedDepth;
+
+        // If there is a passdowngroup select that instead of the previous group.
+        $this->group[$this->processedDepth] = $propertyAnnotation->hasPassdownGroup() ?
+            $propertyAnnotation->getPassdownGroup() :
+            $this->group[$this->processedDepth - 1];
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback) && is_callable([$propertyValue, $annotationCallback])) {

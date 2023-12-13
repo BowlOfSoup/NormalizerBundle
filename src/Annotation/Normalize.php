@@ -23,6 +23,7 @@ class Normalize extends AbstractAnnotation
         'normalizeCallbackResult' => ['type' => 'boolean'],
         'skipEmpty' => ['type' => 'boolean'],
         'maxDepth' => ['type' => 'integer'],
+        'passdownGroup' => ['type' => 'string'],
     ];
 
     /** @var string|null */
@@ -45,6 +46,9 @@ class Normalize extends AbstractAnnotation
 
     /** @var string|null */
     protected $type = null;
+
+    /** @var string|null */
+    private $passdownGroup = null;
 
     public function __construct(array $properties)
     {
@@ -101,5 +105,15 @@ class Normalize extends AbstractAnnotation
     public function getType(): ?string
     {
         return $this->type;
+    }
+
+    public function hasPassdownGroup(): ?bool
+    {
+        return $this->passdownGroup !== null;
+    }
+
+    public function getPassdownGroup(): ?string
+    {
+        return $this->passdownGroup;
     }
 }

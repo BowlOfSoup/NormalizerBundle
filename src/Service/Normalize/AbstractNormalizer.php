@@ -29,8 +29,8 @@ abstract class AbstractNormalizer
     /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
     protected $annotationExtractor;
 
-    /** @var string|null */
-    protected $group = null;
+    /** @var array */
+    protected $group = [];
 
     /** @var int|null */
     protected $maxDepth = null;
@@ -106,7 +106,7 @@ abstract class AbstractNormalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
-            if ($classAnnotation->isGroupValidForConstruct($this->group)) {
+            if ($classAnnotation->isGroupValidForConstruct($this->group[$this->processedDepth])) {
                 $this->maxDepth = $classAnnotation->getMaxDepth();
 
                 return $classAnnotation;
@@ -138,7 +138,7 @@ abstract class AbstractNormalizer
         $objectName = get_class($object);
 
         if (is_object($object) && !$this->isCircularReference($object, $objectName)) {
-            $normalizedConstruct = $this->sharedNormalizer->normalizeObject($object, $this->group);
+            $normalizedConstruct = $this->sharedNormalizer->normalizeObject($object, $this->group[$this->processedDepth]);
 
             if (empty($normalizedConstruct)) {
                 return null;
@@ -188,13 +188,18 @@ abstract class AbstractNormalizer
             }
             ++$this->processedDepth;
 
+            // If there is a passdowngroup select that instead of the previous group.
+            $this->group[$this->processedDepth] = $propertyAnnotation->hasPassdownGroup() ?
+                $propertyAnnotation->getPassdownGroup() :
+                $this->group[$this->processedDepth - 1];
+
             if (!empty($annotationCallback) && is_callable([$collectionItem, $annotationCallback])) {
                 $normalizedCollection[] = $this->handleCallbackResult(
                     $collectionItem->$annotationCallback(),
                     $propertyAnnotation
                 );
             } else {
-                $normalizedObject = $this->sharedNormalizer->normalizeObject($collectionItem, $this->group);
+                $normalizedObject = $this->sharedNormalizer->normalizeObject($collectionItem, $this->group[$this->processedDepth]);
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
             --$this->processedDepth;
@@ -226,7 +231,7 @@ abstract class AbstractNormalizer
                     $allObjects = false;
                     continue;
                 }
-                $normalizedCollection[] = $this->sharedNormalizer->normalizeObject($item, $this->group);
+                $normalizedCollection[] = $this->sharedNormalizer->normalizeObject($item, $this->group[$this->processedDepth]);
             }
             if (empty($normalizedCollection) && !$allObjects) {
                 return $propertyValue;
@@ -234,7 +239,7 @@ abstract class AbstractNormalizer
 
             return $normalizedCollection;
         } elseif (is_object($propertyValue)) {
-            return $this->sharedNormalizer->normalizeObject($propertyValue, $this->group);
+            return $this->sharedNormalizer->normalizeObject($propertyValue, $this->group[$this->processedDepth]);
         }
 
         return $propertyValue;
@@ -249,7 +254,7 @@ abstract class AbstractNormalizer
             return null;
         }
 
-        $group = ($emptyGroup) ? null : $this->group;
+        $group = ($emptyGroup) ? null : $this->group[$this->processedDepth];
 
         $translationAnnotation = null;
         foreach ($translateAnnotations as $translateAnnotation) {

@@ -22,6 +22,7 @@ class NormalizeTest extends TestCase
         $this->assertSame($properties['callback'], $normalize->getCallback());
         $this->assertSame($properties['skipEmpty'], $normalize->getSkipEmpty());
         $this->assertSame($properties['maxDepth'], $normalize->getMaxDepth());
+        $this->assertSame($properties['passdownGroup'], $normalize->getPassdownGroup());
     }
 
     /**
@@ -75,6 +76,19 @@ class NormalizeTest extends TestCase
         new Normalize($properties);
     }
 
+    /**
+     * @testdox Test annotation, validation if property input type is valid
+     */
+    public function testNormalizeDefaultPassdownGroup(): void
+    {
+        $properties = $this->getValidSetOfProperties();
+        unset($properties['passdownGroup']);
+        $normalize = new Normalize($properties);
+
+        $this->assertSame(false, $normalize->hasPassdownGroup());
+        $this->assertSame(null, $normalize->getPassdownGroup());
+    }
+
     private function getValidSetOfProperties(): array
     {
         return [
@@ -85,6 +99,7 @@ class NormalizeTest extends TestCase
             'callback' => 'toArray',
             'skipEmpty' => true,
             'maxDepth' => 2,
+            'passdownGroup' => 'group3',
         ];
     }
 }

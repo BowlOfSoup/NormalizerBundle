@@ -43,7 +43,7 @@ class MethodNormalizer extends AbstractNormalizer
         $objectName = $objectBag->getObjectName();
 
         $this->sharedNormalizer = $sharedNormalizer;
-        $this->group = $group;
+        $this->group[$this->processedDepth] = $group;
 
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
@@ -89,7 +89,7 @@ class MethodNormalizer extends AbstractNormalizer
 
         /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $methodAnnotation */
         foreach ($methodAnnotations as $methodAnnotation) {
-            if (!$methodAnnotation->isGroupValidForConstruct($this->group)) {
+            if (!$methodAnnotation->isGroupValidForConstruct($this->group[$this->processedDepth])) {
                 continue;
             }
 
@@ -211,6 +211,11 @@ class MethodNormalizer extends AbstractNormalizer
             return $this->getValueForMaxDepth($methodValue);
         }
         ++$this->processedDepth;
+
+        // If there is a passdowngroup select that instead of the previous group.
+        $this->group[$this->processedDepth] = $propertyAnnotation->hasPassdownGroup() ?
+            $propertyAnnotation->getPassdownGroup() :
+            $this->group[$this->processedDepth - 1];
 
         $annotationCallback = $propertyAnnotation->getCallback();
         if (!empty($annotationCallback)) {
