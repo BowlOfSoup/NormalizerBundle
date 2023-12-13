@@ -490,13 +490,11 @@ class NormalizerTest extends TestCase
     }
 
     /**
-     * @testdox Normalize object, normalize with no group specified.
+     * @testdox Normalize object, normalize passdown option.
      */
     public function testNormalizeSuccessPassdownGroup(): void
     {
         $person = $this->getDummyDataSet();
-        $person->setGender('male');
-
         $result = $this->normalizer->normalize($person, 'passdown');
 
         $expectedResult = [
@@ -504,7 +502,7 @@ class NormalizerTest extends TestCase
             'name' => 'Bowl',
             'social' => [
                 'id' => 546,
-            ]
+            ],
         ];
 
         $this->assertNotEmpty($result);

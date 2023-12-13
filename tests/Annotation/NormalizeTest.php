@@ -77,7 +77,7 @@ class NormalizeTest extends TestCase
     }
 
     /**
-     * @testdox Test annotation, validation if property input type is valid
+     * @testdox Test annotation, default passdownGroup
      */
     public function testNormalizeDefaultPassdownGroup(): void
     {
