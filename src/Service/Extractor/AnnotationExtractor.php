@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\CachedReader;
+use Doctrine\Common\Annotations\PsrCachedReader;
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\Common\Cache\ArrayCache;
-use Doctrine\Common\Cache\FilesystemCache;
 use Doctrine\Persistence\Proxy;
+use Symfony\Component\Cache\Adapter\ArrayAdapter;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class AnnotationExtractor
 {
@@ -18,6 +18,9 @@ class AnnotationExtractor
 
     /** @var array */
     private $annotationCache = [];
+    
+    /** @var string */
+    public const CACHE_NS = 'bos_annotations';
 
     /**
      * @codeCoverageIgnore
@@ -25,17 +28,16 @@ class AnnotationExtractor
     public function __construct(string $cacheDir = null, bool $debugMode = false)
     {
         if (null !== $cacheDir) {
-            $cacheDir .= '/annotations';
             $this->createDirectory($cacheDir);
 
             if ($this->directoryExits($cacheDir)) {
-                $this->annotationReader = new CachedReader(new AnnotationReader(), new FilesystemCache($cacheDir), $debugMode);
+                $this->annotationReader = new PsrCachedReader(new AnnotationReader(), new FilesystemAdapter(self::CACHE_NS, 0, $cacheDir), $debugMode);
 
                 return;
             }
         }
 
-        $this->annotationReader = new CachedReader(new AnnotationReader(), new ArrayCache(), $debugMode);
+        $this->annotationReader = new PsrCachedReader(new AnnotationReader(), new ArrayAdapter(), $debugMode);
     }
 
     public function setAnnotationReader(Reader $annotationReader): void
