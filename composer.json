@@ -15,7 +15,7 @@
     "ext-simplexml": "*",
     "ext-libxml": "*",
     "ext-dom": "*",
-    "doctrine/annotations": "~1.13.0",
+    "doctrine/annotations": "^1.13.0",
     "php": ">=7.2",
     "symfony/framework-bundle": "~5.4",
     "symfony/translation": "~5.4",
