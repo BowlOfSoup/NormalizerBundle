@@ -8,6 +8,8 @@ use Rector\Symfony\Set\SymfonyLevelSetList;
 
 return static function (RectorConfig $rectorConfig): void
 {
+    $rectorConfig->disableParallel();
+
     $rectorConfig->paths([
         __DIR__,
     ]);
