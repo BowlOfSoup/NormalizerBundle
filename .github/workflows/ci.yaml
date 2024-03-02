@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: [7.2, 7.4, 8.2]
+        include:
+          - php-version: 8.2
+            env:
+              SYMFONY_VERSION: ~5.4
+      fail-fast: true
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer:1.10.22
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: $HOME/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: |
+          if [ "${{ matrix.env.SYMFONY_VERSION }}" != "" ]; then composer require "symfony/symfony:${{ matrix.env.SYMFONY_VERSION }}" --no-update; fi;
+          COMPOSER_MEMORY_LIMIT=-1 composer install
+
+      - name: Setup Codecov
+        run: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+
+      - name: Run Rector
+        run: vendor/bin/rector process --dry-run --no-progress-bar --ansi
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyze --no-progress --ansi
+
+      - name: Run PHPUnit tests
+        run: XDEBUG_MODE=coverage php vendor/bin/phpunit
+
+      - name: Upload coverage to Codecov
+        run: ./codecov
