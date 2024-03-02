@@ -132,7 +132,6 @@ class PropertyNormalizer extends AbstractNormalizer
 
             // Add to current path, like a breadcrumb where we are when normalizing.
             $this->currentPath[] = $propertyName;
-            dump($this->currentPath);
 
             if ($propertyAnnotation->hasType()) {
                 $propertyValue = $this->getValueForPropertyWithType(
