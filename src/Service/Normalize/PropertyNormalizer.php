@@ -32,20 +32,22 @@ class PropertyNormalizer extends AbstractNormalizer
     }
 
     /**
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string|null $context
+     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @throws \ReflectionException
      */
     public function normalize(
         Normalizer $sharedNormalizer,
         ObjectBag $objectBag,
-        ?string $group
+        $context
     ): array {
         $object = $objectBag->getObject();
         $objectName = $objectBag->getObjectName();
         $objectIdentifier = $objectBag->getObjectIdentifier();
 
         $this->sharedNormalizer = $sharedNormalizer;
-        $this->group = $group;
+        $this->handleContext($context);
         $this->nameAndClassStore[$objectIdentifier] = new Store();
 
         $normalizedProperties = [];
@@ -123,6 +125,15 @@ class PropertyNormalizer extends AbstractNormalizer
                 continue;
             }
 
+            $annotationName = $propertyAnnotation->getName();
+            if (!empty($annotationName)) {
+                $propertyName = $propertyAnnotation->getName();
+            }
+
+            // Add to current path, like a breadcrumb where we are when normalizing.
+            $this->currentPath[] = $propertyName;
+            dump($this->currentPath);
+
             if ($propertyAnnotation->hasType()) {
                 $propertyValue = $this->getValueForPropertyWithType(
                     $object,
@@ -142,17 +153,19 @@ class PropertyNormalizer extends AbstractNormalizer
                 }
             }
 
-            $annotationName = $propertyAnnotation->getName();
-            if (!empty($annotationName)) {
-                $propertyName = $propertyAnnotation->getName();
-            }
-
             $propertyValue = (is_array($propertyValue) && empty($propertyValue) ? null : $propertyValue);
             if (null !== $translationAnnotation) {
                 $propertyValue = $this->translateValue($propertyValue, $translationAnnotation);
             }
 
             $normalizedProperties[$propertyName] = $propertyValue;
+
+            // Decrease current path.
+            if (is_array($this->currentPath) && count($this->currentPath) > 1) {
+                array_pop($this->currentPath);
+            } else {
+                $this->currentPath = [];
+            }
         }
 
         return $normalizedProperties;

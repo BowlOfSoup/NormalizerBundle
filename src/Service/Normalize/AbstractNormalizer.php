@@ -7,10 +7,10 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\Context;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -31,6 +31,12 @@ abstract class AbstractNormalizer
 
     /** @var string|null */
     protected $group = null;
+
+    /** @var \BowlOfSoup\NormalizerBundle\Model\Context */
+    protected $context;
+
+    /** @var array */
+    protected $currentPath = [];
 
     /** @var int|null */
     protected $maxDepth = null;
@@ -73,6 +79,26 @@ abstract class AbstractNormalizer
     protected function hasMaxDepth(): bool
     {
         return null !== $this->maxDepth && ($this->processedDepth + 1) > $this->maxDepth;
+    }
+
+    /**
+     * This function deals with processing $context, which due to compatibility can be either a group or a context model.
+     * Refactor this in the next major version.
+     *
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string|null $context
+     */
+    protected function handleContext($context): void
+    {
+        if (is_string($context)) {
+            // Group has been given instead of context. Set group on context.
+            $context = (new Context())->setGroup($context);
+        } elseif (!$context instanceof Context) {
+            // No context has been given, instantiate empty context.
+            $context = new Context();
+        }
+
+        $this->group = $context->getGroup();
+        $this->context = $context;
     }
 
     /**
@@ -198,6 +224,7 @@ abstract class AbstractNormalizer
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
             --$this->processedDepth;
+
         }
 
         return $normalizedCollection;

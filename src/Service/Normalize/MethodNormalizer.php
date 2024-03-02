@@ -31,20 +31,21 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string|null $context
+     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @throws \ReflectionException
      */
     public function normalize(
         Normalizer $sharedNormalizer,
         ObjectBag $objectBag,
-        ?string $group
+        $context
     ): array {
         $object = $objectBag->getObject();
         $objectName = $objectBag->getObjectName();
 
         $this->sharedNormalizer = $sharedNormalizer;
-        $this->group = $group;
-
+        $this->handleContext($context);
         $this->processedDepthObjects[$objectName] = $this->processedDepth;
 
         $normalizedMethods = [];

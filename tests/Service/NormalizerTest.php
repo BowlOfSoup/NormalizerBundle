@@ -6,7 +6,6 @@ namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
-use BowlOfSoup\NormalizerBundle\Service\Normalizer;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Group;
@@ -99,12 +98,31 @@ class NormalizerTest extends TestCase
             'surName' => 'Of Soup',
             'addresses' => [
                 [
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'Amsterdam',
                     'getSpecialNotesForDelivery' => 'some special string',
                 ],
                 [
+                    'street' => null,
+                    'number' => '4',
+                    'postalCode' => '1234AB',
+                    'city' => null,
                     'getSpecialNotesForDelivery' => 'some special string',
                 ],
             ],
+            'hobbies' => [
+                [
+                    'id' => 1,
+                ],
+                [
+                    'id' => 2,
+                ],
+                [
+                    'id' => 3,
+                ],
+            ]
         ];
 
         $this->assertNotEmpty($result);
