@@ -12,14 +12,8 @@ jobs:
         php-version: [7.2, 7.4, 8.2]
         include:
           - php-version: 8.2
-            dist: jammy
             env:
               SYMFONY_VERSION: ~5.4
-        exclude:
-          - php-version: 7.2
-            dist: jammy
-          - php-version: 7.4
-            dist: jammy
       fail-fast: true
 
     steps:
