@@ -105,6 +105,19 @@ class MethodNormalizer extends AbstractNormalizer
                 continue;
             }
 
+            $annotationName = $methodAnnotation->getName();
+            if (!empty($annotationName)) {
+                $methodName = $methodAnnotation->getName();
+            }
+
+            // Add to current path, like a breadcrumb where we are when normalizing.
+            $this->currentPath[] = $methodName;
+            if (!$this->canCurrentPathBeIncluded($methodAnnotation->getType())) {
+                $this->decreaseCurrentPath();
+
+                continue;
+            }
+
             if ($methodAnnotation->hasType()) {
                 $methodValue = $this->getValueForMethodWithType(
                     $object,
@@ -121,17 +134,14 @@ class MethodNormalizer extends AbstractNormalizer
                 }
             }
 
-            $annotationName = $methodAnnotation->getName();
-            if (!empty($annotationName)) {
-                $methodName = $methodAnnotation->getName();
-            }
-
             $methodValue = (is_array($methodValue) && empty($methodValue) ? null : $methodValue);
             if (null !== $translationAnnotation) {
                 $methodValue = $this->translateValue($methodValue, $translationAnnotation);
             }
 
             $normalizedProperties[$methodName] = $methodValue;
+
+            $this->decreaseCurrentPath();
         }
 
         return $normalizedProperties;
@@ -157,11 +167,11 @@ class MethodNormalizer extends AbstractNormalizer
         $newMethodValue = null;
         $annotationMethodType = strtolower($annotationMethodType);
 
-        if ('datetime' === $annotationMethodType) {
+        if (static::TYPE_DATETIME === $annotationMethodType) {
             $newMethodValue = $this->getValueForMethodWithDateTime($object, $method, $methodAnnotation);
-        } elseif ('object' === $annotationMethodType) {
+        } elseif (static::TYPE_OBJECT === $annotationMethodType) {
             $newMethodValue = $this->getValueForMethodWithTypeObject($object, $method, $methodValue, $methodAnnotation);
-        } elseif ('collection' === $annotationMethodType) {
+        } elseif (static::TYPE_COLLECTION === $annotationMethodType) {
             $newMethodValue = $this->normalizeReferencedCollection($methodValue, $methodAnnotation);
         }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\Context;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
@@ -127,6 +128,63 @@ class NormalizerTest extends TestCase
 
         $this->assertNotEmpty($result);
         ArraySubset::assert($result, $expectedResult);
+    }
+
+    /**
+     * @testdox Normalize object, with includes set.
+     */
+    public function testNormalizeSuccessWithIncludes(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, (new Context())
+            ->setGroup('anotherGroup')
+            ->setIncludesFromString('addresses')
+        );
+
+        $expectedResult = [
+            'surName' => 'Of Soup',
+            'addresses' => [
+                [
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'Amsterdam',
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+                [
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => null,
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+            ],
+        ];
+
+        $this->assertNotEmpty($result);
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * @testdox Normalize object, with includes set and max include depth
+     */
+    public function testNormalizeSuccessWithIncludesAndDepth(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, (new Context())
+            ->setGroup('anotherGroup')
+            ->setIncludesFromString('addresses')
+            ->setMaxDepth(0)
+        );
+
+        $expectedResult = [
+            'surName' => 'Of Soup',
+        ];
+
+        $this->assertNotEmpty($result);
+        $this->assertSame($expectedResult, $result);
     }
 
     /**

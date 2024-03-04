@@ -17,6 +17,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
+    protected const TYPE_DATETIME = 'datetime';
+    protected const TYPE_OBJECT = 'object';
+    protected const TYPE_COLLECTION = 'collection';
+
     /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer|null */
     protected $sharedNormalizer = null;
 
@@ -62,6 +66,7 @@ abstract class AbstractNormalizer
 
     public function cleanUp(): void
     {
+        $this->currentPath = [];
         $this->maxDepth = null;
     }
 
@@ -164,7 +169,7 @@ abstract class AbstractNormalizer
         $objectName = get_class($object);
 
         if (is_object($object) && !$this->isCircularReference($object, $objectName)) {
-            $normalizedConstruct = $this->sharedNormalizer->normalizeObject($object, $this->group);
+            $normalizedConstruct = $this->sharedNormalizer->normalizeObject($object, $this->context);
 
             if (empty($normalizedConstruct)) {
                 return null;
@@ -220,7 +225,7 @@ abstract class AbstractNormalizer
                     $propertyAnnotation
                 );
             } else {
-                $normalizedObject = $this->sharedNormalizer->normalizeObject($collectionItem, $this->group);
+                $normalizedObject = $this->sharedNormalizer->normalizeObject($collectionItem, $this->context);
                 $normalizedCollection[] = (!empty($normalizedObject) ? $normalizedObject : null);
             }
             --$this->processedDepth;
@@ -253,7 +258,7 @@ abstract class AbstractNormalizer
                     $allObjects = false;
                     continue;
                 }
-                $normalizedCollection[] = $this->sharedNormalizer->normalizeObject($item, $this->group);
+                $normalizedCollection[] = $this->sharedNormalizer->normalizeObject($item, $this->context);
             }
             if (empty($normalizedCollection) && !$allObjects) {
                 return $propertyValue;
@@ -261,7 +266,7 @@ abstract class AbstractNormalizer
 
             return $normalizedCollection;
         } elseif (is_object($propertyValue)) {
-            return $this->sharedNormalizer->normalizeObject($propertyValue, $this->group);
+            return $this->sharedNormalizer->normalizeObject($propertyValue, $this->context);
         }
 
         return $propertyValue;
@@ -328,6 +333,34 @@ abstract class AbstractNormalizer
     protected function storeNormalizedConstructForObject(string $constructName, string $baseObjectName, object $object): void
     {
         $this->nameAndClassStore[$baseObjectName]->set($constructName, $object);
+    }
+
+    protected function decreaseCurrentPath(): void
+    {
+        if (is_array($this->currentPath) && count($this->currentPath) > 1) {
+            array_pop($this->currentPath);
+        } else {
+            $this->currentPath = [];
+        }
+    }
+
+    protected function canCurrentPathBeIncluded(?string $pathType): bool
+    {
+        if ($pathType !== static::TYPE_OBJECT && $pathType !== static::TYPE_COLLECTION) {
+            return true;
+        }
+
+        if ($this->context->getMaxDepth() === (count($this->currentPath) - 1)) {
+            return false;
+        }
+
+        if (!$this->context->hasIncludes()) {
+            return true;
+        }
+
+        $pathThatIsBeingNormalized = implode('.', $this->currentPath);
+
+        return $this->context->hasInclude($pathThatIsBeingNormalized);
     }
 
     private function isCircularReference(object $object, string $objectName): bool

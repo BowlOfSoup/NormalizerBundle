@@ -132,6 +132,11 @@ class PropertyNormalizer extends AbstractNormalizer
 
             // Add to current path, like a breadcrumb where we are when normalizing.
             $this->currentPath[] = $propertyName;
+            if (!$this->canCurrentPathBeIncluded($propertyAnnotation->getType())) {
+                $this->decreaseCurrentPath();
+
+                continue;
+            }
 
             if ($propertyAnnotation->hasType()) {
                 $propertyValue = $this->getValueForPropertyWithType(
@@ -159,12 +164,7 @@ class PropertyNormalizer extends AbstractNormalizer
 
             $normalizedProperties[$propertyName] = $propertyValue;
 
-            // Decrease current path.
-            if (is_array($this->currentPath) && count($this->currentPath) > 1) {
-                array_pop($this->currentPath);
-            } else {
-                $this->currentPath = [];
-            }
+            $this->decreaseCurrentPath();
         }
 
         return $normalizedProperties;
@@ -190,11 +190,11 @@ class PropertyNormalizer extends AbstractNormalizer
         $newPropertyValue = null;
         $annotationPropertyType = strtolower($annotationPropertyType);
 
-        if ('datetime' === $annotationPropertyType) {
+        if (static::TYPE_DATETIME === $annotationPropertyType) {
             $newPropertyValue = $this->getValueForPropertyWithDateTime($object, $property, $propertyAnnotation);
-        } elseif ('object' === $annotationPropertyType) {
+        } elseif (static::TYPE_OBJECT === $annotationPropertyType) {
             $newPropertyValue = $this->getValueForPropertyWithTypeObject($object, $propertyValue, $propertyAnnotation);
-        } elseif ('collection' === $annotationPropertyType) {
+        } elseif (static::TYPE_COLLECTION === $annotationPropertyType) {
             $newPropertyValue = $this->normalizeReferencedCollection($propertyValue, $propertyAnnotation);
         }
 

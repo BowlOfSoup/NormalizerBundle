@@ -12,6 +12,9 @@ class Context
     /** @var string[] */
     private $includes = [];
 
+    /** @var int|null */
+    private $maxDepth;
+
     public function getGroup(): ?string
     {
         return $this->group;
@@ -64,5 +67,25 @@ class Context
     public function hasInclude(string $assertion): bool
     {
         return in_array($assertion, $this->includes);
+    }
+
+    public function hasIncludes(): bool
+    {
+        return count($this->includes) > 0;
+    }
+
+    public function getMaxDepth(): ?int
+    {
+        return $this->maxDepth;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setMaxDepth(int $maxDepth): self
+    {
+        $this->maxDepth = $maxDepth;
+
+        return $this;
     }
 }
