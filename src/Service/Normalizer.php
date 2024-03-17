@@ -3,6 +3,7 @@
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\Context;
 use BowlOfSoup\NormalizerBundle\Model\ObjectBag;
 use BowlOfSoup\NormalizerBundle\Model\ObjectCache;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
@@ -34,27 +35,38 @@ class Normalizer
      * Normalize an object or an array of objects, for a specific group.
      *
      * @param mixed $data
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string|null $context
      *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @throws \ReflectionException
      */
-    public function normalize($data, string $group = null): array
+    public function normalize($data, $context = null): array
     {
         if (empty($data)) {
             return [];
         }
 
+        if (is_string($context)) {
+            // Group has been given instead of context. Set group on context.
+            $context = (new Context())->setGroup($context);
+        } elseif (!$context instanceof Context) {
+            // No context has been given, instantiate empty context.
+            $context = new Context();
+        }
+
         $this->cleanUpSession();
-        return $this->normalizeData($data, $group);
+        return $this->normalizeData($data, $context);
     }
 
     /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string $context
+     *
      * @throws \ReflectionException
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
-    public function normalizeObject(object $object, ?string $group): array
+    public function normalizeObject(object $object, $context): array
     {
         $normalizedConstructs = [];
         $objectName = get_class($object);
@@ -70,10 +82,10 @@ class Normalizer
 
         $objectBag = new ObjectBag($object, $objectIdentifier, $objectName);
 
-        $normalizedClassProperties = $this->propertyNormalizer->normalize($this, $objectBag, $group);
+        $normalizedClassProperties = $this->propertyNormalizer->normalize($this, $objectBag, $context);
         $normalizedConstructs = array_merge($normalizedConstructs, ...$normalizedClassProperties);
 
-        $normalizedClassMethods = $this->methodNormalizer->normalize($this, $objectBag, $group);
+        $normalizedClassMethods = $this->methodNormalizer->normalize($this, $objectBag, $context);
         $normalizedConstructs = array_merge($normalizedConstructs, ...$normalizedClassMethods);
 
         if (null !== $objectIdentifier) {
@@ -86,20 +98,22 @@ class Normalizer
     }
 
     /**
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string $context
+     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @throws \ReflectionException
      */
-    private function normalizeData($data, ?string $group): array
+    private function normalizeData($data, $context): array
     {
         $this->propertyNormalizer->cleanUp();
         $normalizedData = [];
 
         if (is_iterable($data) || $data instanceof \Traversable) {
             foreach ($data as $item) {
-                $normalizedData[] = $this->normalizeData($item, $group);
+                $normalizedData[] = $this->normalizeData($item, $context);
             }
         } else if (is_object($data)) {
-            $normalizedData = $this->normalizeObject($data, $group);
+            $normalizedData = $this->normalizeObject($data, $context);
         } else {
             throw new BosNormalizerException('Can only normalize an object or an array of objects. Input contains: ' . gettype($data));
         }

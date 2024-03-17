@@ -95,7 +95,7 @@ class Normalize extends AbstractAnnotation
         return $this->maxDepth;
     }
 
-    public function getType(): string
+    public function getType(): ?string
     {
         return $this->type;
     }
