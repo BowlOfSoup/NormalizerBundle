@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\Service;
 
 use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Model\Context;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Address;
@@ -14,6 +15,7 @@ use BowlOfSoup\NormalizerBundle\Tests\assets\HobbyType;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxySocial;
+use BowlOfSoup\NormalizerBundle\Tests\assets\ProxySocialNotInitialized;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Social;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use BowlOfSoup\NormalizerBundle\Tests\assets\TelephoneNumbers;
@@ -97,16 +99,92 @@ class NormalizerTest extends TestCase
             'surName' => 'Of Soup',
             'addresses' => [
                 [
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'Amsterdam',
                     'getSpecialNotesForDelivery' => 'some special string',
                 ],
                 [
+                    'street' => null,
+                    'number' => '4',
+                    'postalCode' => '1234AB',
+                    'city' => null,
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+            ],
+            'hobbies' => [
+                [
+                    'id' => 1,
+                ],
+                [
+                    'id' => 2,
+                ],
+                [
+                    'id' => 3,
+                ],
+            ]
+        ];
+
+        $this->assertNotEmpty($result);
+        ArraySubset::assert($result, $expectedResult);
+    }
+
+    /**
+     * @testdox Normalize object, with includes set.
+     */
+    public function testNormalizeSuccessWithIncludes(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, (new Context())
+            ->setGroup('anotherGroup')
+            ->setIncludesFromString('addresses')
+        );
+
+        $expectedResult = [
+            'surName' => 'Of Soup',
+            'addresses' => [
+                [
+                    'street' => 'Dummy Street',
+                    'number' => null,
+                    'postalCode' => null,
+                    'city' => 'Amsterdam',
+                    'getSpecialNotesForDelivery' => 'some special string',
+                ],
+                [
+                    'street' => null,
+                    'number' => 4,
+                    'postalCode' => '1234AB',
+                    'city' => null,
                     'getSpecialNotesForDelivery' => 'some special string',
                 ],
             ],
         ];
 
         $this->assertNotEmpty($result);
-        ArraySubset::assert($result, $expectedResult);
+        $this->assertSame($expectedResult, $result);
+    }
+
+    /**
+     * @testdox Normalize object, with includes set and max include depth
+     */
+    public function testNormalizeSuccessWithIncludesAndDepth(): void
+    {
+        $person = $this->getDummyDataSet();
+
+        $result = $this->normalizer->normalize($person, (new Context())
+            ->setGroup('anotherGroup')
+            ->setIncludesFromString('addresses')
+            ->setMaxDepth(0)
+        );
+
+        $expectedResult = [
+            'surName' => 'Of Soup',
+        ];
+
+        $this->assertNotEmpty($result);
+        $this->assertSame($expectedResult, $result);
     }
 
     /**
@@ -176,7 +254,7 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setMethods(['getId'])
+            ->onlyMethods(['getId'])
             ->getMock();
         $this->classExtractor
             ->expects($this->any())
@@ -200,7 +278,7 @@ class NormalizerTest extends TestCase
         /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
-            ->setMethods(['getId'])
+            ->onlyMethods(['getId'])
             ->getMock();
         $this->classExtractor
             ->expects($this->any())
@@ -504,6 +582,16 @@ class NormalizerTest extends TestCase
     public function testNormalizeProxyWithMethods(): void
     {
         $socialProxy = new ProxySocial();
+        $socialProxy->setFacebook('foo');
+
+        $this->assertSame([
+            'facebook' => 'foo',
+        ], $this->normalizer->normalize($socialProxy, 'proxy-method'));
+    }
+
+    public function testNormalizeNotInitializedProxyWithMethods(): void
+    {
+        $socialProxy = new ProxySocialNotInitialized();
         $socialProxy->setFacebook('foo');
 
         $this->assertSame([

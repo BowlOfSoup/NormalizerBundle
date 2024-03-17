@@ -11,6 +11,7 @@ class Address
      * @var string
      *
      * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"anotherGroup"})
      */
     private $street;
 
@@ -18,6 +19,7 @@ class Address
      * @var int
      *
      * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"anotherGroup"})
      */
     private $number;
 
@@ -25,6 +27,7 @@ class Address
      * @var string
      *
      * @Bos\Normalize(group={"default"})
+     * @Bos\Normalize(group={"anotherGroup"})
      */
     private $postalCode;
 
@@ -32,6 +35,7 @@ class Address
      * @var string
      *
      * @Bos\Normalize(group={"default"}, callback="getCityWithFormat")
+     * @Bos\Normalize(group={"anotherGroup"})
      */
     private $city;
 
