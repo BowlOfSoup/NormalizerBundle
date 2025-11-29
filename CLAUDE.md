@@ -75,7 +75,7 @@ The `.env.local` file is gitignored and will be automatically picked up by act. 
 
 **Note**: The first run will be slow as it downloads the container image and sets up PHP. Subsequent runs are much faster due to container reuse (configured in `~/Library/Application Support/act/actrc`).
 
-**Configuration**: act is configured to:
+**Configuration**: act MUST be configured to:
 - Use `catthehacker/ubuntu:act-latest` as the base image (medium size)
 - Reuse containers between runs for faster execution
 - Use linux/amd64 architecture (required for M-series Macs)
