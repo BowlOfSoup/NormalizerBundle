@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
-use Rector\Symfony\Set\SymfonyLevelSetList;
 
 return static function (RectorConfig $rectorConfig): void
 {
@@ -21,7 +20,6 @@ return static function (RectorConfig $rectorConfig): void
 
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_72,
-        SymfonyLevelSetList::UP_TO_SYMFONY_54,
     ]);
 
     $rectorConfig->importNames(true, false);
