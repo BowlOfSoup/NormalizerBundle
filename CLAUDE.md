@@ -73,7 +73,7 @@ CODECOV_TOKEN=your-codecov-token-here
 ```
 The `.env.local` file is gitignored and will be automatically picked up by act. The `.env` file is committed as a template.
 
-**Note**: The first run will be slow as it downloads the container image and sets up PHP. Subsequent runs are much faster due to container reuse (configured in `~/Library/Application Support/act/actrc`).
+**Note**: The first run will be slow as it downloads the container image and sets up PHP. Subsequent runs are much faster due to container reuse; configure this!
 
 **Configuration**: act MUST be configured to:
 - Use `catthehacker/ubuntu:act-latest` as the base image (medium size)
@@ -95,11 +95,6 @@ The `.env.local` file is gitignored and will be automatically picked up by act. 
 - Wraps Normalizer with encoding capabilities (JSON, XML)
 - Uses EncoderFactory to create encoders
 - Supports sorting via `@Serialize` annotation
-
-**ObjectCache** (`src/Model/ObjectCache.php`)
-- Static cache preventing circular references
-- Caches normalized results by object name and identifier (from `getId()`)
-- Must be cleared between normalize operations
 
 ### Annotation System
 
