@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [7.2, 7.4, 8.2]
+        php-version: [7.4, 8.2]
         include:
           - php-version: 8.2
             env:
@@ -25,10 +25,12 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer:1.10.22
+          tools: composer:v2
+          extensions: xdebug
+          coverage: xdebug
 
       - name: Cache Composer dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: $HOME/.composer/cache
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -54,4 +56,8 @@ jobs:
         run: XDEBUG_MODE=coverage php vendor/bin/phpunit
 
       - name: Upload coverage to Codecov
-        run: ./codecov
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          BRANCH=$(git rev-parse --abbrev-ref HEAD)
+          ./codecov -r BowlOfSoup/NormalizerBundle -B "${BRANCH}"
