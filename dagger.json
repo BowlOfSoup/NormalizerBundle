@@ -1,0 +1,8 @@
+{
+  "name": "NormalizerBundle",
+  "engineVersion": "v0.19.7",
+  "sdk": {
+    "source": "php"
+  },
+  "source": ".dagger"
+}
