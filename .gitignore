@@ -8,4 +8,4 @@
 !/var/**/
 !/var/**/.gitkeep
 /phpstan.neon
->>>>>>> fc967e0fc51238085fa8a2a2882bcdab42090dec
+.env.local
