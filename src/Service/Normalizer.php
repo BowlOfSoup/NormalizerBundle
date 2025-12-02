@@ -13,34 +13,20 @@ use BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer;
 
 class Normalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
-    protected $classExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer */
-    private $propertyNormalizer;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer */
-    private $methodNormalizer;
-
     public function __construct(
-        ClassExtractor $classExtractor,
-        PropertyNormalizer $propertyNormalizer,
-        MethodNormalizer $methodNormalizer
+        protected ClassExtractor $classExtractor,
+        private readonly PropertyNormalizer $propertyNormalizer,
+        private readonly MethodNormalizer $methodNormalizer,
     ) {
-        $this->classExtractor = $classExtractor;
-        $this->propertyNormalizer = $propertyNormalizer;
-        $this->methodNormalizer = $methodNormalizer;
     }
 
     /**
      * Normalize an object or an array of objects, for a specific group.
      *
-     * @param mixed $data
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
-    public function normalize($data, string $group = null): array
+    public function normalize(mixed $data, ?string $group = null): array
     {
         if (empty($data)) {
             return [];
@@ -54,13 +40,13 @@ class Normalizer
     /**
      * Get properties for given object, annotations per property and begin normalizing.
      *
+     * @throws BosNormalizerException
      * @throws \ReflectionException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      */
     public function normalizeObject(object $object, ?string $group): array
     {
         $normalizedConstructs = [];
-        $objectName = get_class($object);
+        $objectName = $object::class;
         $objectIdentifier = ObjectHelper::getObjectIdentifier($object);
 
         ObjectCache::setObjectByName($objectName, $objectIdentifier);
@@ -89,10 +75,10 @@ class Normalizer
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
-    private function normalizeData($data, ?string $group): array
+    private function normalizeData(mixed $data, ?string $group): array
     {
         $this->propertyNormalizer->cleanUp();
         $normalizedData = [];

@@ -10,59 +10,45 @@ class Group
 {
     /**
      * @Bos\Normalize(group={"maxDepthTestDepth1", "default"})
-     *
-     * @var int
      */
-    private $id;
+    private int $id;
 
     /**
      * @Bos\Normalize(group={"maxDepthTestDepth1", "default"})
-     *
-     * @var string
      */
-    private $name;
+    private string $name;
 
     /**
      * @Bos\Normalize(group={"default"})
      *
-     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]|array|null
+     * @var Person[]|null
      */
-    private $persons = null;
+    private ?array $persons = null;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
-     *
      * @return $this
      */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param mixed $name
-     *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -70,7 +56,7 @@ class Group
     }
 
     /**
-     * @return \BowlOfSoup\NormalizerBundle\Tests\assets\Person[]
+     * @return Person[]
      */
     public function getPersons(): array
     {
@@ -78,7 +64,7 @@ class Group
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Person[] $persons
+     * @param Person[] $persons
      *
      * @return $this
      */

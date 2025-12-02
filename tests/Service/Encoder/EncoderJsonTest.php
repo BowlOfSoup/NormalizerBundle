@@ -8,6 +8,7 @@ use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
 use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class EncoderJsonTest extends TestCase
@@ -95,7 +96,7 @@ class EncoderJsonTest extends TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['jsonLastErrorMsgExists']);
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderJson|\PHPUnit\Framework\MockObject\MockObject $encoderJson */
+        /** @var EncoderJson&MockObject $encoderJson */
         $encoderJson = $mockBuilder->getMock();
         $encoderJson
             ->expects($this->any())

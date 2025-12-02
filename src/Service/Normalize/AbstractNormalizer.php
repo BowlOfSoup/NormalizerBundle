@@ -17,41 +17,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class AbstractNormalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer|null */
-    protected $sharedNormalizer = null;
+    protected ?Normalizer $sharedNormalizer = null;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor */
-    protected $classExtractor;
-
-    /** @var \Symfony\Contracts\Translation\TranslatorInterface */
-    protected $translator;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
-    protected $annotationExtractor;
-
-    /** @var string|null */
-    protected $group = null;
-
-    /** @var int|null */
-    protected $maxDepth = null;
-
-    /** @var array */
-    protected $processedDepthObjects = [];
-
-    /** @var int */
-    protected $processedDepth = 0;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Model\Store[]|array|null */
-    protected $nameAndClassStore = null;
+    protected ?string $group = null;
+    protected ?int $maxDepth = null;
+    protected array $processedDepthObjects = [];
+    protected int $processedDepth = 0;
+    protected ?array $nameAndClassStore = null;
 
     public function __construct(
-        ClassExtractor $classExtractor,
-        TranslatorInterface $translator,
-        AnnotationExtractor $annotationExtractor
+        protected ClassExtractor $classExtractor,
+        protected TranslatorInterface $translator,
+        protected AnnotationExtractor $annotationExtractor,
     ) {
-        $this->classExtractor = $classExtractor;
-        $this->translator = $translator;
-        $this->annotationExtractor = $annotationExtractor;
     }
 
     public function cleanUp(): void
@@ -76,15 +54,13 @@ abstract class AbstractNormalizer
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return int|string
+     * @throws BosNormalizerException
      */
-    protected function getValueForMaxDepth(object $object)
+    protected function getValueForMaxDepth(object $object): int|string
     {
         $value = $this->classExtractor->getId($object);
         if (null === $value) {
-            throw new BosNormalizerException('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to ' . get_class($object));
+            throw new BosNormalizerException('Maximal depth reached, but no identifier found. Prevent this by adding a getId() method to ' . $object::class);
         }
 
         return $value;
@@ -104,7 +80,7 @@ abstract class AbstractNormalizer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $classAnnotation */
+        /** @var Normalize $classAnnotation */
         foreach ($classAnnotations as $classAnnotation) {
             if ($classAnnotation->isGroupValidForConstruct($this->group)) {
                 $this->maxDepth = $classAnnotation->getMaxDepth();
@@ -116,10 +92,7 @@ abstract class AbstractNormalizer
         return null;
     }
 
-    /**
-     * @param mixed $value
-     */
-    protected function skipEmptyValue($value, Normalize $annotation, Normalize $classAnnotation = null): bool
+    protected function skipEmptyValue(mixed $value, Normalize $annotation, ?Normalize $classAnnotation = null): bool
     {
         $skipEmpty = (null !== $classAnnotation ? $classAnnotation->getSkipEmpty() : false);
 
@@ -129,13 +102,13 @@ abstract class AbstractNormalizer
     /**
      * Normalize a referenced object, handles circular references.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     protected function normalizeReferencedObject(object $object, object $parentObject): ?array
     {
         $normalizedConstruct = null;
-        $objectName = get_class($object);
+        $objectName = $object::class;
 
         if (is_object($object) && !$this->isCircularReference($object, $objectName)) {
             $normalizedConstruct = $this->sharedNormalizer->normalizeObject($object, $this->group);
@@ -148,7 +121,7 @@ abstract class AbstractNormalizer
         if (empty($normalizedConstruct)) {
             $normalizedConstruct = $this->classExtractor->getId($object);
             if (null === $normalizedConstruct) {
-                throw new BosNormalizerException('Circular reference on: ' . $objectName . ' called from: ' . get_class($parentObject) . '. If possible, prevent this by adding a getId() method to ' . $objectName);
+                throw new BosNormalizerException('Circular reference on: ' . $objectName . ' called from: ' . $parentObject::class . '. If possible, prevent this by adding a getId() method to ' . $objectName);
             }
 
             return ['id' => $normalizedConstruct];
@@ -160,14 +133,12 @@ abstract class AbstractNormalizer
     /**
      * Normalize a property with 'collection' type.
      *
-     * A Collection can be anything that is iteratable, such as a Doctrine ArrayCollection, or just an array.
+     * A Collection can be anything that is iterable, such as a Doctrine ArrayCollection, or just an array.
      *
-     * @param mixed $propertyValue
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
-    protected function normalizeReferencedCollection($propertyValue, Normalize $propertyAnnotation): ?array
+    protected function normalizeReferencedCollection(mixed $propertyValue, Normalize $propertyAnnotation): ?array
     {
         $normalizedCollection = [];
 
@@ -204,14 +175,10 @@ abstract class AbstractNormalizer
     }
 
     /**
-     * @param mixed $propertyValue
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
-     *
-     * @return array|string|null
      */
-    protected function handleCallbackResult($propertyValue, Normalize $propertyAnnotation)
+    protected function handleCallbackResult(mixed $propertyValue, Normalize $propertyAnnotation): mixed
     {
         if (!$propertyAnnotation->mustNormalizeCallbackResult()) {
             return $propertyValue;
@@ -241,7 +208,7 @@ abstract class AbstractNormalizer
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Annotation\Translate[] $translateAnnotations
+     * @param Translate[] $translateAnnotations
      */
     protected function getTranslationAnnotation(array $translateAnnotations, bool $emptyGroup = false): ?Translate
     {
@@ -262,19 +229,14 @@ abstract class AbstractNormalizer
         }
         // Annotation found, but no explicit group. Try again with no group.
         if (null === $translationAnnotation) {
-            // Don't try again if get with no group given to prevent
+            // Don't try again if we get with no group given to prevent
             return (!$emptyGroup) ? $this->getTranslationAnnotation($translateAnnotations, true) : null;
         }
 
         return $translationAnnotation;
     }
 
-    /**
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    protected function translateValue($value, Translate $translationAnnotation)
+    protected function translateValue(mixed $value, Translate $translationAnnotation): mixed
     {
         if (!is_string($value)) {
             return $value;

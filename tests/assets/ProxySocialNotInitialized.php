@@ -8,7 +8,7 @@ use Doctrine\Persistence\Proxy;
 
 class ProxySocialNotInitialized extends Social implements Proxy
 {
-    public function __load()
+    public function __load(): void
     {
     }
 

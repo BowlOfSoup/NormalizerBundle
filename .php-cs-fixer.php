@@ -107,14 +107,19 @@ final class CustomFinder extends Finder
     private function initFilesFromGit(): void
     {
         $this->input = 'Git';
-        $branch = $this->pipedExec('git rev-parse --abbrev-ref HEAD 2>/dev/null');
-        echo sprintf('What is the destination branch of %s [master]: ', $branch);
-        $destinationBranch = trim(fgets(STDIN)) ?: 'master';
+
+        // Get destination branch from environment variable (required)
+        $destinationBranch = getenv('PHP_CS_FIXER_TARGET_BRANCH');
+
+        if ($destinationBranch === false || $destinationBranch === '') {
+            $destinationBranch = 'master';
+        }
+
         $branchExists = $this->pipedExec(sprintf('git branch --remotes 2>/dev/null | grep --extended-regexp "^(\*| ) origin/%s( |$)" 2>/dev/null', $destinationBranch));
         if ($branchExists === false) {
             die(sprintf("fatal: Couldn't find remote ref %s", $destinationBranch) . PHP_EOL);
         }
-        $this->pipedExec(sprintf('(git diff origin/%s.. --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
+        $this->pipedExec(sprintf('(git diff origin/%s.. --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff HEAD --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
         $repositoryRoot = $this->pipedExec('git rev-parse --show-toplevel 2>/dev/null');
         chdir($repositoryRoot);
     }

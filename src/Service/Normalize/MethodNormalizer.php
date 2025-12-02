@@ -16,28 +16,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MethodNormalizer extends AbstractNormalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor */
-    private $methodExtractor;
-
     public function __construct(
         ClassExtractor $classExtractor,
         TranslatorInterface $translator,
         AnnotationExtractor $annotationExtractor,
-        MethodExtractor $methodExtractor
+        private readonly MethodExtractor $methodExtractor,
     ) {
         parent::__construct($classExtractor, $translator, $annotationExtractor);
-
-        $this->methodExtractor = $methodExtractor;
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     public function normalize(
         Normalizer $sharedNormalizer,
         ObjectBag $objectBag,
-        ?string $group
+        ?string $group,
     ): array {
         $object = $objectBag->getObject();
         $objectName = $objectBag->getObjectName();
@@ -76,18 +71,18 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     private function normalizeMethod(
         object $object,
         \ReflectionMethod $method,
         array $methodAnnotations,
-        ?Normalize $classAnnotation
+        ?Normalize $classAnnotation,
     ): array {
         $normalizedProperties = [];
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $methodAnnotation */
+        /** @var Normalize $methodAnnotation */
         foreach ($methodAnnotations as $methodAnnotation) {
             if (!$methodAnnotation->isGroupValidForConstruct($this->group)) {
                 continue;
@@ -96,7 +91,6 @@ class MethodNormalizer extends AbstractNormalizer
             $translateAnnotations = $this->annotationExtractor->getAnnotationsForMethod(Translate::class, $method);
             $translationAnnotation = $this->getTranslationAnnotation($translateAnnotations);
 
-            /** @var string $methodName */
             $methodName = $method->getName();
             $methodValue = $method->invoke($object);
 
@@ -139,20 +133,16 @@ class MethodNormalizer extends AbstractNormalizer
     /**
      * Returns values for methods with the annotation property 'type'.
      *
-     * @param mixed $methodValue
-     *
      * @throws \ReflectionException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return mixed|null
+     * @throws BosNormalizerException
      */
     private function getValueForMethodWithType(
         object $object,
         \ReflectionMethod $method,
-        $methodValue,
+        mixed $methodValue,
         Normalize $methodAnnotation,
-        string $annotationMethodType
-    ) {
+        string $annotationMethodType,
+    ): string|int|array|null {
         $newMethodValue = null;
         $annotationMethodType = strtolower($annotationMethodType);
 
@@ -170,11 +160,11 @@ class MethodNormalizer extends AbstractNormalizer
     /**
      * Returns values for methods with annotation type 'datetime'.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
+     * @throws \ReflectionException
      */
     private function getValueForMethodWithDateTime(object $object, \ReflectionMethod $method, Normalize $methodAnnotation): ?string
     {
-        /** @var string $methodName */
         $methodName = $method->getName();
         $methodValue = null;
 
@@ -197,14 +187,11 @@ class MethodNormalizer extends AbstractNormalizer
      *
      * @param mixed $methodValue
      *
+     * @throws BosNormalizerException
      * @throws \ReflectionException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return mixed|null
      */
-    private function getValueForMethodWithTypeObject(object $object, \ReflectionMethod $method, $methodValue, Normalize $propertyAnnotation)
+    private function getValueForMethodWithTypeObject(object $object, \ReflectionMethod $method, $methodValue, Normalize $propertyAnnotation): string|array|int|null
     {
-        /** @var string $methodName */
         $methodName = $method->getName();
 
         if ($this->hasMaxDepth()) {
@@ -230,7 +217,7 @@ class MethodNormalizer extends AbstractNormalizer
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      */
     private function callbackException(string $methodName): void
     {

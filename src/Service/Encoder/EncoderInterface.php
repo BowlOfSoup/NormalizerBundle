@@ -10,10 +10,7 @@ interface EncoderInterface
 {
     public function getType(): string;
 
-    /**
-     * @param array|mixed $value
-     */
-    public function encode($value): ?string;
+    public function encode(mixed $value): ?string;
 
     public function populateFromAnnotation(Serialize $serializeAnnotation): void;
 }

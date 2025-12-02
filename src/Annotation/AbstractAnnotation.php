@@ -6,13 +6,12 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 abstract class AbstractAnnotation
 {
-    protected const EXCEPTION_EMPTY = 'Parameter "%s" of annotation "%s" cannot be empty.';
-    protected const EXCEPTION_TYPE = 'Wrong datatype used for property "%s" for annotation "%s"';
-    protected const EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
-    protected const EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
+    protected const string EXCEPTION_EMPTY = 'Parameter "%s" of annotation "%s" cannot be empty.';
+    protected const string EXCEPTION_TYPE = 'Wrong datatype used for property "%s" for annotation "%s"';
+    protected const string EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
+    protected const string EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
 
-    /** @var array */
-    protected $group = [];
+    protected array $group = [];
 
     public function getGroup(): array
     {
@@ -26,13 +25,10 @@ abstract class AbstractAnnotation
     {
         $annotationGroup = $this->getGroup();
 
-        return (empty($group) || in_array($group, $annotationGroup, false)) && (!empty($group) || empty($annotationGroup));
+        return (empty($group) || in_array($group, $annotationGroup)) && (!empty($group) || empty($annotationGroup));
     }
 
-    /**
-     * @param mixed $property
-     */
-    protected function validateProperties($property, string $propertyName, array $propertyOptions, string $annotation): bool
+    protected function validateProperties(mixed $property, string $propertyName, array $propertyOptions, string $annotation): bool
     {
         if ($this->isEmpty($property)) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
@@ -53,19 +49,12 @@ abstract class AbstractAnnotation
         return true;
     }
 
-    /**
-     * @param mixed $property
-     */
-    private function isEmpty($property): bool
+    private function isEmpty(mixed $property): bool
     {
         return 0 !== $property && empty($property) && false !== $property;
     }
 
-    /**
-     * @param mixed $type
-     * @param mixed $property
-     */
-    private function hasCorrectType($type, $property): bool
+    private function hasCorrectType(mixed $type, mixed $property): bool
     {
         return $type === gettype($property);
     }

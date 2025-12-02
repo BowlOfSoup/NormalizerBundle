@@ -11,40 +11,27 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer;
 use BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer;
 use BowlOfSoup\NormalizerBundle\Service\Normalizer;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 trait NormalizerTestTrait
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $classExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\PropertyNormalizer|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $propertyNormalizer;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalize\MethodNormalizer|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $methodNormalizer;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $propertyExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $methodExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $annotationExtractor;
-
-    /** @var \Symfony\Contracts\Translation\TranslatorInterface|\PHPUnit\Framework\MockObject\Stub\Stub|\PHPUnit\Framework\MockObject\MockObject */
-    protected $translator;
+    protected ClassExtractor|Stub $classExtractor;
+    protected PropertyNormalizer|Stub $propertyNormalizer;
+    protected MethodNormalizer|Stub $methodNormalizer;
+    protected PropertyExtractor|Stub $propertyExtractor;
+    protected MethodExtractor|Stub $methodExtractor;
+    protected AnnotationExtractor|Stub $annotationExtractor;
+    protected TranslatorInterface|MockObject $translator;
 
     public function getNormalizer(): Normalizer
     {
         $propertyExtractor = $this->propertyExtractor ?? new PropertyExtractor();
         $methodExtractor = $this->methodExtractor ?? new MethodExtractor();
         $classExtractor = $this->classExtractor ?? new ClassExtractor();
-
         $annotationExtractor = $this->annotationExtractor ?? new AnnotationExtractor();
 
-        /** @var \PHPUnit\Framework\MockObject\MockBuilder|\PHPUnit\Framework\MockObject\MockObject $translationMockBuilder */
         $translationMockBuilder = $this->getMockBuilder(TranslatorInterface::class)
             ->disableOriginalConstructor();
 

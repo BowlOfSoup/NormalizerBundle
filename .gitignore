@@ -4,6 +4,7 @@
 /build/
 *.cache
 /.idea
+/.claude/
 /var/**
 !/var/**/
 !/var/**/.gitkeep

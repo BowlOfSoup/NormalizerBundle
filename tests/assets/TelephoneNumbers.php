@@ -1,25 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 class TelephoneNumbers
 {
-    /** @var string */
-    private $home;
+    private string|int $home;
+    private string|int $mobile;
+    private string|int $work;
+    private string|int $wife;
 
-    /** @var string */
-    private $mobile;
-
-    /** @var string */
-    private $work;
-
-    /** @var string */
-    private $wife;
-
-    /**
-     * @return array
-     */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'home' => $this->home,
@@ -30,11 +22,9 @@ class TelephoneNumbers
     }
 
     /**
-     * @param string $home
-     *
      * @return $this
      */
-    public function setHome($home)
+    public function setHome(string|int $home): self
     {
         $this->home = $home;
 
@@ -42,11 +32,9 @@ class TelephoneNumbers
     }
 
     /**
-     * @param string $mobile
-     *
      * @return $this
      */
-    public function setMobile($mobile)
+    public function setMobile(string|int $mobile): self
     {
         $this->mobile = $mobile;
 
@@ -54,11 +42,9 @@ class TelephoneNumbers
     }
 
     /**
-     * @param string $work
-     *
      * @return $this
      */
-    public function setWork($work)
+    public function setWork(string|int $work): self
     {
         $this->work = $work;
 
@@ -66,11 +52,9 @@ class TelephoneNumbers
     }
 
     /**
-     * @param string $wife
-     *
      * @return $this
      */
-    public function setWife($wife)
+    public function setWife(string|int $wife): self
     {
         $this->wife = $wife;
 

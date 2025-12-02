@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -7,53 +9,39 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
 class HobbyType
 {
     /**
-     * @var int
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
      */
-    private $id;
+    private int $id;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
      */
-    private $name;
+    private string $name;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
-     *
      * @return $this
      */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param mixed $name
-     *
      * @return $this
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 

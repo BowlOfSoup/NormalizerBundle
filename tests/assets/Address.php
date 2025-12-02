@@ -10,122 +10,89 @@ use Doctrine\Common\Collections\Collection;
 class Address
 {
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $street;
+    private ?string $street = null;
 
     /**
-     * @var int
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $number;
+    private ?int $number = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $postalCode;
+    private ?string $postalCode = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"}, callback="getCityWithFormat")
      */
-    private $city;
+    private ?string $city = null;
 
     /**
      * @Bos\Normalize(group={"maxDepthTestDepth1"}, type="collection")
-     *
-     * @var Collection|null
      */
-    private $group = null;
+    private ?Collection $group = null;
 
-    /**
-     * @return string
-     */
-    public function getStreet()
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
     /**
-     * @param string $street
-     *
      * @return $this
      */
-    public function setStreet($street)
+    public function setStreet(?string $street): self
     {
         $this->street = $street;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getNumber()
+    public function getNumber(): ?int
     {
         return $this->number;
     }
 
     /**
-     * @param int $number
-     *
      * @return $this
      */
-    public function setNumber($number)
+    public function setNumber(?int $number): self
     {
         $this->number = $number;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getPostalCode()
+    public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
     /**
-     * @param string $postalCode
-     *
      * @return $this
      */
-    public function setPostalCode($postalCode)
+    public function setPostalCode(?string $postalCode): self
     {
         $this->postalCode = $postalCode;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getCity()
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    /**
-     * @return string
-     */
-    public function getCityWithFormat()
+    public function getCityWithFormat(): string
     {
         return 'The City Is: ' . $this->city;
     }
 
     /**
-     * @param string $city
-     *
      * @return $this
      */
-    public function setCity($city)
+    public function setCity(?string $city): self
     {
         $this->city = $city;
 
@@ -133,11 +100,9 @@ class Address
     }
 
     /**
-     * @return Collection
-     *
      * @Bos\Normalize(type="collection", name="group", group={"maxDepthTestDepth1OnMethod"})
      */
-    public function getGroup()
+    public function getGroup(): ?Collection
     {
         return $this->group;
     }
@@ -145,7 +110,7 @@ class Address
     /**
      * @return $this
      */
-    public function setGroup(Collection $group)
+    public function setGroup(Collection $group): self
     {
         $this->group = $group;
 

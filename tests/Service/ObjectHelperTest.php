@@ -12,7 +12,7 @@ class ObjectHelperTest extends TestCase
 {
     public function testObjectIdentifiedByGetIdMethod(): void
     {
-        $person = (new Person())
+        $person = new Person()
             ->setId(123);
 
         $this->assertSame(123, ObjectHelper::getObjectIdentifier($person));

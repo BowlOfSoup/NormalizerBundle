@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BowlOfSoup\NormalizerBundle\Tests\Service;
+namespace BowlOfSoup\NormalizerBundle\Tests\Service\Extractor;
 
 use BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;

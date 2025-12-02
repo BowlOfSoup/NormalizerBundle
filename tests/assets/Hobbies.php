@@ -10,24 +10,18 @@ class Hobbies
 {
     /**
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
-     *
-     * @var int|null
      */
-    private $id = null;
+    private ?int $id = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
      */
-    private $description;
+    private string $description;
 
     /**
-     * @var HobbyType
-     *
-     * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="object")"}, type="object")
+     * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="object")
      */
-    private $hobbyType;
+    private HobbyType $hobbyType;
 
     public function getId(): int
     {
@@ -44,40 +38,30 @@ class Hobbies
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
     /**
-     * @param string $description
-     *
      * @return $this
      */
-    public function setDescription($description)
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * @return HobbyType
-     */
-    public function getHobbyType()
+    public function getHobbyType(): HobbyType
     {
         return $this->hobbyType;
     }
 
     /**
-     * @param HobbyType $hobbyType
-     *
      * @return $this
      */
-    public function setHobbyType($hobbyType)
+    public function setHobbyType(HobbyType $hobbyType): self
     {
         $this->hobbyType = $hobbyType;
 

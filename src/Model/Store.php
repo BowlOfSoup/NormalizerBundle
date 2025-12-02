@@ -6,25 +6,16 @@ namespace BowlOfSoup\NormalizerBundle\Model;
 
 class Store
 {
-    /** @var array */
-    private $values = [];
+    private array $values = [];
 
-    /**
-     * @param mixed $value
-     *
-     * @return $this
-     */
-    public function set(string $key, $value = null): self
+    public function set(string $key, mixed $value = null): self
     {
         $this->values[$key] = $value;
 
         return $this;
     }
 
-    /**
-     * @return mixed|null
-     */
-    public function get(string $key)
+    public function get(string $key): mixed
     {
         if (!$this->has($key)) {
             return null;

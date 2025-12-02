@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\Service\Encoder;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
@@ -24,7 +26,7 @@ class EncoderXmlTest extends TestCase
     /**
      * @testdox Encoder, encodes successfully.
      */
-    public function testSuccess()
+    public function testSuccess(): void
     {
         $encoderXml = new EncoderXml();
         $encoderXml->setWrapElement('data');
@@ -110,7 +112,6 @@ class EncoderXmlTest extends TestCase
 
         $reflectionClass = new \ReflectionClass($encoderXml);
         $reflectionMethod = $reflectionClass->getMethod('getError');
-        $reflectionMethod->setAccessible(true);
 
         $reflectionMethod->invokeArgs($encoderXml, ['<movies><movie><titles>Faulty XML</title></movie></movies>']);
     }
@@ -140,6 +141,6 @@ class EncoderXmlTest extends TestCase
 
     private function flatten(string $value): string
     {
-        return trim(preg_replace('/\s+/', '', $value));
+        return trim((string) preg_replace('/\s+/', '', $value));
     }
 }

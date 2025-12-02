@@ -13,19 +13,16 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class AnnotationExtractor
 {
-    /** @var \Doctrine\Common\Annotations\Reader */
-    protected $annotationReader;
+    public const string CACHE_NS = 'bos_annotations';
 
-    /** @var array */
-    private $annotationCache = [];
-    
-    /** @var string */
-    public const CACHE_NS = 'bos_annotations';
+    protected Reader $annotationReader;
+
+    private array $annotationCache = [];
 
     /**
      * @codeCoverageIgnore
      */
-    public function __construct(string $cacheDir = null, bool $debugMode = false)
+    public function __construct(?string $cacheDir = null, bool $debugMode = false)
     {
         if (null !== $cacheDir) {
             $this->createDirectory($cacheDir);
@@ -60,6 +57,17 @@ class AnnotationExtractor
         } else {
             $validPropertyAnnotations = [];
 
+            // Read PHP 8 attributes first
+            $attributes = $property->getAttributes($annotationClass);
+            foreach ($attributes as $attribute) {
+                try {
+                    $validPropertyAnnotations[] = $attribute->newInstance();
+                } catch (\Error $e) {
+                    throw new \InvalidArgumentException(sprintf('%s (%s): %s', $objectName, $propertyName, $e->getMessage()), 0, $e);
+                }
+            }
+
+            // Read docblock annotations (Doctrine)
             try {
                 $allPropertyAnnotations = $this->annotationReader->getPropertyAnnotations($property);
             } catch (\InvalidArgumentException $e) {
@@ -96,11 +104,23 @@ class AnnotationExtractor
             if ($objectMethod->getDeclaringClass()->implementsInterface(Proxy::class)
                 && false !== $objectMethod->getDeclaringClass()->getParentClass()
                 && empty($this->annotationReader->getMethodAnnotations($objectMethod))
+                && empty($objectMethod->getAttributes($annotationClass))
                 && $objectMethod->getDeclaringClass()->getParentClass()->hasMethod($objectMethod->getName())
             ) {
                 $objectMethod = $objectMethod->getDeclaringClass()->getParentClass()->getMethod($objectMethod->getName());
             }
 
+            // Read PHP 8 attributes first
+            $attributes = $objectMethod->getAttributes($annotationClass);
+            foreach ($attributes as $attribute) {
+                try {
+                    $validMethodAnnotations[] = $attribute->newInstance();
+                } catch (\Error $e) {
+                    throw new \InvalidArgumentException(sprintf('%s (%s): %s', $objectName, $methodName, $e->getMessage()), 0, $e);
+                }
+            }
+
+            // Read docblock annotations (Doctrine)
             try {
                 $allMethodAnnotations = $this->annotationReader->getMethodAnnotations($objectMethod);
             } catch (\InvalidArgumentException $e) {
@@ -121,11 +141,9 @@ class AnnotationExtractor
     /**
      * Extract annotations set on class level.
      *
-     * @param object|array $object
-     *
      * @throws \ReflectionException
      */
-    public function getAnnotationsForClass(string $annotation, $object): array
+    public function getAnnotationsForClass(string $annotation, object|array $object): array
     {
         if (!is_object($object)) {
             return [];
@@ -138,6 +156,17 @@ class AnnotationExtractor
         } else {
             $validClassAnnotations = [];
 
+            // Read PHP 8 attributes first
+            $attributes = $reflectedClass->getAttributes($annotation);
+            foreach ($attributes as $attribute) {
+                try {
+                    $validClassAnnotations[] = $attribute->newInstance();
+                } catch (\Error $e) {
+                    throw new \InvalidArgumentException(sprintf('%s: %s', $className, $e->getMessage()), 0, $e);
+                }
+            }
+
+            // Read docblock annotations (Doctrine)
             try {
                 $allClassAnnotations = $this->annotationReader->getClassAnnotations($reflectedClass);
             } catch (\InvalidArgumentException $e) {
@@ -159,7 +188,7 @@ class AnnotationExtractor
     /**
      * @codeCoverageIgnore
      */
-    private function directoryExits($dir): bool
+    private function directoryExits(string $dir): bool
     {
         return is_dir($dir);
     }

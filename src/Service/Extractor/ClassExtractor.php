@@ -8,15 +8,12 @@ use BowlOfSoup\NormalizerBundle\Service\ObjectHelper;
 
 class ClassExtractor
 {
-    /** @var string */
-    public const TYPE = 'class';
+    public const string TYPE = 'class';
 
     /**
      * Gets the id from an object if available through getter.
-     *
-     * @return string|int|null
      */
-    public function getId(object $object)
+    public function getId(object $object): string|int|null
     {
         return ObjectHelper::getObjectId($object);
     }

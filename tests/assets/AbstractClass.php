@@ -6,10 +6,9 @@ namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 abstract class AbstractClass
 {
-    /** @var string */
-    private $property1 = 'string';
+    protected array $property2 = [];
 
-    protected $property2 = [];
+    private string $property1 = 'string';
 
     protected function someParentMethod(): string
     {
