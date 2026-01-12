@@ -13,7 +13,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Translate extends AbstractAnnotation
 {
-    private const SUPPORTED_PROPERTIES = [
+    private const array SUPPORTED_PROPERTIES = [
         'group' => ['type' => 'array'],
         'domain' => ['type' => 'string'],
         'locale' => ['type' => 'string'],
