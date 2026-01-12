@@ -13,6 +13,8 @@ abstract class AbstractAnnotation
 
     protected array $group = [];
 
+    abstract protected function getSupportedProperties(): array;
+
     public function getGroup(): array
     {
         return $this->group;
@@ -26,6 +28,19 @@ abstract class AbstractAnnotation
         $annotationGroup = $this->getGroup();
 
         return (empty($group) || in_array($group, $annotationGroup)) && (!empty($group) || empty($annotationGroup));
+    }
+
+    protected function validateProperty(string $propertyName, mixed $propertyValue): void
+    {
+        $supportedProperties = $this->getSupportedProperties();
+
+        if (!array_key_exists($propertyName, $supportedProperties)) {
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, static::class));
+        }
+
+        if (null !== $propertyValue) {
+            $this->validateProperties($propertyValue, $propertyName, $supportedProperties[$propertyName], static::class);
+        }
     }
 
     protected function validateProperties(mixed $property, string $propertyName, array $propertyOptions, string $annotation): bool

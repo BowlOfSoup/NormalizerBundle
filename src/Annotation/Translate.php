@@ -13,7 +13,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Translate extends AbstractAnnotation
 {
-    private array $supportedProperties = [
+    private const SUPPORTED_PROPERTIES = [
         'group' => ['type' => 'array'],
         'domain' => ['type' => 'string'],
         'locale' => ['type' => 'string'],
@@ -27,18 +27,9 @@ class Translate extends AbstractAnnotation
         array|string|null $group = null,
         ?string $locale = null,
     ) {
-        // Support old array-based initialization (for Doctrine annotations)
+        // Legacy Doctrine annotations: single array argument
         if (is_array($domain) && null === $group && 1 === func_num_args()) {
-            $properties = $domain;
-            foreach ($properties as $propertyName => $propertyValue) {
-                if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                    throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-                }
-
-                if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
-                    $this->$propertyName = $propertyValue;
-                }
-            }
+            $this->applyProperties($domain);
 
             return;
         }
@@ -51,29 +42,27 @@ class Translate extends AbstractAnnotation
             $groupValue = [$group];
         }
 
-        $properties = [
+        $this->applyProperties([
             'domain' => is_string($domain) ? $domain : null,
             'group' => $groupValue,
             'locale' => $locale,
-        ];
+        ]);
+    }
 
+    private function applyProperties(array $properties): void
+    {
         foreach ($properties as $propertyName => $propertyValue) {
-            if (null === $propertyValue) {
-                // @codeCoverageIgnoreStart
-                continue;
-                // @codeCoverageIgnoreEnd
-            }
+            $this->validateProperty($propertyName, $propertyValue);
 
-            if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                // @codeCoverageIgnoreStart
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-                // @codeCoverageIgnoreEnd
-            }
-
-            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
+            if (null !== $propertyValue) {
                 $this->$propertyName = $propertyValue;
             }
         }
+    }
+
+    protected function getSupportedProperties(): array
+    {
+        return self::SUPPORTED_PROPERTIES;
     }
 
     public function getDomain(): ?string

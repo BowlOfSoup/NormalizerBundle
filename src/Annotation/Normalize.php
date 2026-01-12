@@ -15,9 +15,7 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Normalize extends AbstractAnnotation
 {
-    protected ?string $type = null;
-
-    private array $supportedProperties = [
+    private const array SUPPORTED_PROPERTIES = [
         'name' => ['type' => 'string'],
         'group' => ['type' => 'array'],
         'type' => ['type' => 'string', 'assert' => ['collection', 'datetime', 'object']],
@@ -27,6 +25,8 @@ class Normalize extends AbstractAnnotation
         'skipEmpty' => ['type' => 'boolean'],
         'maxDepth' => ['type' => 'integer'],
     ];
+
+    protected ?string $type = null;
 
     private ?string $name = null;
     private ?string $format = null;
@@ -45,18 +45,9 @@ class Normalize extends AbstractAnnotation
         ?bool $skipEmpty = null,
         ?int $maxDepth = null,
     ) {
-        // Support old array-based initialization (for Doctrine annotations)
+        // Legacy Doctrine annotations: single array argument
         if (is_array($name) && null === $group && 1 === func_num_args()) {
-            $properties = $name;
-            foreach ($properties as $propertyName => $propertyValue) {
-                if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                    throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-                }
-
-                if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
-                    $this->$propertyName = $propertyValue;
-                }
-            }
+            $this->applyProperties($name);
 
             return;
         }
@@ -69,7 +60,7 @@ class Normalize extends AbstractAnnotation
             $groupValue = [$group];
         }
 
-        $properties = [
+        $this->applyProperties([
             'name' => is_string($name) ? $name : null,
             'group' => $groupValue,
             'type' => $type,
@@ -78,25 +69,23 @@ class Normalize extends AbstractAnnotation
             'normalizeCallbackResult' => $normalizeCallbackResult ?? false,
             'skipEmpty' => $skipEmpty ?? false,
             'maxDepth' => $maxDepth,
-        ];
+        ]);
+    }
 
+    private function applyProperties(array $properties): void
+    {
         foreach ($properties as $propertyName => $propertyValue) {
-            if (null === $propertyValue && 'name' !== $propertyName && 'format' !== $propertyName && 'callback' !== $propertyName && 'maxDepth' !== $propertyName && 'type' !== $propertyName) {
-                // @codeCoverageIgnoreStart
-                continue;
-                // @codeCoverageIgnoreEnd
-            }
+            $this->validateProperty($propertyName, $propertyValue);
 
-            if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                // @codeCoverageIgnoreStart
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-                // @codeCoverageIgnoreEnd
-            }
-
-            if (null !== $propertyValue && $this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
+            if (null !== $propertyValue) {
                 $this->$propertyName = $propertyValue;
             }
         }
+    }
+
+    protected function getSupportedProperties(): array
+    {
+        return self::SUPPORTED_PROPERTIES;
     }
 
     public function getName(): ?string
