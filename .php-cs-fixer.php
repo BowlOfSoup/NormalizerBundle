@@ -227,8 +227,7 @@ return (new Config())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
-        // default
-        '@PSR2' => true,
+        // Symfony style includes PSR-12
         '@Symfony' => true,
         // see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
         'concat_space' => ['spacing' => 'one'],
@@ -239,7 +238,6 @@ return (new Config())
         'phpdoc_align' => false,
         'general_phpdoc_tag_rename' => false,
         'phpdoc_order' => true,
-        'simplified_null_return' => false,
         'no_unused_imports' => true,
         'declare_strict_types' => true,
         'final_internal_class' => false,
@@ -254,8 +252,7 @@ return (new Config())
         ],
         'global_namespace_import' => ['import_classes' => null],
         'list_syntax' => ['syntax' => 'short'],
-        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'], // according to the documentation this is the default, but it ain't
-        'no_php4_constructor' => true,
+        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'],
         'no_superfluous_elseif' => false,
         'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
         'php_unit_internal_class' => false,
@@ -265,5 +262,9 @@ return (new Config())
         'phpdoc_types_order' => ['null_adjustment' => 'always_last', 'sort_algorithm' => 'none'],
         'ordered_class_elements' => ['order' => ['use_trait', 'constant', 'property', 'construct', 'destruct', 'phpunit', 'method']],
         'ternary_to_null_coalescing' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
+        'modernize_types_casting' => true,
+        'use_arrow_functions' => true,
+        'class_definition' => ['single_line' => false],
     ])
     ->setFinder(CustomFinder::create());
