@@ -10,6 +10,7 @@ class Hobbies
 {
     /**
      * @Bos\Normalize(group={"default", "duplicateObjectId"})
+     * @Bos\Normalize(group={"anotherGroup"})
      *
      * @var int|null
      */

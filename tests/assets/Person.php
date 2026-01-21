@@ -107,6 +107,7 @@ class Person extends AbstractPerson
      * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
      *
      * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="collection")
+     * @Bos\Normalize(group={"anotherGroup"}, type="collection")
      */
     private $hobbies;
 

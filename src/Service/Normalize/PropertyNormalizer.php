@@ -32,20 +32,22 @@ class PropertyNormalizer extends AbstractNormalizer
     }
 
     /**
+     * @param \BowlOfSoup\NormalizerBundle\Model\Context|string|null $context
+     *
      * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      * @throws \ReflectionException
      */
     public function normalize(
         Normalizer $sharedNormalizer,
         ObjectBag $objectBag,
-        ?string $group
+        $context
     ): array {
         $object = $objectBag->getObject();
         $objectName = $objectBag->getObjectName();
         $objectIdentifier = $objectBag->getObjectIdentifier();
 
         $this->sharedNormalizer = $sharedNormalizer;
-        $this->group = $group;
+        $this->handleContext($context);
         $this->nameAndClassStore[$objectIdentifier] = new Store();
 
         $normalizedProperties = [];
@@ -123,6 +125,19 @@ class PropertyNormalizer extends AbstractNormalizer
                 continue;
             }
 
+            $annotationName = $propertyAnnotation->getName();
+            if (!empty($annotationName)) {
+                $propertyName = $propertyAnnotation->getName();
+            }
+
+            // Add to current path, like a breadcrumb where we are when normalizing.
+            $this->currentPath[] = $propertyName;
+            if (!$this->canCurrentPathBeIncluded($propertyAnnotation->getType())) {
+                $this->decreaseCurrentPath();
+
+                continue;
+            }
+
             if ($propertyAnnotation->hasType()) {
                 $propertyValue = $this->getValueForPropertyWithType(
                     $object,
@@ -142,17 +157,14 @@ class PropertyNormalizer extends AbstractNormalizer
                 }
             }
 
-            $annotationName = $propertyAnnotation->getName();
-            if (!empty($annotationName)) {
-                $propertyName = $propertyAnnotation->getName();
-            }
-
             $propertyValue = (is_array($propertyValue) && empty($propertyValue) ? null : $propertyValue);
             if (null !== $translationAnnotation) {
                 $propertyValue = $this->translateValue($propertyValue, $translationAnnotation);
             }
 
             $normalizedProperties[$propertyName] = $propertyValue;
+
+            $this->decreaseCurrentPath();
         }
 
         return $normalizedProperties;
@@ -178,11 +190,11 @@ class PropertyNormalizer extends AbstractNormalizer
         $newPropertyValue = null;
         $annotationPropertyType = strtolower($annotationPropertyType);
 
-        if ('datetime' === $annotationPropertyType) {
+        if (static::TYPE_DATETIME === $annotationPropertyType) {
             $newPropertyValue = $this->getValueForPropertyWithDateTime($object, $property, $propertyAnnotation);
-        } elseif ('object' === $annotationPropertyType) {
+        } elseif (static::TYPE_OBJECT === $annotationPropertyType) {
             $newPropertyValue = $this->getValueForPropertyWithTypeObject($object, $propertyValue, $propertyAnnotation);
-        } elseif ('collection' === $annotationPropertyType) {
+        } elseif (static::TYPE_COLLECTION === $annotationPropertyType) {
             $newPropertyValue = $this->normalizeReferencedCollection($propertyValue, $propertyAnnotation);
         }
 
