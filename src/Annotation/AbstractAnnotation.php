@@ -39,29 +39,27 @@ abstract class AbstractAnnotation
         }
 
         if (null !== $propertyValue) {
-            $this->validateProperties($propertyValue, $propertyName, $supportedProperties[$propertyName], static::class);
+            $this->validatePropertyValue($propertyValue, $propertyName, $supportedProperties[$propertyName], static::class);
         }
     }
 
-    protected function validateProperties(mixed $property, string $propertyName, array $propertyOptions, string $annotation): bool
+    protected function validatePropertyValue(mixed $propertyValue, string $propertyName, array $propertyOptions, string $annotation): void
     {
-        if ($this->isEmpty($property)) {
+        if ($this->isEmpty($propertyValue)) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
         }
 
         if (isset($propertyOptions['type'])
-            && !$this->hasCorrectType($propertyOptions['type'], $property)
+            && !$this->hasCorrectType($propertyOptions['type'], $propertyValue)
         ) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
         }
 
         if (isset($propertyOptions['assert'])
-            && !$this->hasValidAssertion($propertyOptions['assert'], $property)
+            && !$this->hasValidAssertion($propertyOptions['assert'], $propertyValue)
         ) {
-            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE_SUPPORTED, $property, $annotation));
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE_SUPPORTED, $propertyValue, $annotation));
         }
-
-        return true;
     }
 
     private function isEmpty(mixed $property): bool
