@@ -3,8 +3,10 @@ Bowl Of Soup Normalizer
 
 [![Build Status](https://github.com/BowlOfSoup/NormalizerBundle/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/BowlOfSoup/NormalizerBundle/actions/workflows/ci.yaml)
 [![codecov](https://codecov.io/gh/BowlOfSoup/NormalizerBundle/branch/master/graph/badge.svg?token=2OW4EWvMUD)](https://codecov.io/gh/BowlOfSoup/NormalizerBundle)
-[![PHP Version](https://img.shields.io/badge/php-7.2.x%20--%208.2.x-blue.svg)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/>%3D8.4-blue.svg)](https://www.php.net/)
 [![Symfony Version](https://img.shields.io/badge/symfony-5.4.x-blue.svg)](https://symfony.com/)
+[![Symfony Version](https://img.shields.io/badge/symfony-6.4.x-blue.svg)](https://symfony.com/)
+[![Symfony Version](https://img.shields.io/badge/symfony-7.4.x-blue.svg)](https://symfony.com/)
 
 Installation
 -----
