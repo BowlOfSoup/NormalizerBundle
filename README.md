@@ -23,10 +23,10 @@ Quick feature overview
 - Can Serialize normalized content
 - Works with Symfony and Doctrine as its ORM. Can handle Doctrine proxies
 - Circular reference check: Handles circular reference by detecting it and returning content of the objects getId() method
-- Object caching: If a getId() method is implemented for an object it will cache the normalized object per normalize command
+- Object caching: If a getId() method is implemented for an object, it will cache the normalized object per normalize command
 - Annotation caching, this means speed!
     - The annotations for an object are cached. This means not parsing annotations multiple times for the same object. per flow (per normalize command)
-    - In Symfony prod mode, annotations are cached completely (after first run)
+    - In Symfony prod mode, annotations are cached completely (after the first run)
 - Symfony translations
     - Indicate domain (translation filename) and locale in annotations
     - Does not support formatting with ICU MessageFormat (yet), so no parameters
@@ -58,7 +58,7 @@ Development
 The following CI tools can be used to check for code quality before pushing code:
 
 ### Rector
-Rector can be used to automated code upgrades and refactoring. Try a dry-run first!
+Rector can be used to automate code upgrades and refactoring. Try a dry-run first!
 ```bash
 vendor/bin/rector process --dry-run --no-progress-bar --ansi
 ```
