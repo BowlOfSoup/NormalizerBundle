@@ -107,14 +107,19 @@ final class CustomFinder extends Finder
     private function initFilesFromGit(): void
     {
         $this->input = 'Git';
-        $branch = $this->pipedExec('git rev-parse --abbrev-ref HEAD 2>/dev/null');
-        echo sprintf('What is the destination branch of %s [master]: ', $branch);
-        $destinationBranch = trim(fgets(STDIN)) ?: 'master';
+
+        // Get destination branch from environment variable (required)
+        $destinationBranch = getenv('PHP_CS_FIXER_TARGET_BRANCH');
+
+        if ($destinationBranch === false || $destinationBranch === '') {
+            $destinationBranch = 'master';
+        }
+
         $branchExists = $this->pipedExec(sprintf('git branch --remotes 2>/dev/null | grep --extended-regexp "^(\*| ) origin/%s( |$)" 2>/dev/null', $destinationBranch));
         if ($branchExists === false) {
             die(sprintf("fatal: Couldn't find remote ref %s", $destinationBranch) . PHP_EOL);
         }
-        $this->pipedExec(sprintf('(git diff origin/%s.. --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
+        $this->pipedExec(sprintf('(git diff origin/%s.. --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff --cached --name-only --diff-filter=ACMRTUXB 2>/dev/null; git diff HEAD --name-only --diff-filter=ACMRTUXB 2>/dev/null) | grep "\.php$" 2>/dev/null | sort 2>/dev/null | uniq 2>/dev/null', $destinationBranch), $this->files);
         $repositoryRoot = $this->pipedExec('git rev-parse --show-toplevel 2>/dev/null');
         chdir($repositoryRoot);
     }
@@ -222,8 +227,7 @@ return (new Config())
     ->setUsingCache(true)
     ->setRiskyAllowed(true)
     ->setRules([
-        // default
-        '@PSR2' => true,
+        // Symfony style includes PSR-12
         '@Symfony' => true,
         // see https://github.com/FriendsOfPHP/PHP-CS-Fixer/blob/master/README.rst
         'concat_space' => ['spacing' => 'one'],
@@ -234,7 +238,6 @@ return (new Config())
         'phpdoc_align' => false,
         'general_phpdoc_tag_rename' => false,
         'phpdoc_order' => true,
-        'simplified_null_return' => false,
         'no_unused_imports' => true,
         'declare_strict_types' => true,
         'final_internal_class' => false,
@@ -249,8 +252,7 @@ return (new Config())
         ],
         'global_namespace_import' => ['import_classes' => null],
         'list_syntax' => ['syntax' => 'short'],
-        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'], // according to the documentation this is the default, but it ain't
-        'no_php4_constructor' => true,
+        'multiline_whitespace_before_semicolons' => ['strategy' => 'no_multi_line'],
         'no_superfluous_elseif' => false,
         'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
         'php_unit_internal_class' => false,
@@ -260,5 +262,9 @@ return (new Config())
         'phpdoc_types_order' => ['null_adjustment' => 'always_last', 'sort_algorithm' => 'none'],
         'ordered_class_elements' => ['order' => ['use_trait', 'constant', 'property', 'construct', 'destruct', 'phpunit', 'method']],
         'ternary_to_null_coalescing' => true,
+        'nullable_type_declaration_for_default_null_value' => true,
+        'modernize_types_casting' => true,
+        'use_arrow_functions' => true,
+        'class_definition' => ['single_line' => false],
     ])
     ->setFinder(CustomFinder::create());

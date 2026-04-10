@@ -8,14 +8,10 @@ use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 
 class EncoderJson extends AbstractEncoder
 {
-    /** @var string */
-    protected const EXCEPTION_PREFIX = 'Error when encoding JSON: ';
+    protected const string EXCEPTION_PREFIX = 'Error when encoding JSON: ';
+    protected const string ERROR_NO_ERROR = 'No error';
 
-    /** @var string */
-    protected const ERROR_NO_ERROR = 'No error';
-
-    /** @var int|null */
-    private $options = null;
+    private ?int $options = null;
 
     public function getType(): string
     {
@@ -31,9 +27,9 @@ class EncoderJson extends AbstractEncoder
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosSerializerException
      */
-    public function encode($value): string
+    public function encode(mixed $value): string
     {
         if (null !== $this->wrapElement) {
             $value = [$this->wrapElement => $value];
@@ -49,7 +45,7 @@ class EncoderJson extends AbstractEncoder
     /**
      * Throws error messages.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosSerializerException
      */
     protected function getError(): void
     {

@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
+use Attribute;
+
 /**
  * Register normalization properties.
  *
  * @Annotation
- *
  * @Target({"CLASS","PROPERTY","METHOD"})
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 class Normalize extends AbstractAnnotation
 {
-    /** @var array */
-    private $supportedProperties = [
+    private const array SUPPORTED_PROPERTIES = [
         'name' => ['type' => 'string'],
         'group' => ['type' => 'array'],
         'type' => ['type' => 'string', 'assert' => ['collection', 'datetime', 'object']],
@@ -25,38 +26,66 @@ class Normalize extends AbstractAnnotation
         'maxDepth' => ['type' => 'integer'],
     ];
 
-    /** @var string|null */
-    private $name = null;
+    protected ?string $type = null;
 
-    /** @var string|null */
-    private $format = null;
+    private ?string $name = null;
+    private ?string $format = null;
+    private ?string $callback = null;
+    private bool $normalizeCallbackResult = false;
+    private bool $skipEmpty = false;
+    private ?int $maxDepth = null;
 
-    /** @var string|null */
-    private $callback = null;
+    public function __construct(
+        array|string|null $name = null,
+        array|string|null $group = null,
+        ?string $type = null,
+        ?string $format = null,
+        ?string $callback = null,
+        ?bool $normalizeCallbackResult = null,
+        ?bool $skipEmpty = null,
+        ?int $maxDepth = null,
+    ) {
+        // Legacy Doctrine annotations: single array argument
+        if (is_array($name) && null === $group && 1 === func_num_args()) {
+            $this->applyProperties($name);
 
-    /** @var bool */
-    private $normalizeCallbackResult = false;
+            return;
+        }
 
-    /** @var bool */
-    private $skipEmpty = false;
+        // Support PHP 8 attribute named parameters
+        $groupValue = $this->group;
+        if (is_array($group)) {
+            $groupValue = $group;
+        } elseif (is_string($group)) {
+            $groupValue = [$group];
+        }
 
-    /** @var int|null */
-    private $maxDepth = null;
+        $this->applyProperties([
+            'name' => is_string($name) ? $name : null,
+            'group' => $groupValue,
+            'type' => $type,
+            'format' => $format,
+            'callback' => $callback,
+            'normalizeCallbackResult' => $normalizeCallbackResult ?? false,
+            'skipEmpty' => $skipEmpty ?? false,
+            'maxDepth' => $maxDepth,
+        ]);
+    }
 
-    /** @var string|null */
-    protected $type = null;
-
-    public function __construct(array $properties)
+    private function applyProperties(array $properties): void
     {
         foreach ($properties as $propertyName => $propertyValue) {
-            if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-            }
+            $this->validateProperty($propertyName, $propertyValue);
 
-            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
+            if (null !== $propertyValue) {
                 $this->$propertyName = $propertyValue;
             }
         }
+    }
+
+    protected function getSupportedProperties(): array
+    {
+        return self::SUPPORTED_PROPERTIES;
     }
 
     public function getName(): ?string

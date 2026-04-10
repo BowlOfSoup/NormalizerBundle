@@ -5,35 +5,26 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Service;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Serialize;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
+use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderFactory;
 use BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 
 class Serializer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor */
-    private $annotationExtractor;
-
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    private $normalizer;
-
     public function __construct(
-        AnnotationExtractor $annotationExtractor,
-        Normalizer $normalizer
+        private readonly AnnotationExtractor $annotationExtractor,
+        private readonly Normalizer $normalizer,
     ) {
-        $this->annotationExtractor = $annotationExtractor;
-        $this->normalizer = $normalizer;
     }
 
     /**
-     * @param mixed $value
-     * @param string|\BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface $encoding
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosNormalizerException
+     * @throws BosSerializerException
      * @throws \ReflectionException
      */
-    public function serialize($value, $encoding, string $group = null): string
+    public function serialize(mixed $value, string|EncoderInterface $encoding, ?string $group = null): string
     {
         $serializeAnnotation = null;
 
@@ -71,22 +62,13 @@ class Serializer
             return null;
         }
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Serialize $classAnnotation */
-        foreach ($classAnnotations as $classAnnotation) {
-            if ($classAnnotation->isGroupValidForConstruct($group)) {
-                return $classAnnotation;
-            }
-        }
-
-        return null;
+        return array_find($classAnnotations, fn (Serialize $classAnnotation) => $classAnnotation->isGroupValidForConstruct($group));
     }
 
     /**
-     * @param string|\BowlOfSoup\NormalizerBundle\Service\Encoder\EncoderInterface $encoding
-     *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosSerializerException
      */
-    private function getEncoder($encoding): EncoderInterface
+    private function getEncoder(string|EncoderInterface $encoding): EncoderInterface
     {
         if ($encoding instanceof EncoderInterface) {
             return $encoding;

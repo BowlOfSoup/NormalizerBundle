@@ -12,8 +12,6 @@ class UnknownPropertyTranslate
      * @Bos\Normalize(group={"default"})
      *
      * @Bos\Translate(groupp={"default"})
-     *
-     * @var string
      */
-    private $name = 'foo';
+    private string $name = 'foo';
 }

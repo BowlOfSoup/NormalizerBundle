@@ -8,11 +8,9 @@ use BowlOfSoup\NormalizerBundle\Exception\BosSerializerException;
 
 class EncoderXml extends AbstractEncoder
 {
-    /** @var string */
-    public const DEFAULT_WRAP_ELEMENT = 'data';
+    public const string DEFAULT_WRAP_ELEMENT = 'data';
 
-    /** @var string */
-    protected const EXCEPTION_PREFIX = 'Error when encoding XML: ';
+    protected const string EXCEPTION_PREFIX = 'Error when encoding XML: ';
 
     public function getType(): string
     {
@@ -20,10 +18,10 @@ class EncoderXml extends AbstractEncoder
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosSerializerException
      * @throws \Exception
      */
-    public function encode($value): ?string
+    public function encode(mixed $value): ?string
     {
         if (!is_array($value)) {
             return null;
@@ -66,7 +64,7 @@ class EncoderXml extends AbstractEncoder
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosSerializerException
+     * @throws BosSerializerException
      */
     protected function getError(string $xmlData): void
     {

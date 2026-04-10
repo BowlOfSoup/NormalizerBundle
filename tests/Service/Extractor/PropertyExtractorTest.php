@@ -9,12 +9,12 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\assets\Person;
 use BowlOfSoup\NormalizerBundle\Tests\assets\ProxyObject;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class PropertyExtractorTest extends TestCase
 {
-    /** @var (\BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor&\PHPUnit\Framework\MockObject\MockObject)|\PHPUnit\Framework\MockObject\MockObject */
-    private $propertyExtractor;
+    private PropertyExtractor&MockObject $propertyExtractor;
 
     protected function setUp(): void
     {
@@ -30,7 +30,6 @@ class PropertyExtractorTest extends TestCase
      */
     public function testGetMethodsForNothing(): void
     {
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $result = $propertyExtractor->getProperties('foo');
 
@@ -41,9 +40,9 @@ class PropertyExtractorTest extends TestCase
     /**
      * @testdox Get all properties of a class.
      */
-    public function testGetProperties()
+    public function testGetProperties(): void
     {
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $stubPropertyExtractor */
+        /** @var PropertyExtractor&MockObject $stubPropertyExtractor */
         $stubPropertyExtractor = $this
             ->getMockBuilder(PropertyExtractor::class)
             ->disableOriginalConstructor()
@@ -58,7 +57,6 @@ class PropertyExtractorTest extends TestCase
         $property = $properties[0];
         $this->assertSame('property32', $property->getName());
         $this->assertInstanceOf(\ReflectionProperty::class, $property);
-        $property->setAccessible(true);
         $this->assertSame(123, $property->getValue($someClass));
 
         $property = $properties[1];
@@ -73,13 +71,11 @@ class PropertyExtractorTest extends TestCase
         $property = $properties[3];
         $this->assertSame('property2', $property->getName());
         $this->assertInstanceOf(\ReflectionProperty::class, $property);
-        $property->setAccessible(true);
         $this->assertSame([], $property->getValue($someClass));
 
         $property = $properties[4];
         $this->assertSame('property1', $property->getName());
         $this->assertInstanceOf(\ReflectionProperty::class, $property);
-        $property->setAccessible(true);
         $this->assertSame('string', $property->getValue($someClass));
     }
 
@@ -90,7 +86,6 @@ class PropertyExtractorTest extends TestCase
     {
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $properties = $propertyExtractor->getProperties($someClass);
         foreach ($properties as $property) {
@@ -112,7 +107,6 @@ class PropertyExtractorTest extends TestCase
 
         $proxyObject = new ProxyObject();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $properties = $propertyExtractor->getProperties($proxyObject);
         foreach ($properties as $property) {
@@ -134,7 +128,6 @@ class PropertyExtractorTest extends TestCase
 
         $proxyObject = new ProxyObject();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $properties = $propertyExtractor->getProperties($proxyObject);
         foreach ($properties as $property) {
@@ -154,7 +147,6 @@ class PropertyExtractorTest extends TestCase
         $person = new Person();
         $person->setSurName('BowlOfSoup');
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
 
         $reflectionPropertyMock = $this
@@ -188,7 +180,6 @@ class PropertyExtractorTest extends TestCase
     {
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $result = $propertyExtractor->getPropertyValueByMethod($someClass, 'getProperty32');
 
@@ -202,7 +193,6 @@ class PropertyExtractorTest extends TestCase
     {
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor $propertyExtractor */
         $propertyExtractor = $this->propertyExtractor;
         $result = $propertyExtractor->getPropertyValueByMethod($someClass, 'getProperty53');
 

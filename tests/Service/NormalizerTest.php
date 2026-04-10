@@ -27,8 +27,7 @@ class NormalizerTest extends TestCase
 {
     use NormalizerTestTrait;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Normalizer */
-    private $normalizer;
+    private Normalizer $normalizer;
 
     protected function setUp(): void
     {
@@ -53,7 +52,7 @@ class NormalizerTest extends TestCase
     }
 
     /**
-     * @testdox Normalize an integer, but only objects or an array of objects are allowed.
+     * @testdox Normalize an integer, but only objects or an array of objects is allowed.
      */
     public function testNormalizeInvalidDataType()
     {
@@ -175,7 +174,7 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
 
-        /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        /* @var ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
             ->onlyMethods(['getId'])
@@ -199,7 +198,7 @@ class NormalizerTest extends TestCase
         $this->expectException(BosNormalizerException::class);
         $this->expectExceptionMessage('Circular reference on: BowlOfSoup\NormalizerBundle\Tests\assets\Person called from: BowlOfSoup\NormalizerBundle\Tests\assets\Social. If possible, prevent this by adding a getId() method to BowlOfSoup\NormalizerBundle\Tests\assets\Person');
 
-        /* @var \BowlOfSoup\NormalizerBundle\Service\Extractor\ClassExtractor $classExtractor */
+        /* @var ClassExtractor $classExtractor */
         $this->classExtractor = $this
             ->getMockBuilder(ClassExtractor::class)
             ->onlyMethods(['getId'])
@@ -427,7 +426,7 @@ class NormalizerTest extends TestCase
 
     public function testDontOverwriteChildConstructWithParent(): void
     {
-        $person = (new Person())
+        $person = new Person()
             ->setName('child-foo')
             ->setDateOfBirth(new \DateTime('1987-11-17'));
 

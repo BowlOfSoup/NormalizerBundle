@@ -4,39 +4,67 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Annotation;
 
+use Attribute;
+
 /**
  * Register serialization, encoding properties.
  *
  * @Annotation
- *
  * @Target({"CLASS"})
  */
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Serialize extends AbstractAnnotation
 {
-    /** @var array|array[] */
-    private $supportedProperties = [
+    private const array SUPPORTED_PROPERTIES = [
         'group' => ['type' => 'array'],
         'wrapElement' => ['type' => 'string'],
         'sortProperties' => ['type' => 'boolean'],
     ];
 
-    /** @var string|null */
-    private $wrapElement = null;
+    private ?string $wrapElement = null;
+    private bool $sortProperties = false;
 
-    /** @var bool */
-    private $sortProperties = false;
+    public function __construct(
+        array|string|null $wrapElement = null,
+        array|string|null $group = null,
+        ?bool $sortProperties = null,
+    ) {
+        // Legacy Doctrine annotations: single array argument
+        if (is_array($wrapElement) && null === $group && 1 === func_num_args()) {
+            $this->applyProperties($wrapElement);
 
-    public function __construct(array $properties)
+            return;
+        }
+
+        // Support PHP 8 attribute named parameters
+        $groupValue = $this->group;
+        if (is_array($group)) {
+            $groupValue = $group;
+        } elseif (is_string($group)) {
+            $groupValue = [$group];
+        }
+
+        $this->applyProperties([
+            'wrapElement' => is_string($wrapElement) ? $wrapElement : null,
+            'group' => $groupValue,
+            'sortProperties' => $sortProperties ?? false,
+        ]);
+    }
+
+    private function applyProperties(array $properties): void
     {
         foreach ($properties as $propertyName => $propertyValue) {
-            if (!array_key_exists($propertyName, $this->supportedProperties)) {
-                throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, self::class));
-            }
+            $this->validateProperty($propertyName, $propertyValue);
 
-            if ($this->validateProperties($propertyValue, $propertyName, $this->supportedProperties[$propertyName], self::class)) {
+            if (null !== $propertyValue) {
                 $this->$propertyName = $propertyValue;
             }
         }
+    }
+
+    protected function getSupportedProperties(): array
+    {
+        return self::SUPPORTED_PROPERTIES;
     }
 
     public function getWrapElement(): ?string

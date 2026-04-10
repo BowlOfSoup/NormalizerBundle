@@ -9,14 +9,20 @@ use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor;
 use BowlOfSoup\NormalizerBundle\Tests\ArraySubset;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenAnnotation;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenAttributeClass;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenAttributeMethod;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenAttributeProperty;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenClassAnnotation;
+use BowlOfSoup\NormalizerBundle\Tests\assets\BrokenMethodAnnotation;
 use BowlOfSoup\NormalizerBundle\Tests\assets\SomeClass;
 use Doctrine\Common\Annotations\AnnotationReader;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class AnnotationExtractorTest extends TestCase
 {
-    /** @var string */
-    protected const ANNOTATION_NORMALIZE = Normalize::class;
+    protected const string ANNOTATION_NORMALIZE = Normalize::class;
 
     public function testExtractClassAnnotation(): void
     {
@@ -26,7 +32,7 @@ class AnnotationExtractorTest extends TestCase
         $someClass = new SomeClass();
         $reflectedClass = new \ReflectionClass($someClass);
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -48,7 +54,7 @@ class AnnotationExtractorTest extends TestCase
         $someClass = new SomeClass();
         $reflectedClass = new \ReflectionClass($someClass);
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -70,7 +76,7 @@ class AnnotationExtractorTest extends TestCase
 
     public function testExtractClassAnnotationNoClassGiven(): void
     {
-        /** @var \Doctrine\Common\Annotations\AnnotationReader $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -86,7 +92,7 @@ class AnnotationExtractorTest extends TestCase
         $annotation = new Normalize([]);
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor|\PHPUnit\Framework\MockObject\Stub\Stub $methodExtractor */
+        /** @var MethodExtractor&MockObject $methodExtractor */
         $methodExtractor = $this
             ->getMockBuilder(MethodExtractor::class)
             ->disableOriginalConstructor()
@@ -96,7 +102,7 @@ class AnnotationExtractorTest extends TestCase
 
         $annotationResult = [$annotation];
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -110,7 +116,7 @@ class AnnotationExtractorTest extends TestCase
 
         $methodExtractor = new AnnotationExtractor();
         $methodExtractor->setAnnotationReader($mockAnnotationReader);
-        $result = $methodExtractor->getAnnotationsForMethod(get_class($annotation), $methods[0]);
+        $result = $methodExtractor->getAnnotationsForMethod($annotation::class, $methods[0]);
 
         ArraySubset::assert([$annotation], $result);
     }
@@ -120,7 +126,7 @@ class AnnotationExtractorTest extends TestCase
         $annotation = new Normalize([]);
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\MethodExtractor|\PHPUnit\Framework\MockObject\Stub\Stub $methodExtractor */
+        /** @var MethodExtractor&MockObject $methodExtractor */
         $methodExtractor = $this
             ->getMockBuilder(MethodExtractor::class)
             ->disableOriginalConstructor()
@@ -128,9 +134,7 @@ class AnnotationExtractorTest extends TestCase
             ->getMock();
         $methods = $methodExtractor->getMethods($someClass);
 
-        $annotationResult = [$annotation];
-
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -147,7 +151,7 @@ class AnnotationExtractorTest extends TestCase
 
         $methodExtractor = new AnnotationExtractor();
         $methodExtractor->setAnnotationReader($mockAnnotationReader);
-        $methodExtractor->getAnnotationsForMethod(get_class($annotation), $methods[0]);
+        $methodExtractor->getAnnotationsForMethod($annotation::class, $methods[0]);
     }
 
     public function testExtractPropertyAnnotations(): void
@@ -155,7 +159,7 @@ class AnnotationExtractorTest extends TestCase
         $annotation = new Normalize([]);
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor|\PHPUnit\Framework\MockObject\Stub\Stub $propertyExtractor */
+        /** @var PropertyExtractor&MockObject $propertyExtractor */
         $propertyExtractor = $this
             ->getMockBuilder(PropertyExtractor::class)
             ->disableOriginalConstructor()
@@ -165,7 +169,7 @@ class AnnotationExtractorTest extends TestCase
 
         $annotationResult = [$annotation];
 
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -179,7 +183,7 @@ class AnnotationExtractorTest extends TestCase
 
         $propertyExtractor = new AnnotationExtractor();
         $propertyExtractor->setAnnotationReader($mockAnnotationReader);
-        $result = $propertyExtractor->getAnnotationsForProperty(get_class($annotation), $properties[0]);
+        $result = $propertyExtractor->getAnnotationsForProperty($annotation::class, $properties[0]);
 
         ArraySubset::assert([$annotation], $result);
     }
@@ -189,7 +193,7 @@ class AnnotationExtractorTest extends TestCase
         $annotation = new Normalize([]);
         $someClass = new SomeClass();
 
-        /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor|\PHPUnit\Framework\MockObject\Stub\Stub $propertyExtractor */
+        /** @var PropertyExtractor&MockObject $propertyExtractor */
         $propertyExtractor = $this
             ->getMockBuilder(PropertyExtractor::class)
             ->disableOriginalConstructor()
@@ -197,9 +201,7 @@ class AnnotationExtractorTest extends TestCase
             ->getMock();
         $properties = $propertyExtractor->getProperties($someClass);
 
-        $annotationResult = [$annotation];
-
-        /** @var \Doctrine\Common\Annotations\AnnotationReader|\PHPUnit\Framework\MockObject\MockObject $mockAnnotationReader */
+        /** @var AnnotationReader&MockObject $mockAnnotationReader */
         $mockAnnotationReader = $this
             ->getMockBuilder(AnnotationReader::class)
             ->disableOriginalConstructor()
@@ -216,6 +218,44 @@ class AnnotationExtractorTest extends TestCase
 
         $propertyExtractor = new AnnotationExtractor();
         $propertyExtractor->setAnnotationReader($mockAnnotationReader);
-        $propertyExtractor->getAnnotationsForProperty(get_class($annotation), $properties[0]);
+        $propertyExtractor->getAnnotationsForProperty($annotation::class, $properties[0]);
+    }
+
+    public function testExtractPropertyAnnotationsWithAttributeError(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/BrokenAttributeProperty \(brokenProperty\):/');
+
+        $brokenObject = new BrokenAttributeProperty();
+        $propertyExtractor = new PropertyExtractor();
+        $properties = $propertyExtractor->getProperties($brokenObject);
+
+        $annotationExtractor = new AnnotationExtractor();
+        // Use the BrokenAnnotation class that will actually cause a TypeError
+        $annotationExtractor->getAnnotationsForProperty(BrokenAnnotation::class, $properties[0]);
+    }
+
+    public function testExtractMethodAnnotationsWithAttributeError(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/BrokenAttributeMethod \(getBrokenMethod\):/');
+
+        $brokenObject = new BrokenAttributeMethod();
+        $methodExtractor = new MethodExtractor();
+        $methods = $methodExtractor->getMethods($brokenObject);
+
+        $annotationExtractor = new AnnotationExtractor();
+        $annotationExtractor->getAnnotationsForMethod(BrokenMethodAnnotation::class, $methods[0]);
+    }
+
+    public function testExtractClassAnnotationsWithAttributeError(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches('/BrokenAttributeClass:/');
+
+        $brokenObject = new BrokenAttributeClass();
+
+        $annotationExtractor = new AnnotationExtractor();
+        $annotationExtractor->getAnnotationsForClass(BrokenClassAnnotation::class, $brokenObject);
     }
 }

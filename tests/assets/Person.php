@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -22,234 +21,182 @@ use Doctrine\Common\Collections\Collection;
 class Person extends AbstractPerson
 {
     /**
-     * @var int
-     *
      * @Bos\Normalize(group={"default", "translation"})
      *
      * @Bos\Translate(group={"translation"})
      */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"}, name="name_value")
      * @Bos\Normalize(group={"parent_test"})
      */
-    private $name;
+    private ?string $name = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default", "anotherGroup"})
      */
-    private $surName;
+    private ?string $surName = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"}, type="collection")
      */
-    private $initials;
+    private ?string $initials = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize()
      * @Bos\Normalize(group={"translation"})
      *
      * @Bos\Translate(group={"translation"})
      */
-    private $gender;
+    private ?string $gender = null;
 
     /**
      * @Bos\Normalize(group={"default"}, type="DateTime", format="Y-m-d")
-     *
-     * @var \DateTime|null
      */
-    private $dateOfBirth = null;
+    private ?\DateTime $dateOfBirth = null;
 
-    /** @var \DateTime|null */
-    private $dateOfRegistration = null;
+    private ?\DateTime $dateOfRegistration = null;
 
     /**
-     * @var DateTime
-     *
      * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y", callback="calculateDeceasedDate")
      */
-    private $deceasedDate;
+    private ?\DateTime $deceasedDate = null;
 
     /**
      * @Bos\Normalize(group={"default", "maxDepthTestDepth1", "maxDepthTestDepthNoIdentifier"}, type="collection")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="collection")
      * @Bos\Normalize(group={"anotherGroup"}, type="collection")
-     *
-     * @var Collection|null
      */
-    private $addresses = null;
+    private ?Collection $addresses = null;
 
     /**
      * @Bos\Normalize(group={"default", "maxDepthTestDepth0"}, type="object")
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
-     *
-     * @var Social|null
      */
-    private $social = null;
+    private ?Social $social = null;
 
     /**
      * @Bos\Normalize(group={"default"}, type="object", callback="toArray")
-     *
-     * @var TelephoneNumbers|null
      */
-    private $telephoneNumbers = null;
+    private ?TelephoneNumbers $telephoneNumbers = null;
 
     /**
-     * @var \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
-     *
      * @Bos\Normalize(group={"default", "duplicateObjectId"}, type="collection")
+     *
+     * @var Hobbies[]|null
      */
-    private $hobbies;
+    private mixed $hobbies = null;
 
     /**
      * @Bos\Normalize(group={"default"}, type="object")
      */
-    protected $validEmptyObjectProperty;
+    protected mixed $validEmptyObjectProperty = null;
 
     /**
-     * @var array
-     *
      * @Bos\Normalize(group={"default"}, type="collection")
      */
-    protected $nonValidCollectionProperty = ['123', '456'];
+    protected array $nonValidCollectionProperty = ['123', '456'];
 
     /**
      * @Bos\Normalize(group={"default"}, type="collection", callback="getProperty32")
-     *
-     * @var array|null
      */
-    private $validCollectionPropertyWithCallback = null;
+    private ?array $validCollectionPropertyWithCallback = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallback", normalizeCallbackResult=true)
      */
-    private $testForNormalizingCallback;
+    private mixed $testForNormalizingCallback = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackObject", normalizeCallbackResult=true)
      */
-    private $testForNormalizingCallbackObject;
+    private mixed $testForNormalizingCallbackObject = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackString", normalizeCallbackResult=true)
      */
-    private $testForNormalizingCallbackString;
+    private mixed $testForNormalizingCallbackString = null;
 
     /**
      * @Bos\Normalize(group={"default"}, callback="getTestForNormalizingCallbackArray", normalizeCallbackResult=true)
      */
-    private $testForNormalizingCallbackArray;
+    private mixed $testForNormalizingCallbackArray = null;
 
     /**
      * @Bos\Normalize(group={"default"}, type="object")
-     *
-     * @var ProxyObject|null
      */
-    private $testForProxy = null;
+    private ?ProxyObject $testForProxy = null;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
-     *
      * @return $this
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
-     *
      * @return $this
      */
-    public function setName($name)
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSurName()
+    public function getSurName(): ?string
     {
         return $this->surName;
     }
 
     /**
-     * @param string $surName
-     *
      * @return $this
      */
-    public function setSurName($surName)
+    public function setSurName(?string $surName): self
     {
         $this->surName = $surName;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getInitials()
+    public function getInitials(): ?string
     {
         return $this->initials;
     }
 
     /**
-     * @param string $initials
-     *
      * @return $this
      */
-    public function setInitials($initials)
+    public function setInitials(?string $initials): self
     {
         $this->initials = $initials;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getGender()
+    public function getGender(): ?string
     {
         return $this->gender;
     }
 
     /**
-     * @param string $gender
-     *
      * @return $this
      */
-    public function setGender($gender)
+    public function setGender(?string $gender): self
     {
         $this->gender = $gender;
 
@@ -257,12 +204,11 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return \DateTime
-     *
      * @Bos\Normalize(type="DateTime", name="dateOfBirth")
      * @Bos\Normalize(type="DateTime", group={"parent_test"})
      */
-    public function getDateOfBirth()
+    #[\Override]
+    public function getDateOfBirth(): \DateTime
     {
         return $this->dateOfBirth;
     }
@@ -270,7 +216,7 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setDateOfBirth(DateTime $dateOfBirth)
+    public function setDateOfBirth(\DateTime $dateOfBirth): self
     {
         $this->dateOfBirth = $dateOfBirth;
 
@@ -278,14 +224,12 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return DateTime
-     *
      * @Bos\Normalize(group={"default"}, name="dateOfRegistration", type="DateTime", format="M. Y")
      */
-    public function getDateOfRegistration()
+    public function getDateOfRegistration(): \DateTime
     {
         if (null === $this->dateOfRegistration) {
-            return new DateTime('2015-04-23');
+            return new \DateTime('2015-04-23');
         }
 
         return $this->dateOfRegistration;
@@ -294,7 +238,7 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setDateOfRegistration(DateTime $dateOfRegistration)
+    public function setDateOfRegistration(\DateTime $dateOfRegistration): self
     {
         $this->dateOfRegistration = $dateOfRegistration;
 
@@ -305,7 +249,7 @@ class Person extends AbstractPerson
      * @Bos\Normalize(group={"dateTimeTest"}, type="DateTime", format="M. Y")
      * @Bos\Normalize(group={"methodWithCallback"}, type="DateTime", format="M. Y", callback="getAddresses")
      */
-    public function calculateDeceasedDate(): DateTime
+    public function calculateDeceasedDate(): \DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -313,7 +257,7 @@ class Person extends AbstractPerson
     /**
      * @Bos\Normalize(group={"methodWithCallbackAndNoType"}, callback="getAddresses")
      */
-    public function calculateDeceasedDate2(): DateTime
+    public function calculateDeceasedDate2(): \DateTime
     {
         return new \DateTime('2020-01-01');
     }
@@ -327,12 +271,10 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return Collection
-     *
      * @Bos\Normalize(type="collection", group={"maxDepthTestDepth0OnMethod"})
      * @Bos\Normalize(type="collection", group={"maxDepthTestDepth1OnMethod"})
      */
-    public function getAddresses()
+    public function getAddresses(): ?Collection
     {
         return $this->addresses;
     }
@@ -340,7 +282,7 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setAddresses(Collection $addresses)
+    public function setAddresses(Collection $addresses): self
     {
         $this->addresses = $addresses;
 
@@ -348,13 +290,11 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return Social
-     *
      * @Bos\Normalize(type="object", group={"circRefMethod"})
      * @Bos\Normalize(type="object", group={"maxDepthTestDepth0OnMethodWithObject"})
      * @Bos\Normalize(type="object", group={"callbackOnMethodWithObject"}, callback="getAddresses")
      */
-    public function getSocial()
+    public function getSocial(): ?Social
     {
         return $this->social;
     }
@@ -362,7 +302,7 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setSocial(Social $social)
+    public function setSocial(Social $social): self
     {
         $this->social = $social;
 
@@ -370,11 +310,9 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return TelephoneNumbers
-     *
      * @Bos\Normalize(group={"noContentForCollectionTest"}, type="object")
      */
-    public function getTelephoneNumbers()
+    public function getTelephoneNumbers(): ?TelephoneNumbers
     {
         return $this->telephoneNumbers;
     }
@@ -382,7 +320,7 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setTelephoneNumbers(TelephoneNumbers $telephoneNumbers)
+    public function setTelephoneNumbers(TelephoneNumbers $telephoneNumbers): self
     {
         $this->telephoneNumbers = $telephoneNumbers;
 
@@ -390,7 +328,7 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @return \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[]
+     * @return Hobbies[]
      */
     public function getHobbies(): array
     {
@@ -398,11 +336,11 @@ class Person extends AbstractPerson
     }
 
     /**
-     * @param \BowlOfSoup\NormalizerBundle\Tests\assets\Hobbies[] $hobbies
+     * @param Hobbies[] $hobbies
      *
      * @return $this
      */
-    public function setHobbies($hobbies)
+    public function setHobbies(mixed $hobbies): self
     {
         $this->hobbies = $hobbies;
 
@@ -412,25 +350,19 @@ class Person extends AbstractPerson
     /**
      * @return $this
      */
-    public function setValidCollectionPropertyWithCallback(array $validCollectionPropertyWithCallback)
+    public function setValidCollectionPropertyWithCallback(array $validCollectionPropertyWithCallback): self
     {
         $this->validCollectionPropertyWithCallback = $validCollectionPropertyWithCallback;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function normalizeValidCollectionPropertyWithCallback()
+    public function normalizeValidCollectionPropertyWithCallback(): string
     {
         return 'test';
     }
 
-    /**
-     * @return ArrayCollection
-     */
-    public function getTestForNormalizingCallback()
+    public function getTestForNormalizingCallback(): ArrayCollection
     {
         $addressCollection = new ArrayCollection();
         $address1 = new Address();
@@ -445,10 +377,7 @@ class Person extends AbstractPerson
         return $addressCollection;
     }
 
-    /**
-     * @return Address
-     */
-    public function getTestForNormalizingCallbackObject()
+    public function getTestForNormalizingCallbackObject(): Address
     {
         $address1 = new Address();
         $address1->setStreet('Dummy Street');
@@ -457,18 +386,12 @@ class Person extends AbstractPerson
         return $address1;
     }
 
-    /**
-     * @return string
-     */
-    public function getTestForNormalizingCallbackString()
+    public function getTestForNormalizingCallbackString(): string
     {
         return 'asdasd';
     }
 
-    /**
-     * @return array
-     */
-    public function getTestForNormalizingCallbackArray()
+    public function getTestForNormalizingCallbackArray(): array
     {
         return [
             '123',
@@ -477,15 +400,12 @@ class Person extends AbstractPerson
         ];
     }
 
-    /**
-     * @return ProxyObject
-     */
-    public function getTestForProxy()
+    public function getTestForProxy(): ?ProxyObject
     {
         return $this->testForProxy;
     }
 
-    public function setTestForProxy(ProxyObject $proxyObject)
+    public function setTestForProxy(ProxyObject $proxyObject): void
     {
         $this->testForProxy = $proxyObject;
     }

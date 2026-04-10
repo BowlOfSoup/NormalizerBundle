@@ -6,13 +6,9 @@ namespace BowlOfSoup\NormalizerBundle\Service\Extractor;
 
 class MethodExtractor
 {
-    /** @var string */
-    public const TYPE = 'method';
+    public const string TYPE = 'method';
 
-    /**
-     * @param object|string $object
-     */
-    public function getMethods($object): array
+    public function getMethods(object|string $object): array
     {
         if (!is_object($object)) {
             return [];

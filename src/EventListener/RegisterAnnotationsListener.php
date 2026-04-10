@@ -8,14 +8,11 @@ use Doctrine\Common\Annotations\AnnotationRegistry;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 
-class RegisterAnnotationsListener implements EventSubscriberInterface
+readonly class RegisterAnnotationsListener implements EventSubscriberInterface
 {
-    /** @var bool|null */
-    private $parameterRegisterAnnotations = null;
-
-    public function __construct(bool $parameterRegisterAnnotations = null)
-    {
-        $this->parameterRegisterAnnotations = $parameterRegisterAnnotations;
+    public function __construct(
+        private ?bool $parameterRegisterAnnotations = null,
+    ) {
     }
 
     public static function getSubscribedEvents(): array

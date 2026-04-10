@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\Annotation;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
@@ -73,6 +75,61 @@ class NormalizeTest extends TestCase
         $properties = $this->getValidSetOfProperties();
         $properties['group'] = 'dummy';
         new Normalize($properties);
+    }
+
+    /**
+     * @testdox Test annotation with unknown property in array-based initialization
+     */
+    public function testNormalizeWithUnknownProperty(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Property "unknownProperty" of annotation "BowlOfSoup\NormalizerBundle\Annotation\Normalize" is unknown.');
+
+        $properties = $this->getValidSetOfProperties();
+        $properties['unknownProperty'] = 'value';
+        new Normalize($properties);
+    }
+
+    /**
+     * @testdox Test annotation with attribute-style named parameters with explicit nulls
+     */
+    public function testNormalizeWithAttributeStyleNullParameters(): void
+    {
+        // This tests the attribute-style path with null parameters
+        $normalize = new Normalize(
+            name: null,
+            group: ['api'],
+            type: null,
+            format: null,
+            callback: null,
+            normalizeCallbackResult: null,
+            skipEmpty: null,
+            maxDepth: null
+        );
+
+        $this->assertNull($normalize->getName());
+        $this->assertSame(['api'], $normalize->getGroup());
+    }
+
+    /**
+     * @testdox Test annotation with attribute-style string group parameter
+     */
+    public function testNormalizeWithAttributeStyleStringGroup(): void
+    {
+        // This tests the elseif branch where group is a string
+        $normalize = new Normalize(
+            name: 'test',
+            group: 'api',  // String instead of array
+            type: null,
+            format: null,
+            callback: null,
+            normalizeCallbackResult: null,
+            skipEmpty: null,
+            maxDepth: null
+        );
+
+        $this->assertSame('test', $normalize->getName());
+        $this->assertSame(['api'], $normalize->getGroup());  // Should be converted to array
     }
 
     private function getValidSetOfProperties(): array

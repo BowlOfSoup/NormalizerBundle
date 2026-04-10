@@ -9,18 +9,13 @@ use Doctrine\Persistence\Proxy;
 
 class PropertyExtractor
 {
-    /** @var bool */
-    public const GET_ONLY_PRIVATES = true;
-
-    /** @var string */
-    public const TYPE = 'property';
+    public const bool GET_ONLY_PRIVATES = true;
+    public const string TYPE = 'property';
 
     /**
      * Get all properties for a given class.
-     *
-     * @param object|string $object
      */
-    public function getProperties($object): array
+    public function getProperties(object|string $object): array
     {
         if (!is_object($object)) {
             return [];
@@ -59,11 +54,9 @@ class PropertyExtractor
     /**
      * Returns a value for a (reflected) property.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
-     *
-     * @return mixed|null
+     * @throws BosNormalizerException
      */
-    public function getPropertyValue(object $object, \ReflectionProperty $property)
+    public function getPropertyValue(object $object, \ReflectionProperty $property): mixed
     {
         $propertyName = $property->getName();
         $propertyValue = null;
@@ -71,7 +64,7 @@ class PropertyExtractor
 
         try {
             $propertyValue = $property->getValue($object);
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             $forceGetMethod = true;
         }
 
@@ -96,10 +89,8 @@ class PropertyExtractor
 
     /**
      * Returns a value by specified method.
-     *
-     * @return mixed
      */
-    public function getPropertyValueByMethod(object $object, string $method)
+    public function getPropertyValueByMethod(object $object, string $method): mixed
     {
         if (is_callable([$object, $method])) {
             return $object->$method();

@@ -4,28 +4,16 @@ declare(strict_types=1);
 
 namespace BowlOfSoup\NormalizerBundle\Model;
 
-class ObjectBag
+readonly class ObjectBag
 {
-    /** @var object */
-    private $object;
+    private string $objectIdentifier;
 
-    /** @var string */
-    private $objectIdentifier;
-
-    /** @var string */
-    private $objectName;
-
-    /**
-     * @param mixed $objectIdentifier
-     */
     public function __construct(
-        object $object,
-        $objectIdentifier,
-        string $objectName
+        private object $object,
+        mixed $objectIdentifier,
+        private string $objectName,
     ) {
-        $this->object = $object;
         $this->objectIdentifier = (string) $objectIdentifier;
-        $this->objectName = $objectName;
     }
 
     public function getObject(): object

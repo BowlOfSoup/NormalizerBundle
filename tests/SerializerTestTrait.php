@@ -11,9 +11,6 @@ trait SerializerTestTrait
 {
     use NormalizerTestTrait;
 
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor|\PHPUnit\Framework\MockObject\Stub\Stub */
-    protected $annotationExtractor;
-
     public function getSerializer(): Serializer
     {
         $annotationExtractor = $this->annotationExtractor ?? new AnnotationExtractor();

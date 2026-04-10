@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BowlOfSoup\NormalizerBundle\Tests\assets;
 
 use BowlOfSoup\NormalizerBundle\Annotation as Bos;
@@ -9,60 +11,44 @@ use BowlOfSoup\NormalizerBundle\Annotation as Bos;
  */
 class Social
 {
-    /** @var int */
-    private $id;
+    private ?int $id = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $facebook;
+    private ?string $facebook = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $twitter;
+    private ?string $twitter = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $instagram;
+    private ?string $instagram = null;
 
     /**
-     * @var string
-     *
      * @Bos\Normalize(group={"default"})
      */
-    private $snapchat;
+    private ?string $snapchat = null;
 
     /**
-     * Used to show cirular reference for the normalizer.
-     *
-     * @var Person
+     * Used to show circular reference for the normalizer.
      *
      * @Bos\Normalize(group={"default"}, type="object")
      */
-    private $person;
+    private ?Person $person = null;
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * @param int $id
-     *
      * @return $this
      */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
@@ -70,81 +56,62 @@ class Social
     }
 
     /**
-     * @return string
-     *
      * @Bos\Normalize(name="facebook", group={"proxy-method"})
      */
-    public function getFacebook()
+    public function getFacebook(): ?string
     {
         return $this->facebook;
     }
 
     /**
-     * @param string $facebook
-     *
      * @return $this
      */
-    public function setFacebook($facebook)
+    public function setFacebook(?string $facebook): self
     {
         $this->facebook = $facebook;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getTwitter()
+    public function getTwitter(): ?string
     {
         return $this->twitter;
     }
 
     /**
-     * @param string $twitter
-     *
      * @return $this
      */
-    public function setTwitter($twitter)
+    public function setTwitter(?string $twitter): self
     {
         $this->twitter = $twitter;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getInstagram()
+    public function getInstagram(): ?string
     {
         return $this->instagram;
     }
 
     /**
-     * @param string $instagram
-     *
      * @return $this
      */
-    public function setInstagram($instagram)
+    public function setInstagram(?string $instagram): self
     {
         $this->instagram = $instagram;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getSnapchat()
+    public function getSnapchat(): ?string
     {
         return $this->snapchat;
     }
 
     /**
-     * @param string $snapchat
-     *
      * @return $this
      */
-    public function setSnapchat($snapchat)
+    public function setSnapchat(?string $snapchat): self
     {
         $this->snapchat = $snapchat;
 
@@ -152,21 +119,17 @@ class Social
     }
 
     /**
-     * @return Person
-     *
      * @Bos\Normalize(type="object", group={"circRefMethod"})
      */
-    public function getPerson()
+    public function getPerson(): ?Person
     {
         return $this->person;
     }
 
     /**
-     * @param Person $person
-     *
      * @return $this
      */
-    public function setPerson($person)
+    public function setPerson(?Person $person): self
     {
         $this->person = $person;
 

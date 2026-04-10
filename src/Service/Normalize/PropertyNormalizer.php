@@ -6,6 +6,7 @@ namespace BowlOfSoup\NormalizerBundle\Service\Normalize;
 
 use BowlOfSoup\NormalizerBundle\Annotation\Normalize;
 use BowlOfSoup\NormalizerBundle\Annotation\Translate;
+use BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException;
 use BowlOfSoup\NormalizerBundle\Model\ObjectBag;
 use BowlOfSoup\NormalizerBundle\Model\Store;
 use BowlOfSoup\NormalizerBundle\Service\Extractor\AnnotationExtractor;
@@ -17,28 +18,23 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class PropertyNormalizer extends AbstractNormalizer
 {
-    /** @var \BowlOfSoup\NormalizerBundle\Service\Extractor\PropertyExtractor */
-    private $propertyExtractor;
-
     public function __construct(
         ClassExtractor $classExtractor,
         TranslatorInterface $translator,
         AnnotationExtractor $annotationExtractor,
-        PropertyExtractor $propertyExtractor
+        private readonly PropertyExtractor $propertyExtractor,
     ) {
         parent::__construct($classExtractor, $translator, $annotationExtractor);
-
-        $this->propertyExtractor = $propertyExtractor;
     }
 
     /**
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     public function normalize(
         Normalizer $sharedNormalizer,
         ObjectBag $objectBag,
-        ?string $group
+        ?string $group,
     ): array {
         $object = $objectBag->getObject();
         $objectName = $objectBag->getObjectName();
@@ -66,8 +62,6 @@ class PropertyNormalizer extends AbstractNormalizer
                 continue;
             }
 
-            $classProperty->setAccessible(true);
-
             if ($object instanceof Proxy && !$object->__isInitialized()) {
                 $object->__load();
             }
@@ -94,18 +88,18 @@ class PropertyNormalizer extends AbstractNormalizer
     /**
      * Normalization per (reflected) property.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     private function normalizeProperty(
         object $object,
         \ReflectionProperty $property,
         array $propertyAnnotations,
-        ?Normalize $classAnnotation
+        ?Normalize $classAnnotation,
     ): array {
         $normalizedProperties = [];
 
-        /** @var \BowlOfSoup\NormalizerBundle\Annotation\Normalize $propertyAnnotation */
+        /** @var Normalize $propertyAnnotation */
         foreach ($propertyAnnotations as $propertyAnnotation) {
             if (!$propertyAnnotation->isGroupValidForConstruct($this->group)) {
                 continue;
@@ -161,20 +155,18 @@ class PropertyNormalizer extends AbstractNormalizer
     /**
      * Returns values for properties with the annotation property 'type'.
      *
-     * @param mixed $propertyValue
-     *
      * @throws \ReflectionException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      *
      * @return mixed|null
      */
     private function getValueForPropertyWithType(
         object $object,
         \ReflectionProperty $property,
-        $propertyValue,
+        mixed $propertyValue,
         Normalize $propertyAnnotation,
-        string $annotationPropertyType
-    ) {
+        string $annotationPropertyType,
+    ): mixed {
         $newPropertyValue = null;
         $annotationPropertyType = strtolower($annotationPropertyType);
 
@@ -192,7 +184,7 @@ class PropertyNormalizer extends AbstractNormalizer
     /**
      * Returns values for properties with annotation type 'datetime'.
      *
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
+     * @throws BosNormalizerException
      * @throws \ReflectionException
      */
     private function getValueForPropertyWithDateTime(object $object, \ReflectionProperty $property, Normalize $propertyAnnotation): ?string
@@ -217,14 +209,12 @@ class PropertyNormalizer extends AbstractNormalizer
     /**
      * Returns values for properties with annotation type 'object'.
      *
-     * @param mixed $propertyValue
-     *
+     * @throws BosNormalizerException
      * @throws \ReflectionException
-     * @throws \BowlOfSoup\NormalizerBundle\Exception\BosNormalizerException
      *
      * @return mixed|null
      */
-    private function getValueForPropertyWithTypeObject(object $object, $propertyValue, Normalize $propertyAnnotation)
+    private function getValueForPropertyWithTypeObject(object $object, mixed $propertyValue, Normalize $propertyAnnotation): mixed
     {
         if ($this->hasMaxDepth()) {
             return $this->getValueForMaxDepth($propertyValue);

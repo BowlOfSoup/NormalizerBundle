@@ -6,13 +6,14 @@ namespace BowlOfSoup\NormalizerBundle\Annotation;
 
 abstract class AbstractAnnotation
 {
-    protected const EXCEPTION_EMPTY = 'Parameter "%s" of annotation "%s" cannot be empty.';
-    protected const EXCEPTION_TYPE = 'Wrong datatype used for property "%s" for annotation "%s"';
-    protected const EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
-    protected const EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
+    protected const string EXCEPTION_EMPTY = 'Parameter "%s" of annotation "%s" cannot be empty.';
+    protected const string EXCEPTION_TYPE = 'Wrong datatype used for property "%s" for annotation "%s"';
+    protected const string EXCEPTION_TYPE_SUPPORTED = 'Type "%s" of annotation "%s" is not supported.';
+    protected const string EXCEPTION_UNKNOWN_PROPERTY = 'Property "%s" of annotation "%s" is unknown.';
 
-    /** @var array */
-    protected $group = [];
+    protected array $group = [];
+
+    abstract protected function getSupportedProperties(): array;
 
     public function getGroup(): array
     {
@@ -26,46 +27,47 @@ abstract class AbstractAnnotation
     {
         $annotationGroup = $this->getGroup();
 
-        return (empty($group) || in_array($group, $annotationGroup, false)) && (!empty($group) || empty($annotationGroup));
+        return (empty($group) || in_array($group, $annotationGroup)) && (!empty($group) || empty($annotationGroup));
     }
 
-    /**
-     * @param mixed $property
-     */
-    protected function validateProperties($property, string $propertyName, array $propertyOptions, string $annotation): bool
+    protected function validateProperty(string $propertyName, mixed $propertyValue): void
     {
-        if ($this->isEmpty($property)) {
+        $supportedProperties = $this->getSupportedProperties();
+
+        if (!array_key_exists($propertyName, $supportedProperties)) {
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_UNKNOWN_PROPERTY, $propertyName, static::class));
+        }
+
+        if (null !== $propertyValue) {
+            $this->validatePropertyValue($propertyValue, $propertyName, $supportedProperties[$propertyName], static::class);
+        }
+    }
+
+    protected function validatePropertyValue(mixed $propertyValue, string $propertyName, array $propertyOptions, string $annotation): void
+    {
+        if ($this->isEmpty($propertyValue)) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_EMPTY, $propertyName, $annotation));
         }
 
         if (isset($propertyOptions['type'])
-            && !$this->hasCorrectType($propertyOptions['type'], $property)
+            && !$this->hasCorrectType($propertyOptions['type'], $propertyValue)
         ) {
             throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE, $propertyName, $annotation));
         }
 
         if (isset($propertyOptions['assert'])
-            && !$this->hasValidAssertion($propertyOptions['assert'], $property)
+            && !$this->hasValidAssertion($propertyOptions['assert'], $propertyValue)
         ) {
-            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE_SUPPORTED, $property, $annotation));
+            throw new \InvalidArgumentException(sprintf(static::EXCEPTION_TYPE_SUPPORTED, $propertyValue, $annotation));
         }
-
-        return true;
     }
 
-    /**
-     * @param mixed $property
-     */
-    private function isEmpty($property): bool
+    private function isEmpty(mixed $property): bool
     {
         return 0 !== $property && empty($property) && false !== $property;
     }
 
-    /**
-     * @param mixed $type
-     * @param mixed $property
-     */
-    private function hasCorrectType($type, $property): bool
+    private function hasCorrectType(mixed $type, mixed $property): bool
     {
         return $type === gettype($property);
     }

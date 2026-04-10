@@ -6,67 +6,47 @@ namespace BowlOfSoup\NormalizerBundle\Model;
 
 final class ObjectCache
 {
-    /** @var array */
-    private static $processedObjects = [];
+    private static array $processedObjects = [];
+    private static array $processedObjectCache = [];
 
-    /** @var array */
-    private static $processedObjectCache = [];
-
-    /**
-     * @param mixed $objectIdentifier
-     */
-    public static function hasObjectByNameAndIdentifier(string $objectName, $objectIdentifier): bool
+    public static function hasObjectByNameAndIdentifier(string $objectName, mixed $objectIdentifier): bool
     {
         return
-            array_key_exists($objectName, static::$processedObjectCache)
-            && array_key_exists($objectIdentifier, static::$processedObjectCache[$objectName]);
+            array_key_exists($objectName, self::$processedObjectCache)
+            && array_key_exists($objectIdentifier, self::$processedObjectCache[$objectName]);
     }
 
-    /**
-     * @param mixed $objectIdentifier
-     */
-    public static function setObjectByName(string $objectName, $objectIdentifier): void
+    public static function setObjectByName(string $objectName, mixed $objectIdentifier): void
     {
-        static::$processedObjects[$objectName] = $objectIdentifier;
+        self::$processedObjects[$objectName] = $objectIdentifier;
     }
 
-    /**
-     * @param mixed $objectIdentifier
-     */
     public static function setNormalizedPropertiesByNameAndIdentifier(
         string $objectName,
-        $objectIdentifier,
-        array $normalizedProperties
+        mixed $objectIdentifier,
+        array $normalizedProperties,
     ): void {
-        static::$processedObjectCache[$objectName][$objectIdentifier] = $normalizedProperties;
+        self::$processedObjectCache[$objectName][$objectIdentifier] = $normalizedProperties;
     }
 
-    /**
-     * @param mixed $objectIdentifier
-     *
-     * @return mixed
-     */
-    public static function getObjectByNameAndIdentifier(string $objectName, $objectIdentifier)
+    public static function getObjectByNameAndIdentifier(string $objectName, mixed $objectIdentifier): mixed
     {
-        return static::$processedObjectCache[$objectName][$objectIdentifier];
+        return self::$processedObjectCache[$objectName][$objectIdentifier];
     }
 
-    /**
-     * @param mixed $objectIdentifier
-     */
-    public static function resetObjectByNameAndIdentifier(string $objectName, $objectIdentifier): void
+    public static function resetObjectByNameAndIdentifier(string $objectName, mixed $objectIdentifier): void
     {
-        static::$processedObjectCache[$objectName][$objectIdentifier] = [];
+        self::$processedObjectCache[$objectName][$objectIdentifier] = [];
     }
 
     public static function popCache(): void
     {
-        array_pop(static::$processedObjects);
+        array_pop(self::$processedObjects);
     }
 
     public static function clear(): void
     {
-        static::$processedObjects = [];
-        static::$processedObjectCache = [];
+        self::$processedObjects = [];
+        self::$processedObjectCache = [];
     }
 }

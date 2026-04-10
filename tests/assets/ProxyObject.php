@@ -9,40 +9,30 @@ use Doctrine\Persistence\Proxy;
 
 class ProxyObject implements Proxy
 {
-    /** @var string */
-    private $id = '123';
+    private string $id = '123';
 
     /**
      * @Bos\Normalize(group={"default"})
-     *
-     * @var string
      */
-    private $value = 'Hello';
+    private string $value = 'Hello';
 
-    /** @var string */
-    private $proxyProperty = 'string';
+    private string $proxyProperty = 'string';
 
-    public function __load()
+    public function __load(): void
     {
     }
 
-    public function __isInitialized()
+    public function __isInitialized(): bool
     {
         return true;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId(): int
     {
         return (int) $this->id;
     }
 
-    /**
-     * @return string
-     */
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }
